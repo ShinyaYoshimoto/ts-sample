@@ -1,5 +1,5 @@
-import { Account } from '../../domain/model/account';
+import type { Account } from '../../domain/model/account';
 
 export interface LoadAccountPort {
-  loadAccount(accountId: string, time: Date): Account;
+	loadAccount(accountId: string, time: Date): Account;
 }

@@ -1,3 +1,3 @@
 export class GetAccountBalanceQuery {
-  constructor(public readonly accountId: string) {}
+	constructor(public readonly accountId: string) {}
 }

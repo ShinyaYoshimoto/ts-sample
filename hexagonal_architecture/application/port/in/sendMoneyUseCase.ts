@@ -1,5 +1,5 @@
-import { SendMoneyCommand } from './sendMoneyCommand';
+import type { SendMoneyCommand } from './sendMoneyCommand';
 
 export interface SendMoneyUseCase {
-  sendMoney(command: SendMoneyCommand): boolean;
+	sendMoney(command: SendMoneyCommand): boolean;
 }
