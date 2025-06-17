@@ -23,8 +23,12 @@
   - [ ] elasticsearch
   - [ ] Prisma
   - [ ] effect-ts
-  - [ ] lint, formatter
-    - [ ] biome
+  - [x] lint, formatter
+    - [x] biome
     - [x] prettier
-    - [ ] ESLint
   - [ ] tsgo
+
+
+## biome
+
+- [リファレンス](https://biomejs.dev/ja/reference/configuration/#javascriptformatterquotestyle)
