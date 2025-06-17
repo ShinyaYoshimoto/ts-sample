@@ -1,16 +1,20 @@
 {
-  "name": "ts-sample",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "format": "prettier --write ."
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.8.0",
-  "devDependencies": {
-    "prettier": "^3"
-  }
+	"name": "ts-sample",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"format:prettier": "prettier --write .",
+		"format:biome": "biome format --write .",
+		"lint:biome": "biome lint --write .",
+		"check:biome": "biome check --write ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"packageManager": "pnpm@10.8.0",
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"prettier": "^3"
+	}
 }

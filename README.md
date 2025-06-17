@@ -25,5 +25,6 @@
   - [ ] effect-ts
   - [ ] lint, formatter
     - [ ] biome
-    - [ ] prettier + ESLint
+    - [x] prettier
+    - [ ] ESLint
   - [ ] tsgo
