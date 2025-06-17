@@ -1,20 +1,27 @@
-import { Activity } from "./activity";
-import { ActivityWindow } from "./activityWindow";
-import { Money } from "./money";
+import { Activity } from './activity';
+import { ActivityWindow } from './activityWindow';
+import { Money } from './money';
 
 export class Account {
   private accountId: string;
   private baselineBalance: Money;
   private activityWindow: ActivityWindow;
 
-  constructor(accountId: string, baselineBalance: Money, activityWindow: ActivityWindow) {
+  constructor(
+    accountId: string,
+    baselineBalance: Money,
+    activityWindow: ActivityWindow,
+  ) {
     this.accountId = accountId;
     this.baselineBalance = baselineBalance;
     this.activityWindow = activityWindow;
   }
 
   public calculateBalance(): Money {
-    return Money.add(this.baselineBalance, this.activityWindow.calculateBalance(this.accountId));
+    return Money.add(
+      this.baselineBalance,
+      this.activityWindow.calculateBalance(this.accountId),
+    );
   }
 
   public withdraw(money: Money, targetAccountId: string): boolean {
@@ -26,7 +33,7 @@ export class Account {
       accountId: this.accountId,
       targetAccountId: targetAccountId,
       amount: money,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
     this.activityWindow.addActivity(activity);
     return true;
@@ -41,7 +48,7 @@ export class Account {
       accountId: sourceAccountId,
       targetAccountId: this.accountId,
       amount: money,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
     this.activityWindow.addActivity(deposit);
     return true;

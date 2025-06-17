@@ -1,6 +1,5 @@
 export class Money {
-  constructor(readonly amount: number) {
-  }
+  constructor(readonly amount: number) {}
 
   public static add(base: Money, added: Money): Money {
     return new Money(base.amount + added.amount);

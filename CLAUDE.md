@@ -15,6 +15,7 @@ The codebase follows hexagonal architecture (ports and adapters pattern) with cl
 - **Adapter Layer** (`250604/adapter/`): Infrastructure implementations for web controllers and persistence
 
 Key architectural components:
+
 - **Inbound Ports**: Use case interfaces (e.g., `SendMoneyUseCase`, `GetAccountBalanceUseCase`)
 - **Outbound Ports**: Repository interfaces (e.g., `LoadAccountPort`, `UpdateAccountStatePort`)
 - **Domain Models**: `Account`, `Activity`, `ActivityWindow`, `Money` with business logic encapsulated

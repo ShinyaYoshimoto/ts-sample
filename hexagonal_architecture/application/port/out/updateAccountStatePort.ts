@@ -1,4 +1,4 @@
-import { Activity } from "../../domain/model/activity";
+import { Activity } from '../../domain/model/activity';
 
 export interface UpdateAccountStatePort {
   updateAccountState(accountId: string, activities: Activity[]): boolean;

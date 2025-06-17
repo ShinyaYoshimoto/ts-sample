@@ -1,4 +1,4 @@
-import { SendMoneyCommand } from "./sendMoneyCommand";
+import { SendMoneyCommand } from './sendMoneyCommand';
 
 export interface SendMoneyUseCase {
   sendMoney(command: SendMoneyCommand): boolean;

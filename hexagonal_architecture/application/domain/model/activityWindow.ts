@@ -1,11 +1,10 @@
-import { Money } from "./money";
-import { Activity } from "./activity";
+import { Money } from './money';
+import { Activity } from './activity';
 
 export class ActivityWindow {
   private activities: Activity[] = [];
 
-  constructor() {
-  }
+  constructor() {}
 
   public calculateBalance(accountId: string): Money {
     // TODO

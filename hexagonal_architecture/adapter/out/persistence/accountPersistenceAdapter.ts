@@ -1,13 +1,14 @@
-import { Activity } from "../../../application/domain/model/activity";
-import { UpdateAccountStatePort } from "../../../application/port/out/updateAccountStatePort";
-import { LoadAccountPort } from "../../../application/port/out/loadAccountPort";
-import { Account } from "../../../application/domain/model/account";
-import { Money } from "../../../application/domain/model/money";
-import { ActivityWindow } from "../../../application/domain/model/activityWindow";
+import { Activity } from '../../../application/domain/model/activity';
+import { UpdateAccountStatePort } from '../../../application/port/out/updateAccountStatePort';
+import { LoadAccountPort } from '../../../application/port/out/loadAccountPort';
+import { Account } from '../../../application/domain/model/account';
+import { Money } from '../../../application/domain/model/money';
+import { ActivityWindow } from '../../../application/domain/model/activityWindow';
 
-export class AccountPersistenceAdapter implements UpdateAccountStatePort, LoadAccountPort {
-  constructor(
-  ) {}
+export class AccountPersistenceAdapter
+  implements UpdateAccountStatePort, LoadAccountPort
+{
+  constructor() {}
 
   loadAccount(accountId: string): Account {
     // TODO: data fetch

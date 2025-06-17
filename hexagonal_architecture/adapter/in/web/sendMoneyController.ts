@@ -1,13 +1,13 @@
-import { Money } from "../../../application/domain/model/money";
-import { SendMoneyCommand } from "../../../application/port/in/sendMoneyCommand";
-import { SendMoneyUseCase } from "../../../application/port/in/sendMoneyUseCase";
-import { GetAccountBalanceQuery } from "../../../application/port/in/getAccountBalanceQuery";
-import { GetAccountBalanceUseCase } from "../../../application/port/in/getAccountBalanceUseCase";
+import { Money } from '../../../application/domain/model/money';
+import { SendMoneyCommand } from '../../../application/port/in/sendMoneyCommand';
+import { SendMoneyUseCase } from '../../../application/port/in/sendMoneyUseCase';
+import { GetAccountBalanceQuery } from '../../../application/port/in/getAccountBalanceQuery';
+import { GetAccountBalanceUseCase } from '../../../application/port/in/getAccountBalanceUseCase';
 
 export class SendMoneyController {
   constructor(
     private readonly sendMoneyUsecase: SendMoneyUseCase,
-    private readonly getAccountBalanceUsecase: GetAccountBalanceUseCase
+    private readonly getAccountBalanceUsecase: GetAccountBalanceUseCase,
   ) {}
 
   handle(request: SendMoneyRequest): SendMoneyResponse {
@@ -16,11 +16,11 @@ export class SendMoneyController {
     const command = new SendMoneyCommand(
       sourceAccountId,
       targetAccountId,
-      new Money(amount)
+      new Money(amount),
     );
 
     const success = this.sendMoneyUsecase.sendMoney(command);
-    
+
     if (!success) {
       return { success: false };
     }
@@ -37,10 +37,9 @@ type SendMoneyRequest = {
   sourceAccountId: string;
   targetAccountId: string;
   amount: number;
-}
+};
 
 type SendMoneyResponse = {
   success: boolean;
   balance?: number;
-}
-
+};
