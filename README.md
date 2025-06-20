@@ -28,6 +28,9 @@
     - [x] biome
     - [x] prettier
   - [ ] tsgo
+  - [ ] hash化アルゴリズム
+    - [ ] bcrypt
+    - [ ] Argon2
 
 
 ## biome
