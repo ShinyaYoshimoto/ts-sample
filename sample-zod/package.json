@@ -1,0 +1,16 @@
+{
+	"name": "sample-zod",
+	"version": "1.0.0",
+	"description": "",
+	"scripts": {
+		"test": "vitest"
+	},
+	"keywords": [],
+	"author": "ysmt",
+	"license": "ISC",
+	"packageManager": "pnpm@10.8.0",
+	"devDependencies": {
+		"vitest": "^3.2.1",
+		"zod": "^3.25.67"
+	}
+}
