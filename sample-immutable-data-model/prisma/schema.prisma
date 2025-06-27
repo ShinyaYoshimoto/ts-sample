@@ -11,6 +11,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Prismaの基本操作確認用サンプルデータモデル
 model User {
   id    Int     @id @default(autoincrement())
   email String  @unique
@@ -26,3 +27,5 @@ model Post {
   author    User    @relation(fields: [authorId], references: [id])
   authorId  Int
 }
+
+// TODO

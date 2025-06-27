@@ -1,5 +1,6 @@
 import { PrismaClient } from './generated/prisma';
 
+// Prismaの基本的な使い方サンプル
 const prisma = new PrismaClient();
 
 async function createUser() {
