@@ -1,0 +1,16 @@
+{
+  "name": "sample-gemini",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@typescript/native-preview": "^7.0.0-dev.20250626.1",
+    "typescript": "^5.8.3"
+  }
+}
