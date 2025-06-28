@@ -1,7 +1,7 @@
 class InvoiceIssuanceController {
-  public static handle = async () => {
+  public handle = async () => {
     console.log('InvoiceIssuanceController: start');
   };
 }
 
-InvoiceIssuanceController.handle();
+new InvoiceIssuanceController().handle();

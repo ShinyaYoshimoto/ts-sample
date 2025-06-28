@@ -1,7 +1,7 @@
 class OrderController {
-  public static handle = async () => {
+  public handle = async () => {
     console.log('OrderController: start');
   };
 }
 
-OrderController.handle();
+new OrderController().handle();

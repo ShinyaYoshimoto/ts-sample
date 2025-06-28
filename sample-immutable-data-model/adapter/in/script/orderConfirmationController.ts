@@ -1,7 +1,7 @@
 class OrderConfirmationController {
-  public static handle = async () => {
+  public handle = async () => {
     console.log('OrderConfirmationController: start');
   };
 }
 
-OrderConfirmationController.handle();
+new OrderConfirmationController().handle();

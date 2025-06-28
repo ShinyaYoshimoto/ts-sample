@@ -1,7 +1,7 @@
 class PaymentController {
-  public static handle = async () => {
+  public handle = async () => {
     console.log('PaymentController: start');
   };
 }
 
-PaymentController.handle();
+new PaymentController().handle();

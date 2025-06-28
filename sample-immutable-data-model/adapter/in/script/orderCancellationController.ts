@@ -1,7 +1,7 @@
 class OrderCancellationController {
-  public static handle = async () => {
+  public handle = async () => {
     console.log('OrderCancellationController: start');
   };
 }
 
-OrderCancellationController.handle();
+new OrderCancellationController().handle();
