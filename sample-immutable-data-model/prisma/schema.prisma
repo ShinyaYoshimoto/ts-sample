@@ -28,4 +28,74 @@ model Post {
   authorId  Int
 }
 
-// TODO
+// イミュータブルデータモデルのサンプル（Sqliteを用いる為、idはint型で作成）
+model Order {
+  id          Int      @id @default(autoincrement())
+  memberId    Int
+  orderedAt   DateTime
+
+  member            Member              @relation(fields: [memberId], references: [id])
+  orderConfirmation OrderConfirmation[]
+  scheduledPayments ScheduledPayment[]
+  payments          Payment[]
+  invoiceIssuances  InvoiceIssuance[]
+  orderCancellations OrderCancellation[]
+}
+
+model OrderConfirmation {
+  id              Int      @id @default(autoincrement())
+  orderId         Int
+  administratorId Int
+  confirmedAt     DateTime
+
+  order         Order       @relation(fields: [orderId], references: [id])
+  administrator Administrator @relation(fields: [administratorId], references: [id])
+}
+
+model ScheduledPayment {
+  id                  Int      @id @default(autoincrement())
+  orderId             Int
+  scheduledPaymentDate DateTime
+  scheduledPaymentRegisteredAt DateTime
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  orderId       Int
+  paidAt        DateTime
+  payerId       Int
+
+  order         Order       @relation(fields: [orderId], references: [id])
+  administrator Administrator @relation(fields: [payerId], references: [id])
+}
+
+model InvoiceIssuance {
+  id            Int      @id @default(autoincrement())
+  orderId       Int
+  issuedAt      DateTime
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model OrderCancellation {
+  id            Int      @id @default(autoincrement())
+  orderId       Int
+  cancelledAt   DateTime
+
+  order Order @relation(fields: [orderId], references: [id])
+}
+
+model Member {
+  id    Int    @id @default(autoincrement())
+  name  String
+  orders Order[]
+}
+
+model Administrator {
+  id                Int    @id @default(autoincrement())
+  name              String
+  orderConfirmations OrderConfirmation[]
+  payments          Payment[]
+}
