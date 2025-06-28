@@ -7,7 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prisma:seed": "ts-node seed.ts",
     "prisma:studio": "prisma studio",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "script:order": "ts-node adapter/in/script/orderController.ts",
+    "script:orderConfirmation": "ts-node adapter/in/script/orderConfirmationController.ts",
+    "script:scheduledPayment": "ts-node adapter/in/script/scheduledPaymentController.ts",
+    "script:payment": "ts-node adapter/in/script/paymentController.ts",
+    "script:invoiceIssuance": "ts-node adapter/in/script/invoiceIssuanceController.ts",
+    "script:orderCancellation": "ts-node adapter/in/script/orderCancellationController.ts"
   },
   "keywords": [],
   "author": "",
