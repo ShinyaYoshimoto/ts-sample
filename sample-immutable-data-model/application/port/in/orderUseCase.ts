@@ -1,3 +1,6 @@
+import { Order } from '../../domain/model/order';
+import { OrderCommand } from './orderCommand';
+
 export interface OrderUseCase {
-  order(): boolean;
+  order(command: OrderCommand): Promise<Order>;
 }

@@ -32,7 +32,7 @@ model Post {
 model Order {
   id          Int      @id @default(autoincrement())
   memberId    Int
-  orderedAt   DateTime
+  orderedAt   DateTime @default(now())
 
   member            Member              @relation(fields: [memberId], references: [id])
   orderConfirmation OrderConfirmation[]
