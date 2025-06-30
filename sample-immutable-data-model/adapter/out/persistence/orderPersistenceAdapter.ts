@@ -13,6 +13,6 @@ export class OrderPersistenceAdapter implements RegisterOrderPort {
       },
     });
 
-    return new Order(order.id, order.memberId, order.orderedAt);
+    return new Order(order.id, member, order.orderedAt);
   };
 }
