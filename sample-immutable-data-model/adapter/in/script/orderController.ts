@@ -13,29 +13,33 @@ class OrderController {
     private readonly getMemberUseCase: GetMemberUseCase,
   ) {}
   public handle = async (request: Request) => {
-    console.log('OrderController: start');
+    try {
+      console.log('OrderController: start');
 
-    const query = new GetMemberQuery(request.memberId);
-    const member = await this.getMemberUseCase.getMember(query);
+      const query = new GetMemberQuery(request.memberId);
+      const member = await this.getMemberUseCase.getMember(query);
 
-    if (!member) {
-      throw new Error('Member not found');
+      if (!member) {
+        throw new Error('Member not found');
+      }
+
+      const command = new OrderCommand(member);
+      const order = await this.orderUseCase.order(command);
+
+      if (!order) {
+        throw new Error('Order failed');
+      }
+
+      console.log('OrderController: end');
+    } catch (error) {
+      console.error('OrderController: failed');
     }
-
-    const command = new OrderCommand(member);
-    const order = await this.orderUseCase.order(command);
-
-    if (!order) {
-      throw new Error('Order failed');
-    }
-
-    console.log('OrderController: end');
   };
 }
 
 type Request = {
   memberId: number;
-}
+};
 
 const prisma = new PrismaClient();
 

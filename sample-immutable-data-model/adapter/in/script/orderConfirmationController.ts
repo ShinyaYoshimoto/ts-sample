@@ -19,51 +19,68 @@ class OrderConfirmationController {
   ) {}
 
   public handle = async (request: Request) => {
-    console.log('OrderConfirmationController: start');
+    try {
+      console.log('OrderConfirmationController: start');
+      const orderQuery = new GetOrderQuery(request.orderId);
+      const order = await this.getOrderUseCase.getOrder(orderQuery);
 
-    const orderQuery = new GetOrderQuery(request.orderId);
-    const order = await this.getOrderUseCase.getOrder(orderQuery);
+      if (!order) {
+        throw new Error('Order not found');
+      }
 
-    if (!order) {
-      throw new Error('Order not found');
+      const administratorQuery = new GetAdministratorQuery(
+        request.administratorId,
+      );
+      const administrator =
+        await this.getAdministratorUseCase.getAdministrator(administratorQuery);
+
+      if (!administrator) {
+        throw new Error('Administrator not found');
+      }
+
+      const command = new OrderConfirmationCommand(order, administrator);
+      const orderConfirmation =
+        await this.orderConfirmationUseCase.confirmOrder(command);
+
+      if (!orderConfirmation) {
+        throw new Error('Order confirmation failed');
+      }
+
+      console.log('OrderConfirmationController: success');
+    } catch (error) {
+      console.error('OrderConfirmationController: failed');
     }
-
-    const administratorQuery = new GetAdministratorQuery(request.administratorId);
-    const administrator = await this.getAdministratorUseCase.getAdministrator(administratorQuery);
-
-    if (!administrator) {
-      throw new Error('Administrator not found');
-    }
-
-    const command = new OrderConfirmationCommand(order, administrator);
-    const orderConfirmation = await this.orderConfirmationUseCase.confirmOrder(command);
-
-    if (!orderConfirmation) {
-      throw new Error('Order confirmation failed');
-    }
-
-    console.log('OrderConfirmationController: end');
   };
 }
 
 type Request = {
   orderId: number;
   administratorId: number;
-}
+};
 
 const prisma = new PrismaClient();
 
 const orderPersistenceAdapter = new OrderPersistenceAdapter(prisma);
 const getOrderService = new GetOrderService(orderPersistenceAdapter);
 
-const administratorPersistenceAdapter = new AdministratorPersistenceAdapter(prisma);
-const getAdministratorService = new GetAdministratorService(administratorPersistenceAdapter);
+const administratorPersistenceAdapter = new AdministratorPersistenceAdapter(
+  prisma,
+);
+const getAdministratorService = new GetAdministratorService(
+  administratorPersistenceAdapter,
+);
 
-const orderConfirmationService = new OrderConfirmationService(orderPersistenceAdapter); // OrderConfirmationServiceはOrderPersistenceAdapterに依存すると仮定
+const orderConfirmationService = new OrderConfirmationService(
+  orderPersistenceAdapter,
+); // OrderConfirmationServiceはOrderPersistenceAdapterに依存すると仮定
 
 // Request
 const request: Request = {
   orderId: 1,
   administratorId: 1,
 };
-new OrderConfirmationController(orderConfirmationService, getOrderService, getAdministratorService).handle(request);
+new OrderConfirmationController(
+  orderConfirmationService,
+  getOrderService,
+  getAdministratorService,
+).handle(request);
