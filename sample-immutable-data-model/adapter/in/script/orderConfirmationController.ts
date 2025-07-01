@@ -10,6 +10,7 @@ import { AdministratorPersistenceAdapter } from '../../out/persistence/administr
 import { GetAdministratorUseCase } from '../../../application/port/in/getAdministratorUseCase';
 import { GetAdministratorService } from '../../../application/domain/service/getAdministratorService';
 import { GetAdministratorQuery } from '../../../application/port/in/getAdministratorQuery';
+import { OrderConfirmationPersistenceAdapter } from '../../out/persistence/orderConfirmationPersistenceAdapter';
 
 class OrderConfirmationController {
   constructor(
@@ -70,9 +71,12 @@ const getAdministratorService = new GetAdministratorService(
   administratorPersistenceAdapter,
 );
 
+const orderConfirmationPersistenceAdapter =
+  new OrderConfirmationPersistenceAdapter(prisma);
+
 const orderConfirmationService = new OrderConfirmationService(
-  orderPersistenceAdapter,
-); // OrderConfirmationServiceはOrderPersistenceAdapterに依存すると仮定
+  orderConfirmationPersistenceAdapter,
+);
 
 // Request
 const request: Request = {

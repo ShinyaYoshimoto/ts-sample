@@ -3,12 +3,9 @@ import { Order } from '../../../application/domain/model/order';
 import { RegisterOrderPort } from '../../../application/port/out/registerOrderPort';
 import { LoadOrderPort } from '../../../application/port/out/loadOrderPort';
 import { PrismaClient } from '../../../generated/prisma';
-import { Administrator } from '../../../application/domain/model/administrator';
-import { OrderConfirmation } from '../../../application/domain/model/orderConfirmation';
-import { ConfirmOrderPort } from '../../../application/port/out/confirmOrderPort';
 
 export class OrderPersistenceAdapter
-  implements RegisterOrderPort, LoadOrderPort, ConfirmOrderPort
+  implements RegisterOrderPort, LoadOrderPort
 {
   constructor(private readonly prisma: PrismaClient) {}
 
@@ -38,25 +35,5 @@ export class OrderPersistenceAdapter
     });
 
     return new Order(order.id, member, order.orderedAt);
-  };
-
-  confirmOrder = async (
-    order: Order,
-    administrator: Administrator,
-  ): Promise<OrderConfirmation> => {
-    const confirmedOrder = await this.prisma.orderConfirmation.create({
-      data: {
-        orderId: order.id,
-        administratorId: administrator.id,
-        confirmedAt: new Date(),
-      },
-    });
-
-    return new OrderConfirmation(
-      confirmedOrder.id,
-      order,
-      administrator,
-      confirmedOrder.confirmedAt,
-    );
   };
 }
