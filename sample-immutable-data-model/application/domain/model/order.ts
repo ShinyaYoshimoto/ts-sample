@@ -1,16 +1,16 @@
-import { Member } from "./member";
+import { Member } from './member';
 
 export class Order {
   constructor(
-    readonly orderId: number,
+    readonly id: number,
     readonly member: Member,
     readonly orderedAt: Date,
   ) {
-    if (!orderId) {
+    if (!id || id < 0) {
       throw new Error('orderId is required');
     }
 
-    if (!member.memberId) {
+    if (!member.id) {
       throw new Error('member is required');
     }
   }

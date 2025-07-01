@@ -1,9 +1,9 @@
 export class Member {
   constructor(
-    readonly memberId: number,
+    readonly id: number,
     readonly name: string,
   ) {
-    if (!memberId) {
+    if (!id || id < 0) {
       throw new Error('memberId is required');
     }
 
