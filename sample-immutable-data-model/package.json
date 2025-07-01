@@ -6,15 +6,15 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "prisma:seed": "ts-node seed.ts",
+    "prisma:seed": "tsx seed.ts",
     "prisma:studio": "prisma studio",
     "prisma:migrate": "prisma migrate dev",
-    "exec:order": "ts-node adapter/in/script/orderController.ts",
-    "exec:orderConfirmation": "ts-node adapter/in/script/orderConfirmationController.ts",
-    "exec:scheduledPayment": "ts-node adapter/in/script/scheduledPaymentController.ts",
-    "exec:payment": "ts-node adapter/in/script/paymentController.ts",
-    "exec:invoiceIssuance": "ts-node adapter/in/script/invoiceIssuanceController.ts",
-    "exec:orderCancellation": "ts-node adapter/in/script/orderCancellationController.ts"
+    "exec:order": "tsx adapter/in/script/orderController.ts",
+    "exec:orderConfirmation": "tsx adapter/in/script/orderConfirmationController.ts",
+    "exec:scheduledPayment": "tsx adapter/in/script/scheduledPaymentController.ts",
+    "exec:payment": "tsx adapter/in/script/paymentController.ts",
+    "exec:invoiceIssuance": "tsx adapter/in/script/invoiceIssuanceController.ts",
+    "exec:orderCancellation": "tsx adapter/in/script/orderCancellationController.ts"
   },
   "keywords": [],
   "author": "",

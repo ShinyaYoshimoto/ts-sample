@@ -7,6 +7,10 @@ export class GetMemberService implements GetMemberUseCase {
   constructor(private readonly loadMemberPort: LoadMemberPort) {}
 
   getMember = async (query: GetMemberQuery): Promise<Member> => {
-    return this.loadMemberPort.loadMember(query.memberId);
+    const member = await this.loadMemberPort.loadMember(query.memberId);
+    if (!member) {
+      throw new Error('Member not found');
+    }
+    return member;
   }
 }

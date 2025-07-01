@@ -1,3 +1,6 @@
+import { OrderConfirmationCommand } from './orderConfirmationCommand';
+import { OrderConfirmation } from '../../domain/model/orderConfirmation';
+
 export interface OrderConfirmationUseCase {
-  orderConfirmation(): boolean;
+  confirmOrder(command: OrderConfirmationCommand): Promise<OrderConfirmation | null>;
 }
