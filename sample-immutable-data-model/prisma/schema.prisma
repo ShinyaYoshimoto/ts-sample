@@ -50,6 +50,8 @@ model OrderConfirmation {
 
   order         Order       @relation(fields: [orderId], references: [id])
   administrator Administrator @relation(fields: [administratorId], references: [id])
+
+  @@unique(orderId)
 }
 
 model ScheduledPayment {
@@ -59,6 +61,8 @@ model ScheduledPayment {
   scheduledPaymentRegisteredAt DateTime
 
   order Order @relation(fields: [orderId], references: [id])
+
+  @@unique(orderId)
 }
 
 model Payment {
@@ -69,6 +73,8 @@ model Payment {
 
   order         Order       @relation(fields: [orderId], references: [id])
   administrator Administrator @relation(fields: [payerId], references: [id])
+
+  @@unique(orderId)
 }
 
 model InvoiceIssuance {
@@ -77,6 +83,8 @@ model InvoiceIssuance {
   issuedAt      DateTime
 
   order Order @relation(fields: [orderId], references: [id])
+
+  @@unique(orderId)
 }
 
 model OrderCancellation {
@@ -85,6 +93,8 @@ model OrderCancellation {
   cancelledAt   DateTime
 
   order Order @relation(fields: [orderId], references: [id])
+
+  @@unique(orderId)
 }
 
 model Member {
