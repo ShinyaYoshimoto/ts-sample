@@ -11,7 +11,9 @@ import { GetAdministratorUseCase } from '../../../application/port/in/getAdminis
 import { GetAdministratorService } from '../../../application/domain/service/getAdministratorService';
 import { GetAdministratorQuery } from '../../../application/port/in/getAdministratorQuery';
 import { OrderConfirmationPersistenceAdapter } from '../../out/persistence/orderConfirmationPersistenceAdapter';
-
+import { stdin as input, stdout as output } from 'node:process';
+import * as readline from 'node:readline';
+import { Order } from '../../../application/domain/model/order';
 class OrderConfirmationController {
   constructor(
     private readonly orderConfirmationUseCase: OrderConfirmationUseCase,
@@ -25,7 +27,7 @@ class OrderConfirmationController {
       const orderQuery = new GetOrderQuery(request.orderId);
       const order = await this.getOrderUseCase.getOrder(orderQuery);
 
-      if (!order) {
+      if (!order || !(order instanceof Order)) {
         throw new Error('Order not found');
       }
 
@@ -55,8 +57,6 @@ type Request = {
 };
 
 // Request
-import { stdin as input, stdout as output } from 'node:process';
-import * as readline from 'node:readline';
 
 const rl = readline.createInterface({ input, output });
 const list: string[] = [];

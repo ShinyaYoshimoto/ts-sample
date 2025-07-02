@@ -3,19 +3,21 @@ import { Order } from '../../../application/domain/model/order';
 import { RegisterOrderPort } from '../../../application/port/out/registerOrderPort';
 import { LoadOrderPort } from '../../../application/port/out/loadOrderPort';
 import { PrismaClient } from '../../../generated/prisma';
+import { CanceledOrder } from '../../../application/domain/model/canceledOrder';
 
 export class OrderPersistenceAdapter
   implements RegisterOrderPort, LoadOrderPort
 {
   constructor(private readonly prisma: PrismaClient) {}
 
-  loadOrder = async (orderId: number): Promise<Order> => {
+  loadOrder = async (orderId: number): Promise<Order | CanceledOrder> => {
     const order = await this.prisma.order.findUnique({
       where: {
         id: orderId,
       },
       include: {
         member: true,
+        orderCancellations: true,
       },
     });
 
@@ -24,7 +26,16 @@ export class OrderPersistenceAdapter
     }
 
     const memberEntity = new Member(order.member.id, order.member.name);
-    return new Order(order.id, memberEntity, order.orderedAt);
+    const orderEntity = new Order(order.id, memberEntity, order.orderedAt);
+
+    if (order.orderCancellations.length > 0) {
+      return new CanceledOrder(
+        orderEntity,
+        order.orderCancellations[0].cancelledAt,
+      );
+    }
+
+    return orderEntity;
   };
 
   registerOrder = async (member: Member): Promise<Order> => {
