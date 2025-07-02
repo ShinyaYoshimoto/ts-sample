@@ -20,6 +20,8 @@ export class OrderPersistenceAdapter
         orderConfirmation: true,
         orderCancellations: true,
         scheduledPayments: true,
+        payments: true,
+        invoiceIssuances: true,
       },
     });
 
@@ -34,6 +36,8 @@ export class OrderPersistenceAdapter
       order.orderedAt,
       order.orderConfirmation[0]?.confirmedAt ?? undefined,
       order.scheduledPayments[0]?.scheduledPaymentDate ?? undefined,
+      order.payments[0]?.paidAt ?? undefined,
+      order.invoiceIssuances[0]?.issuedAt ?? undefined,
     );
 
     if (order.orderCancellations.length > 0) {
