@@ -11,7 +11,7 @@
     "prisma:migrate": "prisma migrate dev",
     "exec:order": "tsx adapter/in/script/orderController.ts",
     "exec:orderConfirmation": "tsx adapter/in/script/orderConfirmationController.ts",
-    "exec:scheduledPayment": "tsx adapter/in/script/scheduledPaymentController.ts",
+    "exec:schedulePayment": "tsx adapter/in/script/schedulePaymentController.ts",
     "exec:payment": "tsx adapter/in/script/paymentController.ts",
     "exec:invoiceIssuance": "tsx adapter/in/script/invoiceIssuanceController.ts",
     "exec:orderCancellation": "tsx adapter/in/script/orderCancellationController.ts"

@@ -17,6 +17,7 @@ export class OrderPersistenceAdapter
       },
       include: {
         member: true,
+        orderConfirmation: true,
         orderCancellations: true,
       },
     });
@@ -26,7 +27,12 @@ export class OrderPersistenceAdapter
     }
 
     const memberEntity = new Member(order.member.id, order.member.name);
-    const orderEntity = new Order(order.id, memberEntity, order.orderedAt);
+    const orderEntity = new Order(
+      order.id,
+      memberEntity,
+      order.orderedAt,
+      order.orderConfirmation[0]?.confirmedAt ?? undefined,
+    );
 
     if (order.orderCancellations.length > 0) {
       return new CanceledOrder(
