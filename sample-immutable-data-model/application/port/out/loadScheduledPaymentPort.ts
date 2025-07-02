@@ -1,5 +1,6 @@
-import { ScheduledPayment } from "../../domain/model/scheduledPayment";
+import { Order } from '../../domain/model/order';
+import { ScheduledPayment } from '../../domain/model/scheduledPayment';
 
 export interface LoadScheduledPaymentPort {
-  loadScheduledPayment(orderId: number): Promise<ScheduledPayment | null>;
+  loadScheduledPayment(order: Order): Promise<ScheduledPayment | null>;
 }

@@ -15,7 +15,7 @@ export class SchedulePaymentService implements SchedulePaymentUseCase {
     }
 
     await this.registerScheduledPaymentPort.registerScheduledPayment(
-      order.id,
+      order,
       scheduledPaymentDate,
     );
   }
