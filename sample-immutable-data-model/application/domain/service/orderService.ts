@@ -6,13 +6,7 @@ import { Order } from '../model/order';
 export class OrderService implements OrderUseCase {
   constructor(private readonly registerOrderPort: RegisterOrderPort) {}
 
-  order = async (command: OrderCommand): Promise<Order> => {
-    const order = await this.registerOrderPort.registerOrder(command.member);
-
-    if (!order) {
-      throw new Error('Order failed');
-    }
-
-    return order;
+  order = async (command: OrderCommand): Promise<void> => {
+    await this.registerOrderPort.registerOrder(command.member);
   };
 }

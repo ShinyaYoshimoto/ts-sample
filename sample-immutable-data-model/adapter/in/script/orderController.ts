@@ -24,11 +24,7 @@ class OrderController {
       }
 
       const command = new OrderCommand(member);
-      const order = await this.orderUseCase.order(command);
-
-      if (!order) {
-        throw new Error('Order failed');
-      }
+      await this.orderUseCase.order(command);
 
       console.log('OrderController: end');
     } catch (error) {
@@ -41,16 +37,37 @@ type Request = {
   memberId: number;
 };
 
-const prisma = new PrismaClient();
-
-const memberPersistenceAdapter = new MemberPersistenceAdapter(prisma);
-const getMemberService = new GetMemberService(memberPersistenceAdapter);
-
-const orderPersistenceAdapter = new OrderPersistenceAdapter(prisma);
-const orderService = new OrderService(orderPersistenceAdapter);
-
 // Request
-const request: Request = {
-  memberId: 1,
-};
-new OrderController(orderService, getMemberService).handle(request);
+import { stdin as input, stdout as output } from 'node:process';
+import * as readline from 'node:readline';
+
+const rl = readline.createInterface({ input, output });
+const list: string[] = [];
+
+// initial prompt
+rl.setPrompt('memberId: ');
+rl.prompt();
+
+rl.on('line', (line) => {
+  list.push(line);
+
+  if (list.length >= 1) {
+    rl.close();
+  }
+});
+
+rl.on('close', () => {
+  const request: Request = {
+    memberId: parseInt(list[0]),
+  };
+
+  const prisma = new PrismaClient();
+
+  const memberPersistenceAdapter = new MemberPersistenceAdapter(prisma);
+  const getMemberService = new GetMemberService(memberPersistenceAdapter);
+
+  const orderPersistenceAdapter = new OrderPersistenceAdapter(prisma);
+  const orderService = new OrderService(orderPersistenceAdapter);
+
+  new OrderController(orderService, getMemberService).handle(request);
+});

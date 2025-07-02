@@ -40,12 +40,7 @@ class OrderConfirmationController {
       }
 
       const command = new OrderConfirmationCommand(order, administrator);
-      const orderConfirmation =
-        await this.orderConfirmationUseCase.confirmOrder(command);
-
-      if (!orderConfirmation) {
-        throw new Error('Order confirmation failed');
-      }
+      await this.orderConfirmationUseCase.confirmOrder(command);
 
       console.log('OrderConfirmationController: success');
     } catch (error) {
@@ -59,32 +54,64 @@ type Request = {
   administratorId: number;
 };
 
-const prisma = new PrismaClient();
-
-const orderPersistenceAdapter = new OrderPersistenceAdapter(prisma);
-const getOrderService = new GetOrderService(orderPersistenceAdapter);
-
-const administratorPersistenceAdapter = new AdministratorPersistenceAdapter(
-  prisma,
-);
-const getAdministratorService = new GetAdministratorService(
-  administratorPersistenceAdapter,
-);
-
-const orderConfirmationPersistenceAdapter =
-  new OrderConfirmationPersistenceAdapter(prisma);
-
-const orderConfirmationService = new OrderConfirmationService(
-  orderConfirmationPersistenceAdapter,
-);
-
 // Request
-const request: Request = {
-  orderId: 1,
-  administratorId: 1,
-};
-new OrderConfirmationController(
-  orderConfirmationService,
-  getOrderService,
-  getAdministratorService,
-).handle(request);
+import { stdin as input, stdout as output } from 'node:process';
+import * as readline from 'node:readline';
+
+const rl = readline.createInterface({ input, output });
+const list: string[] = [];
+
+// initial prompt
+rl.setPrompt('orderId: ');
+rl.prompt();
+
+rl.on('line', (line) => {
+  list.push(line);
+
+  switch (list.length) {
+    case 1:
+      rl.setPrompt('administratorId: ');
+      rl.prompt();
+      break;
+    case 2:
+      break;
+    default:
+      throw new Error('Invalid input');
+  }
+
+  if (list.length >= 2) {
+    rl.close();
+  }
+});
+
+rl.on('close', () => {
+  const request: Request = {
+    orderId: parseInt(list[0]),
+    administratorId: parseInt(list[1]),
+  };
+
+  const prisma = new PrismaClient();
+
+  const orderPersistenceAdapter = new OrderPersistenceAdapter(prisma);
+  const getOrderService = new GetOrderService(orderPersistenceAdapter);
+
+  const administratorPersistenceAdapter = new AdministratorPersistenceAdapter(
+    prisma,
+  );
+  const getAdministratorService = new GetAdministratorService(
+    administratorPersistenceAdapter,
+  );
+
+  const orderConfirmationPersistenceAdapter =
+    new OrderConfirmationPersistenceAdapter(prisma);
+
+  const orderConfirmationService = new OrderConfirmationService(
+    orderConfirmationPersistenceAdapter,
+  );
+
+  new OrderConfirmationController(
+    orderConfirmationService,
+    getOrderService,
+    getAdministratorService,
+  ).handle(request);
+});
