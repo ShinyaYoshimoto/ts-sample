@@ -14,7 +14,7 @@ import { OrderConfirmationPersistenceAdapter } from '../../out/persistence/order
 import { stdin as input, stdout as output } from 'node:process';
 import * as readline from 'node:readline';
 import { Order } from '../../../application/domain/model/order';
-class OrderConfirmationController {
+class ConfirmOrderController {
   constructor(
     private readonly orderConfirmationUseCase: OrderConfirmationUseCase,
     private readonly getOrderUseCase: GetOrderUseCase,
@@ -23,7 +23,7 @@ class OrderConfirmationController {
 
   public handle = async (request: Request) => {
     try {
-      console.log('OrderConfirmationController: start');
+      console.log('ConfirmOrderController: start');
       const orderQuery = new GetOrderQuery(request.orderId);
       const order = await this.getOrderUseCase.getOrder(orderQuery);
 
@@ -44,9 +44,9 @@ class OrderConfirmationController {
       const command = new OrderConfirmationCommand(order, administrator);
       await this.orderConfirmationUseCase.confirmOrder(command);
 
-      console.log('OrderConfirmationController: success');
+      console.log('ConfirmOrderController: success');
     } catch (error) {
-      console.error('OrderConfirmationController: failed');
+      console.error('ConfirmOrderController: failed');
     }
   };
 }
@@ -109,7 +109,7 @@ rl.on('close', () => {
     orderConfirmationPersistenceAdapter,
   );
 
-  new OrderConfirmationController(
+  new ConfirmOrderController(
     orderConfirmationService,
     getOrderService,
     getAdministratorService,

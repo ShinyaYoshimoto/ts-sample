@@ -10,11 +10,11 @@
     "prisma:studio": "prisma studio",
     "prisma:migrate": "prisma migrate dev",
     "exec:order": "tsx adapter/in/script/orderController.ts",
-    "exec:orderConfirmation": "tsx adapter/in/script/orderConfirmationController.ts",
+    "exec:confirmOrder": "tsx adapter/in/script/confirmOrderController.ts",
     "exec:schedulePayment": "tsx adapter/in/script/schedulePaymentController.ts",
-    "exec:payment": "tsx adapter/in/script/paymentController.ts",
-    "exec:invoiceIssuance": "tsx adapter/in/script/invoiceIssuanceController.ts",
-    "exec:orderCancellation": "tsx adapter/in/script/orderCancellationController.ts"
+    "exec:pay": "tsx adapter/in/script/payController.ts",
+    "exec:issueInvoice": "tsx adapter/in/script/issueInvoiceController.ts",
+    "exec:cancelOrder": "tsx adapter/in/script/cancelOrderController.ts"
   },
   "keywords": [],
   "author": "",
