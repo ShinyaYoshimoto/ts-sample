@@ -6,6 +6,7 @@ export class Order {
     readonly member: Member,
     readonly orderedAt: Date,
     readonly confirmedAt?: Date,
+    readonly paymentScheduleAt?: Date,
   ) {
     if (!id || id < 0) {
       throw new Error('orderId is required');

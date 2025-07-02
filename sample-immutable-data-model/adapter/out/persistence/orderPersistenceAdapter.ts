@@ -19,6 +19,7 @@ export class OrderPersistenceAdapter
         member: true,
         orderConfirmation: true,
         orderCancellations: true,
+        scheduledPayments: true,
       },
     });
 
@@ -32,6 +33,7 @@ export class OrderPersistenceAdapter
       memberEntity,
       order.orderedAt,
       order.orderConfirmation[0]?.confirmedAt ?? undefined,
+      order.scheduledPayments[0]?.scheduledPaymentDate ?? undefined,
     );
 
     if (order.orderCancellations.length > 0) {

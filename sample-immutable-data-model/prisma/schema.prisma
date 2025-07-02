@@ -69,10 +69,8 @@ model Payment {
   id            Int      @id @default(autoincrement())
   orderId       Int
   paidAt        DateTime
-  payerId       Int
 
   order         Order       @relation(fields: [orderId], references: [id])
-  administrator Administrator @relation(fields: [payerId], references: [id])
 
   @@unique(orderId)
 }
@@ -107,5 +105,4 @@ model Administrator {
   id                Int    @id @default(autoincrement())
   name              String
   orderConfirmations OrderConfirmation[]
-  payments          Payment[]
 }
