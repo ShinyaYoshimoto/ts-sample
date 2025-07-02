@@ -29,5 +29,23 @@ describe('OrderConfirmation', () => {
           ),
       ).toThrow();
     });
+
+    it('when order is already confirmed', () => {
+      const order = new Order(
+        1,
+        new Member(1, 'John Doe'),
+        new Date(),
+        new Date(),
+      );
+      expect(
+        () =>
+          new OrderConfirmation(
+            1,
+            order,
+            new Administrator(1, 'John Doe'),
+            new Date(),
+          ),
+      ).toThrow();
+    });
   });
 });

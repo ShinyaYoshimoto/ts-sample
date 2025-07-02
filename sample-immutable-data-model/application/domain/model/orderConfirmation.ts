@@ -11,5 +11,9 @@ export class OrderConfirmation {
     if (!id || id < 0) {
       throw new Error('id is required');
     }
+
+    if (order.confirmedAt) {
+      throw new Error('order is already confirmed');
+    }
   }
 }
