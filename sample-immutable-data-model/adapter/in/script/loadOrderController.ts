@@ -1,15 +1,14 @@
-import { GetOrderUseCase } from "../../../application/port/in/getOrderUseCase";
+import { GetOrderUseCase } from '../../../application/port/in/getOrderUseCase';
 import { stdin as input, stdout as output } from 'node:process';
 import * as readline from 'node:readline';
-import { PrismaClient } from "../../../generated/prisma";
-import { OrderPersistenceAdapter } from "../../out/persistence/orderPersistenceAdapter";
-import { GetOrderService } from "../../../application/domain/service/getOrderService";
-import { GetOrderQuery } from "../../../application/port/in/getOrderQuery";
-import { Order } from "../../../application/domain/model/order";
+import { PrismaClient } from '../../../generated/prisma';
+import { OrderPersistenceAdapter } from '../../out/persistence/orderPersistenceAdapter';
+import { GetOrderService } from '../../../application/domain/service/getOrderService';
+import { GetOrderQuery } from '../../../application/port/in/getOrderQuery';
+import { Order } from '../../../application/domain/model/order';
+import { CanceledOrder } from '../../../application/domain/model/canceledOrder';
 class LoadOrderController {
-  constructor(
-    private readonly getOrderUseCase: GetOrderUseCase,
-  ) {}
+  constructor(private readonly getOrderUseCase: GetOrderUseCase) {}
 
   public handle = async (request: Request) => {
     try {
@@ -18,12 +17,14 @@ class LoadOrderController {
       const orderQuery = new GetOrderQuery(request.orderId);
       const order = await this.getOrderUseCase.getOrder(orderQuery);
 
-      if (!order || !(order instanceof Order)) {
+      if (
+        !order ||
+        !(order instanceof Order || order instanceof CanceledOrder)
+      ) {
         throw new Error('Order not found');
       }
 
       console.log('LoadOrderController: end', order);
-
     } catch (error) {
       console.error('LoadOrderController: failed', error);
     }
@@ -63,4 +64,3 @@ rl.on('close', () => {
   };
   new LoadOrderController(getOrderService).handle(request);
 });
-
