@@ -14,7 +14,8 @@
     "exec:schedulePayment": "tsx adapter/in/script/schedulePaymentController.ts",
     "exec:pay": "tsx adapter/in/script/payController.ts",
     "exec:issueInvoice": "tsx adapter/in/script/issueInvoiceController.ts",
-    "exec:cancelOrder": "tsx adapter/in/script/cancelOrderController.ts"
+    "exec:cancelOrder": "tsx adapter/in/script/cancelOrderController.ts",
+    "exec:loadOrder": "tsx adapter/in/script/loadOrderController.ts"
   },
   "keywords": [],
   "author": "",
