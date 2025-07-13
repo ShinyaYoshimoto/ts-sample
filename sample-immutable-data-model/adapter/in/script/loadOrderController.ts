@@ -10,7 +10,7 @@ import { CanceledOrder } from '../../../application/domain/model/canceledOrder';
 class LoadOrderController {
   constructor(private readonly getOrderUseCase: GetOrderUseCase) {}
 
-  public handle = async (request: Request) => {
+  public handle = async (request: Request): Promise<Response> => {
     try {
       console.log('LoadOrderController: start');
 
@@ -24,15 +24,49 @@ class LoadOrderController {
         throw new Error('Order not found');
       }
 
-      console.log('LoadOrderController: end', order);
+      console.log('LoadOrderController: end');
+
+      // FIXME: こういう書き方になるくらいなら、CanceledOrderモデルはOrderを継承した方がいい？
+      return order instanceof CanceledOrder
+        ? {
+            orderId: order.order.id,
+            memberId: order.order.member.id,
+            orderedAt: order.order.orderedAt,
+            confirmedAt: order.order.confirmedAt,
+            paymentScheduleAt: order.order.paymentScheduleAt,
+            paidAt: order.order.paidAt,
+            invoiceIssuedAt: order.order.invoiceIssuedAt,
+            canceledAt: order.canceledAt,
+          }
+        : {
+            orderId: order.id,
+            memberId: order.member.id,
+            orderedAt: order.orderedAt,
+            confirmedAt: order.confirmedAt,
+            paymentScheduleAt: order.paymentScheduleAt,
+            paidAt: order.paidAt,
+            invoiceIssuedAt: order.invoiceIssuedAt,
+          };
     } catch (error) {
       console.error('LoadOrderController: failed', error);
+      throw error;
     }
   };
 }
 
 type Request = {
   orderId: number;
+};
+
+type Response = {
+  orderId: number;
+  memberId: number;
+  orderedAt: Date;
+  confirmedAt?: Date;
+  paymentScheduleAt?: Date;
+  paidAt?: Date;
+  invoiceIssuedAt?: Date;
+  canceledAt?: Date;
 };
 
 const rl = readline.createInterface({
