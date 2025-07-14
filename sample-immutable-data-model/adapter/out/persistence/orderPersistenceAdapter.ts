@@ -50,6 +50,33 @@ export class OrderPersistenceAdapter
     return orderEntity;
   };
 
+  searchOrders = async (): Promise<(Order | CanceledOrder)[]> => {
+    const orders = await this.prisma.order.findMany({
+      include: {
+        member: true,
+        orderConfirmation: true,
+        orderCancellations: true,
+        scheduledPayments: true,
+        payments: true,
+        invoiceIssuances: true,
+      },
+    });
+
+    return orders.map((order) => {
+      const memberEntity = new Member(order.member.id, order.member.name);
+      const orderEntity = new Order(order.id, memberEntity, order.orderedAt);
+
+      if (order.orderCancellations.length > 0) {
+        return new CanceledOrder(
+          orderEntity,
+          order.orderCancellations[0].cancelledAt,
+        );
+      }
+
+      return orderEntity;
+    });
+  };
+
   registerOrder = async (member: Member): Promise<Order> => {
     const order = await this.prisma.order.create({
       data: {

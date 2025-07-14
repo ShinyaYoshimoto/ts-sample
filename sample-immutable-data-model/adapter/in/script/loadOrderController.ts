@@ -96,5 +96,6 @@ rl.on('close', () => {
   const request: Request = {
     orderId: parseInt(list[0]),
   };
-  new LoadOrderController(getOrderService).handle(request);
+  const order = new LoadOrderController(getOrderService).handle(request);
+  console.log(order);
 });
