@@ -1,0 +1,21 @@
+{
+	"name": "@ts-sample/sample-zod",
+	"version": "0.1.0",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"private": false,
+	"packageManager": "pnpm@10.8.0",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"lint": "echo 'No lint configured'",
+		"test": "vitest"
+	},
+	"keywords": [],
+	"author": "ysmt",
+	"license": "ISC",
+	"devDependencies": {
+		"typescript": "catalog:",
+		"vitest": "catalog:",
+		"zod": "catalog:"
+	}
+}

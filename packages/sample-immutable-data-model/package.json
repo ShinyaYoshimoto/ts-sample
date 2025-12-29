@@ -1,10 +1,15 @@
 {
-  "name": "sample-immutable-data-model",
-  "version": "1.0.0",
-  "description": "- イミュータブルデータモデルについて学ぶ - [参考ページ](https://scrapbox.io/kawasima/%E3%82%A4%E3%83%9F%E3%83%A5%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E3%83%87%E3%83%BC%E3%82%BF%E3%83%A2%E3%83%87%E3%83%AB)",
-  "main": "index.js",
+  "name": "@ts-sample/sample-immutable-data-model",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "private": false,
+  "description": "イミュータブルデータモデルについて学ぶ - [参考ページ](https://scrapbox.io/kawasima/%E3%82%A4%E3%83%9F%E3%83%A5%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E3%83%87%E3%83%BC%E3%82%BF%E3%83%A2%E3%83%87%E3%83%AB)",
   "type": "module",
   "scripts": {
+    "generate": "prisma generate --schema=prisma/schema.prisma",
+    "build": "tsc -p tsconfig.json",
+    "lint": "echo 'No lint configured'",
     "test": "vitest",
     "prisma:seed": "tsx seed.ts",
     "prisma:studio": "prisma studio",
@@ -22,14 +27,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^24.0.4",
-    "prisma": "^6.10.1",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.1"
+    "@types/node": "catalog:",
+    "prisma": "catalog:",
+    "ts-node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
-    "@prisma/client": "^6.10.1"
+    "@prisma/client": "catalog:"
   }
 }

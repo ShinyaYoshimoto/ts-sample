@@ -1,25 +1,33 @@
 {
-	"name": "ts-sample",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
+	"name": "ts-sample-monorepo",
+	"private": true,
+	"version": "0.0.0",
+	"description": "Typescript sample code collection with monorepo structure",
+	"packageManager": "pnpm@10.8.0",
+	"workspaces": [
+		"packages/*"
+	],
 	"scripts": {
+		"build": "pnpm -r run build",
+		"lint": "pnpm -r run lint",
+		"test": "pnpm -r run test --run",
+		"postinstall": "pnpm -r run generate || true",
 		"format:prettier": "prettier --write .",
 		"format:biome": "biome format --write .",
 		"lint:biome": "biome lint --write .",
-		"check:biome": "biome check --write .",
-    "prisma:generate": "prisma generate",
-    "prisma:studio": "prisma studio",
-    "prisma:migrate": "prisma migrate dev"
+		"check:biome": "biome check --write ."
 	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"packageManager": "pnpm@10.8.0",
 	"devDependencies": {
-		"@biomejs/biome": "^1.9.4",
-		"@prisma/client": "^6.10.1",
-		"prettier": "^3",
-		"prisma": "^6.10.1"
+		"@biomejs/biome": "catalog:",
+		"@prisma/client": "catalog:",
+		"@types/node": "catalog:",
+		"eslint": "catalog:",
+		"prettier": "catalog:",
+		"prisma": "catalog:",
+		"ts-node": "catalog:",
+		"tsx": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:",
+		"zod": "catalog:"
 	}
 }
