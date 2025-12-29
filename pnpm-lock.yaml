@@ -4,51 +4,87 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@biomejs/biome':
+      specifier: ^1.9.4
+      version: 1.9.4
+    '@prisma/client':
+      specifier: ^6.10.1
+      version: 6.19.1
+    '@types/node':
+      specifier: ^24.0.4
+      version: 24.10.4
+    eslint:
+      specifier: ^8.57.0
+      version: 8.57.1
+    prettier:
+      specifier: ^3.7.4
+      version: 3.7.4
+    prisma:
+      specifier: ^6.10.1
+      version: 6.19.1
+    ts-node:
+      specifier: ^10.9.2
+      version: 10.9.2
+    tsx:
+      specifier: ^4.20.3
+      version: 4.21.0
+    typescript:
+      specifier: ^5.8.3
+      version: 5.9.3
+    vitest:
+      specifier: ^3.2.1
+      version: 3.2.4
+    zod:
+      specifier: ^3.25.67
+      version: 3.25.76
+
 importers:
 
   .:
     devDependencies:
       '@biomejs/biome':
-        specifier: ^1.9.4
+        specifier: 'catalog:'
         version: 1.9.4
       '@prisma/client':
-        specifier: ^6.10.1
+        specifier: 'catalog:'
         version: 6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3)
       '@types/node':
-        specifier: ^24.0.4
+        specifier: 'catalog:'
         version: 24.10.4
       eslint:
-        specifier: ^8.57.0
+        specifier: 'catalog:'
         version: 8.57.1
       prettier:
-        specifier: ^3.7.4
+        specifier: 'catalog:'
         version: 3.7.4
       prisma:
-        specifier: ^6.10.1
+        specifier: 'catalog:'
         version: 6.19.1(typescript@5.9.3)
       ts-node:
-        specifier: ^10.9.2
+        specifier: 'catalog:'
         version: 10.9.2(@types/node@24.10.4)(typescript@5.9.3)
       tsx:
-        specifier: ^4.20.3
+        specifier: 'catalog:'
         version: 4.21.0
       typescript:
-        specifier: ^5.8.3
+        specifier: 'catalog:'
         version: 5.9.3
       vitest:
-        specifier: ^3.2.1
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@24.10.4)
       zod:
-        specifier: ^3.25.67
+        specifier: 'catalog:'
         version: 3.25.76
 
   packages/prisma:
     devDependencies:
       '@prisma/client':
-        specifier: ^6.10.1
+        specifier: 'catalog:'
         version: 6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3)
       prisma:
-        specifier: ^6.10.1
+        specifier: 'catalog:'
         version: 6.19.1(typescript@5.9.3)
 
   packages/sample-gemini:
@@ -76,7 +112,7 @@ importers:
         specifier: ^4.2.1
         version: 4.7.0(vite@5.4.21(@types/node@24.10.4))
       eslint:
-        specifier: ^8.57.0
+        specifier: 'catalog:'
         version: 8.57.1
       eslint-plugin-react-hooks:
         specifier: ^4.6.0
@@ -85,7 +121,7 @@ importers:
         specifier: ^0.4.6
         version: 0.4.26(eslint@8.57.1)
       typescript:
-        specifier: ^5.8.3
+        specifier: 'catalog:'
         version: 5.9.3
       vite:
         specifier: ^5.2.0
@@ -94,47 +130,47 @@ importers:
   packages/sample-hexagonal-architecture:
     devDependencies:
       typescript:
-        specifier: ^5.8.3
+        specifier: 'catalog:'
         version: 5.9.3
       vitest:
-        specifier: ^3.2.1
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@24.10.4)
 
   packages/sample-immutable-data-model:
     dependencies:
       '@prisma/client':
-        specifier: ^6.10.1
+        specifier: 'catalog:'
         version: 6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3)
     devDependencies:
       '@types/node':
-        specifier: ^24.0.4
+        specifier: 'catalog:'
         version: 24.10.4
       prisma:
-        specifier: ^6.10.1
+        specifier: 'catalog:'
         version: 6.19.1(typescript@5.9.3)
       ts-node:
-        specifier: ^10.9.2
+        specifier: 'catalog:'
         version: 10.9.2(@types/node@24.10.4)(typescript@5.9.3)
       tsx:
-        specifier: ^4.20.3
+        specifier: 'catalog:'
         version: 4.21.0
       typescript:
-        specifier: ^5.8.3
+        specifier: 'catalog:'
         version: 5.9.3
       vitest:
-        specifier: ^3.2.1
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@24.10.4)
 
   packages/sample-zod:
     devDependencies:
       typescript:
-        specifier: ^5.8.3
+        specifier: 'catalog:'
         version: 5.9.3
       vitest:
-        specifier: ^3.2.1
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@24.10.4)
       zod:
-        specifier: ^3.25.67
+        specifier: 'catalog:'
         version: 3.25.76
 
 packages:

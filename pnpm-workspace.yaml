@@ -1,2 +1,26 @@
 packages:
   - 'packages/*'
+
+catalog:
+  # TypeScript and build tools
+  typescript: ^5.8.3
+  
+  # Testing
+  vitest: ^3.2.1
+  
+  # Prisma
+  '@prisma/client': ^6.10.1
+  prisma: ^6.10.1
+  
+  # Node types and utilities
+  '@types/node': ^24.0.4
+  ts-node: ^10.9.2
+  tsx: ^4.20.3
+  
+  # Validation
+  zod: ^3.25.67
+  
+  # Linting and formatting
+  eslint: ^8.57.0
+  '@biomejs/biome': ^1.9.4
+  prettier: ^3.7.4

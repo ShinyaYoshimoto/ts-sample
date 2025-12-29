@@ -27,14 +27,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^24.0.4",
-    "prisma": "^6.10.1",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.1"
+    "@types/node": "catalog:",
+    "prisma": "catalog:",
+    "ts-node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
-    "@prisma/client": "^6.10.1"
+    "@prisma/client": "catalog:"
   }
 }
