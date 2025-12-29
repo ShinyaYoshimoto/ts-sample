@@ -8,10 +8,9 @@
 		"packages/*"
 	],
 	"scripts": {
-		"build": "pnpm -w -r run build",
-		"lint": "pnpm -w -r run lint",
-		"test": "pnpm -w -r run test",
-		"prepare": "pnpm -w -r run build",
+		"build": "pnpm -r run build",
+		"lint": "pnpm -r run lint",
+		"test": "pnpm -r run test --run",
 		"format:prettier": "prettier --write .",
 		"format:biome": "biome format --write .",
 		"lint:biome": "biome lint --write .",
