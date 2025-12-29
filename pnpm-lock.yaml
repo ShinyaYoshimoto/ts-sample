@@ -11,18 +11,36 @@ importers:
       '@biomejs/biome':
         specifier: ^1.9.4
         version: 1.9.4
+      '@prisma/client':
+        specifier: ^6.10.1
+        version: 6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3)
+      '@types/node':
+        specifier: ^24.0.4
+        version: 24.10.4
       eslint:
-        specifier: ^8.0.0
+        specifier: ^8.57.0
         version: 8.57.1
-      pnpm:
-        specifier: ^8.0.0
-        version: 8.15.9
       prettier:
-        specifier: ^3
+        specifier: ^3.7.4
         version: 3.7.4
+      prisma:
+        specifier: ^6.10.1
+        version: 6.19.1(typescript@5.9.3)
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@24.10.4)(typescript@5.9.3)
+      tsx:
+        specifier: ^4.20.3
+        version: 4.21.0
       typescript:
-        specifier: ^5.1.0
+        specifier: ^5.8.3
         version: 5.9.3
+      vitest:
+        specifier: ^3.2.1
+        version: 3.2.4(@types/node@24.10.4)
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.76
 
   packages/prisma:
     devDependencies:
@@ -67,7 +85,7 @@ importers:
         specifier: ^0.4.6
         version: 0.4.26(eslint@8.57.1)
       typescript:
-        specifier: ^5.2.2
+        specifier: ^5.8.3
         version: 5.9.3
       vite:
         specifier: ^5.2.0
@@ -76,7 +94,7 @@ importers:
   packages/sample-hexagonal-architecture:
     devDependencies:
       typescript:
-        specifier: ^5.1.0
+        specifier: ^5.8.3
         version: 5.9.3
       vitest:
         specifier: ^3.2.1
@@ -110,7 +128,7 @@ importers:
   packages/sample-zod:
     devDependencies:
       typescript:
-        specifier: ^5.1.0
+        specifier: ^5.8.3
         version: 5.9.3
       vitest:
         specifier: ^3.2.1
@@ -1456,11 +1474,6 @@ packages:
 
   pkg-types@2.3.0:
     resolution: {integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==}
-
-  pnpm@8.15.9:
-    resolution: {integrity: sha512-SZQ0ydj90aJ5Tr9FUrOyXApjOrzuW7Fee13pDzL0e1E6ypjNXP0AHDHw20VLw4BO3M1XhQHkyik6aBYWa72fgQ==}
-    engines: {node: '>=16.14'}
-    hasBin: true
 
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
@@ -3007,8 +3020,6 @@ snapshots:
       confbox: 0.2.2
       exsolve: 1.0.8
       pathe: 2.0.3
-
-  pnpm@8.15.9: {}
 
   postcss@8.5.6:
     dependencies:

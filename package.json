@@ -11,6 +11,7 @@
 		"build": "pnpm -r run build",
 		"lint": "pnpm -r run lint",
 		"test": "pnpm -r run test --run",
+		"postinstall": "pnpm -r run generate || true",
 		"format:prettier": "prettier --write .",
 		"format:biome": "biome format --write .",
 		"lint:biome": "biome lint --write .",
@@ -18,9 +19,15 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"eslint": "^8.0.0",
-		"prettier": "^3",
-		"pnpm": "^8.0.0",
-		"typescript": "^5.1.0"
+		"@prisma/client": "^6.10.1",
+		"@types/node": "^24.0.4",
+		"eslint": "^8.57.0",
+		"prettier": "^3.7.4",
+		"prisma": "^6.10.1",
+		"ts-node": "^10.9.2",
+		"tsx": "^4.20.3",
+		"typescript": "^5.8.3",
+		"vitest": "^3.2.1",
+		"zod": "^3.25.67"
 	}
 }
