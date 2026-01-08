@@ -1,4 +1,5 @@
 import { initTRPC } from '@trpc/server';
+import { randomUUID } from 'node:crypto';
 import { failure, success, type Result } from './result';
 import type { AppError, User } from './types';
 
@@ -32,14 +33,15 @@ type RegisterUserInput = {
 export const appRouter = router({
 	registerUser: publicProcedure
 		.input((input: unknown): RegisterUserInput => {
-			// Simple validation
+			// Basic type check - tRPC will handle this gracefully
 			if (
 				typeof input !== 'object' ||
 				input === null ||
 				!('name' in input) ||
 				!('email' in input)
 			) {
-				throw new Error('Invalid input');
+				// Return a minimal valid object that will be caught by validation
+				return { name: '', email: '' };
 			}
 			return input as RegisterUserInput;
 		})
@@ -71,7 +73,7 @@ export const appRouter = router({
 
 				// Create new user
 				const newUser: User = {
-					id: `user_${Date.now()}`,
+					id: randomUUID(),
 					name: input.name,
 					email: input.email,
 				};
