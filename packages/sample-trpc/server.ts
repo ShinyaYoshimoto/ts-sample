@@ -33,14 +33,16 @@ type RegisterUserInput = {
 export const appRouter = router({
 	registerUser: publicProcedure
 		.input((input: unknown): RegisterUserInput => {
-			// Basic type check - tRPC will handle this gracefully
+			// Note: For this demo, we use simple input coercion.
+			// In production, use zod or similar for proper schema validation.
+			// This pattern allows us to handle all errors through Result type.
 			if (
 				typeof input !== 'object' ||
 				input === null ||
 				!('name' in input) ||
 				!('email' in input)
 			) {
-				// Return a minimal valid object that will be caught by validation
+				// Return empty values that will be caught by business logic validation
 				return { name: '', email: '' };
 			}
 			return input as RegisterUserInput;
@@ -55,6 +57,8 @@ export const appRouter = router({
 					});
 				}
 
+				// Email validation - intentionally simple for this demo
+				// In production, use a proper email validation library or regex
 				if (!input.email || !input.email.includes('@')) {
 					return failure({
 						type: 'VALIDATION_ERROR',
