@@ -119,14 +119,37 @@ async function makeRequest(variables: { email: string; name: string }) {
 }
 
 /**
+ * Result type matching GraphQL union
+ */
+type User = {
+  __typename: 'User';
+  id: string;
+  email: string;
+  name: string;
+};
+
+type ValidationError = {
+  __typename: 'ValidationError';
+  message: string;
+  field?: string;
+};
+
+type ConflictError = {
+  __typename: 'ConflictError';
+  message: string;
+  conflictingId?: string;
+};
+
+type RegisterUserResult = User | ValidationError | ConflictError;
+
+/**
  * Type-safe result handler using __typename discrimination
  */
-function handleResult(result: any) {
-  console.log(`Input: email="${result.email || 'N/A'}", name="${result.name || 'N/A'}"`);
-  
+function handleResult(result: RegisterUserResult) {
   // Type narrowing based on __typename
   switch (result.__typename) {
     case 'User':
+      console.log(`Input: email="${result.email}", name="${result.name}"`);
       console.log(`✅ SUCCESS: User registered!`);
       console.log(`   - ID: ${result.id}`);
       console.log(`   - Email: ${result.email}`);
@@ -134,6 +157,7 @@ function handleResult(result: any) {
       break;
 
     case 'ValidationError':
+      console.log(`Input: Validation failed before processing`);
       console.log(`❌ VALIDATION ERROR: ${result.message}`);
       if (result.field) {
         console.log(`   - Field: ${result.field}`);
@@ -141,6 +165,7 @@ function handleResult(result: any) {
       break;
 
     case 'ConflictError':
+      console.log(`Input: Conflict with existing data`);
       console.log(`⚠️  CONFLICT ERROR: ${result.message}`);
       if (result.conflictingId) {
         console.log(`   - Conflicting ID: ${result.conflictingId}`);
@@ -148,6 +173,8 @@ function handleResult(result: any) {
       break;
 
     default:
+      // Exhaustiveness check - TypeScript will error if we miss a case
+      const _exhaustive: never = result;
       console.log(`❓ UNKNOWN ERROR: Unexpected result type`);
   }
 }

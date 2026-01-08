@@ -147,6 +147,30 @@ export function isConflictError(
 }
 
 /**
+ * GraphQL mutation for registering a user
+ */
+const REGISTER_USER_MUTATION = `
+  mutation RegisterUser($email: String!, $name: String!) {
+    registerUser(email: $email, name: $name) {
+      __typename
+      ... on User {
+        id
+        email
+        name
+      }
+      ... on ValidationError {
+        message
+        field
+      }
+      ... on ConflictError {
+        message
+        conflictingId
+      }
+    }
+  }
+`;
+
+/**
  * Example client function that makes a GraphQL request
  * (This is a mock - in real app, use fetch or GraphQL client)
  */
@@ -155,34 +179,13 @@ export async function registerUser(
   name: string,
   endpoint: string = 'http://localhost:4000/graphql'
 ): Promise<RegisterUserResult> {
-  const query = `
-    mutation RegisterUser($email: String!, $name: String!) {
-      registerUser(email: $email, name: $name) {
-        __typename
-        ... on User {
-          id
-          email
-          name
-        }
-        ... on ValidationError {
-          message
-          field
-        }
-        ... on ConflictError {
-          message
-          conflictingId
-        }
-      }
-    }
-  `;
-
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      query,
+      query: REGISTER_USER_MUTATION,
       variables: { email, name },
     }),
   });
