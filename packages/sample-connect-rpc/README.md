@@ -286,7 +286,7 @@ switch (response.result.case) {
 ## References
 
 - [Connect-ES Documentation](https://connectrpc.com/docs/node/getting-started)
-- [Protocol Buffers Oneof](https://protobuf.dev/programming-guides/proto3/#oneof)
+- [Protocol Buffers oneof](https://protobuf.dev/programming-guides/proto3/#oneof)
 - [Buf Documentation](https://buf.build/docs/)
 - [Result Type Pattern](https://en.wikipedia.org/wiki/Result_type)
 

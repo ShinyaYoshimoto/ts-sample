@@ -1,9 +1,9 @@
 /**
  * Connect (gRPC) Result Pattern Sample
- * 
+ *
  * This package demonstrates Contract-first Result Pattern implementation
  * using Connect (gRPC) and Protocol Buffers.
- * 
+ *
  * @packageDocumentation
  */
 
