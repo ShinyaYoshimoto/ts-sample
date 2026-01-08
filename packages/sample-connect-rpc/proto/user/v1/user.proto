@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package user.v1;
+
+// User represents a registered user
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+// ErrorDetail represents error information
+message ErrorDetail {
+  string code = 1;
+  string message = 2;
+}
+
+// RegisterUserRequest is the request to register a new user
+message RegisterUserRequest {
+  string name = 1;
+  string email = 2;
+}
+
+// RegisterUserResponse contains the result of user registration
+// Using oneof to represent Result pattern
+message RegisterUserResponse {
+  oneof result {
+    User user = 1;
+    ErrorDetail error = 2;
+  }
+}
+
+// UserService provides user management operations
+service UserService {
+  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+}
