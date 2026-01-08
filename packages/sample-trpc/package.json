@@ -1,0 +1,26 @@
+{
+	"name": "@ts-sample/sample-trpc",
+	"version": "0.1.0",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"private": false,
+	"description": "tRPC client-server result propagation sample",
+	"packageManager": "pnpm@10.8.0",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"lint": "echo 'No lint configured'",
+		"test": "vitest"
+	},
+	"keywords": [],
+	"author": "ysmt",
+	"license": "ISC",
+	"dependencies": {
+		"@trpc/server": "^11.0.0",
+		"@trpc/client": "^11.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}
