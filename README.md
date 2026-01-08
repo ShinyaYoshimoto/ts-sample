@@ -10,6 +10,7 @@
 ### Packages
 
 - **@ts-sample/sample-gemini** - Gemini APIを使ったサンプル（React + Vite）
+- **@ts-sample/sample-graphql-union** - GraphQL Union型を用いたResult Patternの実装
 - **@ts-sample/sample-hexagonal-architecture** - ヘキサゴナルアーキテクチャのサンプル実装
 - **@ts-sample/sample-immutable-data-model** - イミュータブルデータモデルのサンプル
 - **@ts-sample/sample-zod** - Zodを使ったバリデーションのサンプル
@@ -38,7 +39,8 @@ pnpm lint
 - 開発
   - [ ] ヘキサゴナルアーキテクチャ
   - [ ] 関数型プログラミング
-  - [ ] Result型の実装
+  - [x] Result型の実装
+    - [x] GraphQL Union型を用いたResult Pattern
   - [ ] CQRS
   - [ ] イベントソーシング
   - [ ] 分散トランザクション

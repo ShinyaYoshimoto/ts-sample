@@ -1,0 +1,29 @@
+{
+	"name": "@ts-sample/sample-graphql-union",
+	"version": "0.1.0",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"private": false,
+	"description": "GraphQL Union-based Result Pattern implementation",
+	"packageManager": "pnpm@10.8.0",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"lint": "echo 'No lint configured'",
+		"test": "vitest",
+		"dev": "tsx src/server.ts"
+	},
+	"keywords": ["graphql", "union", "result-pattern"],
+	"author": "ysmt",
+	"license": "ISC",
+	"dependencies": {
+		"@graphql-tools/schema": "^10.0.0",
+		"graphql": "^16.9.0",
+		"graphql-yoga": "^3.9.1"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"tsx": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}
