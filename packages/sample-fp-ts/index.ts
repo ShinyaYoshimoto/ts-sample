@@ -26,11 +26,14 @@ export type AppError = ValidationError | ConflictError | InfrastructureError;
 /**
  * Validates the input for creating a user.
  * Returns ValidationError if email is empty or invalid format.
+ * 
+ * NOTE: This uses simplified validation for demonstration purposes.
+ * Production code should use a proper email validation library.
  */
 export function validateInput(
 	input: CreateUserInput,
 ): TE.TaskEither<ValidationError, CreateUserInput> {
-	// Simple email validation
+	// Simple email validation (for demo purposes only)
 	if (!input.email || input.email.trim() === '') {
 		return TE.left({
 			_tag: 'ValidationError',
