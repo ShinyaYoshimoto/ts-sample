@@ -2,21 +2,23 @@
 
 ## 実装概要
 
-3つのResult型ライブラリを使用して、同じユーザー登録ロジックを実装しました。
+4つのResult型ライブラリを使用して、同じユーザー登録ロジックを実装しました。
 
 ### 実装パッケージ
 
-1. **packages/sample-byethrow/** - neverthrowを使用
-2. **packages/sample-effect-ts/** - effect-tsを使用  
-3. **packages/sample-fp-ts/** - fp-tsを使用
+1. **packages/sample-byethrow/** - @praha/byethrowを使用
+2. **packages/sample-neverthrow/** - neverthrowを使用
+3. **packages/sample-effect-ts/** - effect-tsを使用  
+4. **packages/sample-fp-ts/** - fp-tsを使用
 
 ## テスト結果
 
-✅ **全テスト合格**: 44テスト (sample-byethrow: 14, sample-effect-ts: 14, sample-fp-ts: 16)
+✅ **全テスト合格**: 62テスト (sample-byethrow: 18, sample-neverthrow: 14, sample-effect-ts: 14, sample-fp-ts: 16)
 
 ```bash
 # 各パッケージのテスト実行
 cd packages/sample-byethrow && pnpm test
+cd packages/sample-neverthrow && pnpm test
 cd packages/sample-effect-ts && pnpm test
 cd packages/sample-fp-ts && pnpm test
 ```
@@ -57,7 +59,28 @@ pnpm build  # すべてのパッケージをビルド
 
 ### 各ライブラリの実装スタイル
 
-#### 1. neverthrow (sample-byethrow)
+#### 1. byethrow (sample-byethrow)
+
+**スタイル**: 関数型パイプライン
+
+```typescript
+export function registerUser(input: CreateUserInput): Result.Result<User, AppError> {
+  return Result.pipe(
+    validateInput(input),
+    Result.andThrough((validated) => checkUserExists(validated.email)),
+    Result.andThen((validated) => saveUser(createUser(validated)))
+  );
+}
+```
+
+**代替実装**: Async版も提供
+
+**特徴**:
+- 軽量でツリーシェイク可能
+- 一貫したAPI
+- バンドルサイズが最小 (~3KB)
+
+#### 2. neverthrow (sample-neverthrow)
 
 **スタイル**: 命令型 + 関数型のハイブリッド
 
@@ -78,7 +101,7 @@ export async function registerUser(input: CreateUserInput): Promise<Result<User,
 - async/awaitとの統合が自然
 - バンドルサイズが小さい (~5KB)
 
-#### 2. effect-ts (sample-effect-ts)
+#### 3. effect-ts (sample-effect-ts)
 
 **スタイル**: 純粋関数型プログラミング
 
@@ -97,7 +120,7 @@ export function registerUser(input: CreateUserInput): Effect.Effect<User, AppErr
 - 豊富なエコシステム
 - 高度な機能（retry, timeout, etc）
 
-#### 3. fp-ts (sample-fp-ts)
+#### 4. fp-ts (sample-fp-ts)
 
 **スタイル**: 関数型プログラミング (TaskEither)
 
@@ -124,6 +147,7 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
+| byethrow | ⭐⭐⭐⭐⭐ | 優秀。自動型推論が強力 |
 | neverthrow | ⭐⭐⭐⭐ | 優秀。エラー型も自動追跡 |
 | effect-ts | ⭐⭐⭐⭐⭐ | 非常に優秀。タグ付きエラーで完璧 |
 | fp-ts | ⭐⭐⭐⭐ | 優秀。chainWで型の拡張が必要な場合も |
@@ -132,6 +156,7 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
+| byethrow | ⭐⭐⭐⭐⭐ | Promise自動処理。同期/非同期統一 |
 | neverthrow | ⭐⭐⭐⭐⭐ | async/awaitと完全に統合 |
 | effect-ts | ⭐⭐⭐⭐ | Effectの概念理解が必要 |
 | fp-ts | ⭐⭐⭐⭐ | TaskEitherで対応。やや冗長 |
@@ -140,6 +165,8 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
+| byethrow | ⭐⭐⭐⭐⭐ | Result.pipeで非常に読みやすい |
+| byethrow | ⭐⭐⭐⭐⭐ | Result.pipeで非常に読みやすい |
 | neverthrow | ⭐⭐⭐⭐⭐ | 命令型スタイルで直感的 |
 | effect-ts | ⭐⭐⭐ | pipeは慣れが必要 |
 | fp-ts | ⭐⭐⭐ | pipeは慣れが必要 |
@@ -148,6 +175,7 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
+| byethrow | ⭐⭐ (低) | シンプルで学習しやすい |
 | neverthrow | ⭐⭐ (低) | シンプルで学習しやすい |
 | effect-ts | ⭐⭐⭐⭐ (高) | 関数型プログラミングの知識が必要 |
 | fp-ts | ⭐⭐⭐⭐ (高) | MonadやFunctorの理解が必要 |
@@ -156,17 +184,25 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
+| byethrow | ⭐⭐⭐⭐⭐ | 最小限 |
 | neverthrow | ⭐⭐⭐⭐⭐ | 最小限 |
 | effect-ts | ⭐⭐⭐ | シンプルなケースではやや冗長 |
 | fp-ts | ⭐⭐⭐ | インポートが多い |
 
 ## 推奨ユースケース
 
+### byethrow を選ぶべき場合
+- ✅ 軽量でモダンなライブラリを求める
+- ✅ ツリーシェイク可能なバンドルが必要
+- ✅ 一貫したAPIデザインを好む
+- ✅ 同期/非同期の統一処理が必要
+- ✅ バンドルサイズを最小限に抑えたい
+
 ### neverthrow を選ぶべき場合
 - ✅ シンプルなエラーハンドリングが必要
 - ✅ チームの学習コストを抑えたい
 - ✅ 既存のasync/awaitコードに統合
-- ✅ バンドルサイズを小さく保ちたい
+- ✅ 実績のあるライブラリを使いたい
 - ✅ プロトタイプやMVP開発
 
 ### effect-ts を選ぶべき場合
@@ -187,8 +223,15 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 ```
 packages/
-├── sample-byethrow/          # neverthrow実装
+├── sample-byethrow/          # byethrow実装
 │   ├── README.md             # ライブラリ説明
+│   ├── index.ts              # 実装コード
+│   ├── index.test.ts         # テストコード (18 tests)
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vitest.config.ts
+│
+├── sample-neverthrow/        # neverthrow実装
 │   ├── index.ts              # 実装コード
 │   ├── index.test.ts         # テストコード (14 tests)
 │   ├── package.json
@@ -217,8 +260,9 @@ docs/
 
 ## 結論
 
-3つのライブラリはそれぞれ異なる強みを持っています:
+4つのライブラリはそれぞれ異なる強みを持っています:
 
+- **byethrow**: 軽量・モダン・ツリーシェイク可能な最新ライブラリ
 - **neverthrow**: 簡潔さと実用性のバランスが最高
 - **effect-ts**: 高度な機能と型安全性で大規模プロジェクト向き
 - **fp-ts**: 関数型プログラミングの標準として信頼性が高い

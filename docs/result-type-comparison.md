@@ -1,12 +1,13 @@
-# Result型ライブラリ比較: neverthrow vs effect-ts vs fp-ts
+# Result型ライブラリ比較: byethrow vs neverthrow vs effect-ts vs fp-ts
 
-このドキュメントでは、3つの異なるResult型ライブラリを使用した実装を比較します。
+このドキュメントでは、4つの異なるResult型ライブラリを使用した実装を比較します。
 
 ## 対象ライブラリ
 
-1. **neverthrow** (`packages/sample-byethrow/`)
-2. **effect-ts** (`packages/sample-effect-ts/`)
-3. **fp-ts** (`packages/sample-fp-ts/`)
+1. **byethrow** (`packages/sample-byethrow/`)
+2. **neverthrow** (`packages/sample-neverthrow/`)
+3. **effect-ts** (`packages/sample-effect-ts/`)
+4. **fp-ts** (`packages/sample-fp-ts/`)
 
 ## 実装内容
 
@@ -18,7 +19,44 @@
 
 ## 比較結果
 
-### 1. neverthrow
+### 1. byethrow
+
+**特徴**:
+- 軽量（~3KB）かつツリーシェイク可能
+- オブジェクトベース（クラス不要）
+- 一貫したAPI設計
+- 同期/非同期の統一処理
+- `Result.pipe` による読みやすい合成
+
+**型推論**:
+- ✅ 優秀な型推論
+- ✅ エラー型の自動追跡
+- ✅ TypeScriptとの相性が良い
+
+**非同期処理**:
+- ✅ Promise自動処理
+- ✅ 同期/非同期の統一API
+- ✅ シンプルな async/await 統合
+
+**可読性**:
+```typescript
+return Result.pipe(
+  validateInput(input),
+  Result.andThrough((validated) => checkUserExists(validated.email)),
+  Result.andThen((validated) => saveUser(createUser(validated)))
+);
+```
+
+**ボイラープレート**:
+- ✅ 最小限のボイラープレート
+- ✅ シンプルで一貫したAPI
+- ✅ ツリーシェイク可能
+
+**学習コスト**: ⭐⭐ (低)
+
+---
+
+### 2. neverthrow
 
 **特徴**:
 - 軽量（~5KB）でシンプルなAPI
@@ -52,7 +90,7 @@ if (result.isErr()) {
 
 ---
 
-### 2. effect-ts
+### 3. effect-ts
 
 **特徴**:
 - 高機能で包括的なエコシステム
@@ -87,7 +125,7 @@ return pipe(
 
 ---
 
-### 3. fp-ts
+### 4. fp-ts
 
 **特徴**:
 - TypeScriptの標準的な関数型プログラミングライブラリ
@@ -124,11 +162,18 @@ return pipe(
 
 ## 推奨用途
 
+### byethrowが適している場合
+- 軽量でツリーシェイク可能なライブラリが必要
+- モダンなAPIデザインを好む
+- 同期/非同期の統一的な処理が必要
+- バンドルサイズを最小限に抑えたい
+- シンプルかつ強力な合成が必要
+
 ### neverthrowが適している場合
 - シンプルなエラーハンドリングが必要
 - 学習コストを抑えたい
 - 既存のasync/awaitコードに統合したい
-- バンドルサイズを小さく保ちたい
+- 実績のあるライブラリを使いたい
 
 ### effect-tsが適している場合
 - 複雑なビジネスロジックを扱う
@@ -146,13 +191,14 @@ return pipe(
 
 | ライブラリ | バンドルサイズ | 実行速度 |
 |----------|--------------|---------|
+| byethrow | ~3KB | ⭐⭐⭐⭐⭐ |
 | neverthrow | ~5KB | ⭐⭐⭐⭐⭐ |
 | effect-ts | ~100KB+ | ⭐⭐⭐ |
 | fp-ts | ~50KB | ⭐⭐⭐⭐ |
 
 ## まとめ
 
-**初心者向け**: neverthrow - シンプルで学習しやすい
+**初心者向け**: byethrow / neverthrow - シンプルで学習しやすい
 
 **中級者向け**: fp-ts - 関数型プログラミングの標準
 
@@ -163,8 +209,11 @@ return pipe(
 各パッケージのテストを実行:
 
 ```bash
-# neverthrow
+# byethrow
 cd packages/sample-byethrow && pnpm test
+
+# neverthrow
+cd packages/sample-neverthrow && pnpm test
 
 # effect-ts
 cd packages/sample-effect-ts && pnpm test

@@ -89,9 +89,9 @@ importers:
 
   packages/sample-byethrow:
     dependencies:
-      neverthrow:
-        specifier: ^8.2.0
-        version: 8.2.0
+      '@praha/byethrow':
+        specifier: ^0.9.0
+        version: 0.9.0(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -202,6 +202,22 @@ importers:
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.4(@types/node@24.10.4)
+
+  packages/sample-neverthrow:
+    dependencies:
+      neverthrow:
+        specifier: ^8.2.0
+        version: 8.2.0
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.10.4
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -718,6 +734,11 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@praha/byethrow@0.9.0':
+    resolution: {integrity: sha512-D8XhQ40RsGkwcJdKYqoQ2RUfoqgzztHWXZNpMaRE5P5U+D1c1YboFPc8hysJWQhqloQ32kCXB0XPwM3dFiNyIg==}
+    peerDependencies:
+      typescript: '>=5.0.0'
 
   '@prisma/client@6.19.1':
     resolution: {integrity: sha512-4SXj4Oo6HyQkLUWT8Ke5R0PTAfVOKip5Roo+6+b2EDTkFg5be0FnBWiuRJc0BC0sRQIWGMLKW1XguhVfW/z3/A==}
@@ -2246,6 +2267,11 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
+
+  '@praha/byethrow@0.9.0(typescript@5.9.3)':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      typescript: 5.9.3
 
   '@prisma/client@6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3)':
     optionalDependencies:

@@ -1,5 +1,5 @@
 {
-	"name": "@ts-sample/sample-byethrow",
+	"name": "@ts-sample/sample-neverthrow",
 	"version": "0.1.0",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -10,11 +10,11 @@
 		"lint": "echo 'No lint configured'",
 		"test": "vitest"
 	},
-	"keywords": ["result-type", "error-handling", "byethrow"],
+	"keywords": ["result-type", "error-handling", "neverthrow"],
 	"author": "ysmt",
 	"license": "ISC",
 	"dependencies": {
-		"@praha/byethrow": "^0.9.0"
+		"neverthrow": "^8.2.0"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

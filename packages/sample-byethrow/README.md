@@ -1,63 +1,88 @@
-# sample-byethrow (neverthrow)
+# sample-byethrow
 
-This package demonstrates error handling using **neverthrow**, a lightweight Result type library for TypeScript.
+This package demonstrates error handling using **@praha/byethrow**, a lightweight, tree-shakable Result type library for TypeScript.
 
 ## Overview
 
-neverthrow provides a `Result<T, E>` type (similar to Rust's Result) without requiring the use of `throw` statements. It offers:
-- Type-safe error handling
-- Explicit error types in function signatures
-- Simple, lightweight API
-- Good async/await integration
+@praha/byethrow is a modern Result type library that provides:
+- Tree-shakable and lightweight design
+- Object-based (no classes)
+- Consistent API for both sync and async operations
+- Simple, readable composition with `Result.pipe`
+- Automatic Promise handling
 
 ## Implementation Features
 
-### 1. Basic Result Pattern
+### 1. Simple Result Type
 ```typescript
-async function validateInput(input: CreateUserInput): Promise<Result<CreateUserInput, ValidationError>>
+function validateInput(input: CreateUserInput): Result.Result<CreateUserInput, ValidationError>
 ```
 
-### 2. Error Composition
-The `registerUser` function demonstrates sequential error handling:
+### 2. Pipe-based Composition
+The `registerUser` function demonstrates clean composition:
 ```typescript
-export async function registerUser(
-  input: CreateUserInput,
-): Promise<Result<User, AppError>>
+export function registerUser(input: CreateUserInput): Result.Result<User, AppError> {
+  return Result.pipe(
+    validateInput(input),
+    Result.andThrough((validated) => checkUserExists(validated.email)),
+    Result.andThen((validated) => saveUser(createUser(validated)))
+  );
+}
 ```
 
-### 3. Functional Composition (Alternative)
-The `registerUserFunctional` shows neverthrow's functional chaining with `ResultAsync`:
+### 3. Async Support
+byethrow automatically handles async operations:
 ```typescript
-return ResultAsync.fromPromise(validateInput(input), ...)
-  .andThen((validatedInput) => ...)
-  .andThen((validatedInput) => ...)
+export async function registerUserAsync(input: CreateUserInput): Promise<Result.Result<User, AppError>>
 ```
 
 ## Key Characteristics
 
 ### Pros
-- ✅ Very lightweight (~5KB)
-- ✅ Simple, intuitive API
-- ✅ Great TypeScript type inference
-- ✅ Works well with async/await
-- ✅ Low learning curve
+- ✅ Lightweight and tree-shakable
+- ✅ Clean, consistent API
+- ✅ Excellent TypeScript type inference
+- ✅ Unified sync/async handling
+- ✅ Simple composition with `Result.pipe`
+- ✅ Object-based (no class inheritance)
 
 ### Cons
-- ❌ Smaller ecosystem compared to effect-ts
-- ❌ Less powerful composition tools than fp-ts
-- ❌ Manual error type widening needed in some cases
+- ❌ Newer library (smaller community than neverthrow/fp-ts)
+- ❌ Less ecosystem integrations
+
+## API Highlights
+
+### Core Functions
+- `Result.succeed(value)` - Create a success result
+- `Result.fail(error)` - Create a failure result
+- `Result.isSuccess(result)` - Check if result is success
+- `Result.isFailure(result)` - Check if result is failure
+
+### Composition
+- `Result.pipe()` - Chain multiple operations
+- `Result.andThen(fn)` - Map and chain (flatMap equivalent)
+- `Result.andThrough(fn)` - Execute but discard result (useful for validation)
+- `Result.map(fn)` - Transform success value
 
 ## Usage Example
 
 ```typescript
-const result = await registerUser({ email: "test@example.com", name: "Test" });
+const result = registerUser({ email: "test@example.com", name: "Test" });
 
-if (result.isOk()) {
+if (Result.isSuccess(result)) {
   console.log("User registered:", result.value);
 } else {
   console.error("Error:", result.error);
 }
 ```
+
+## Comparison with neverthrow
+
+Both libraries provide similar functionality, but byethrow offers:
+- Tree-shakable design for smaller bundles
+- Object-based instead of class-based
+- More consistent API naming
+- Better async/sync unification
 
 ## Running Tests
 
@@ -70,3 +95,8 @@ pnpm test
 ```bash
 pnpm build
 ```
+
+## Learn More
+
+- [byethrow GitHub](https://github.com/praha-inc/byethrow)
+- [byethrow Documentation](https://praha-inc.github.io/byethrow/)

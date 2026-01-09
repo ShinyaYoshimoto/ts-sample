@@ -1,61 +1,62 @@
 import { describe, it, expect } from 'vitest';
+import { Result } from '@praha/byethrow';
 import {
 	registerUser,
-	registerUserFunctional,
+	registerUserAsync,
 	validateInput,
 	checkUserExists,
 	saveUser,
 	type CreateUserInput,
 } from './index';
 
-describe('neverthrow implementation', () => {
+describe('byethrow implementation', () => {
 	describe('validateInput', () => {
-		it('should return ok for valid input', async () => {
+		it('should return success for valid input', () => {
 			const input: CreateUserInput = {
 				email: 'user@example.com',
 				name: 'John Doe',
 			};
-			const result = await validateInput(input);
-			expect(result.isOk()).toBe(true);
-			if (result.isOk()) {
+			const result = validateInput(input);
+			expect(Result.isSuccess(result)).toBe(true);
+			if (Result.isSuccess(result)) {
 				expect(result.value).toEqual(input);
 			}
 		});
 
-		it('should return ValidationError for empty email', async () => {
+		it('should return ValidationError for empty email', () => {
 			const input: CreateUserInput = {
 				email: '',
 				name: 'John Doe',
 			};
-			const result = await validateInput(input);
-			expect(result.isErr()).toBe(true);
-			if (result.isErr()) {
+			const result = validateInput(input);
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
 				expect(result.error._tag).toBe('ValidationError');
 				expect(result.error.message).toBe('Email is required');
 			}
 		});
 
-		it('should return ValidationError for invalid email format', async () => {
+		it('should return ValidationError for invalid email format', () => {
 			const input: CreateUserInput = {
 				email: 'invalid-email',
 				name: 'John Doe',
 			};
-			const result = await validateInput(input);
-			expect(result.isErr()).toBe(true);
-			if (result.isErr()) {
+			const result = validateInput(input);
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
 				expect(result.error._tag).toBe('ValidationError');
 				expect(result.error.message).toBe('Invalid email format');
 			}
 		});
 
-		it('should return ValidationError for empty name', async () => {
+		it('should return ValidationError for empty name', () => {
 			const input: CreateUserInput = {
 				email: 'user@example.com',
 				name: '',
 			};
-			const result = await validateInput(input);
-			expect(result.isErr()).toBe(true);
-			if (result.isErr()) {
+			const result = validateInput(input);
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
 				expect(result.error._tag).toBe('ValidationError');
 				expect(result.error.message).toBe('Name is required');
 			}
@@ -63,15 +64,15 @@ describe('neverthrow implementation', () => {
 	});
 
 	describe('checkUserExists', () => {
-		it('should return ok if user does not exist', async () => {
-			const result = await checkUserExists('newuser@example.com');
-			expect(result.isOk()).toBe(true);
+		it('should return success if user does not exist', () => {
+			const result = checkUserExists('newuser@example.com');
+			expect(Result.isSuccess(result)).toBe(true);
 		});
 
-		it('should return ConflictError if user exists', async () => {
-			const result = await checkUserExists('test@example.com');
-			expect(result.isErr()).toBe(true);
-			if (result.isErr()) {
+		it('should return ConflictError if user exists', () => {
+			const result = checkUserExists('test@example.com');
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
 				expect(result.error._tag).toBe('ConflictError');
 				expect(result.error.message).toContain('already exists');
 			}
@@ -79,28 +80,28 @@ describe('neverthrow implementation', () => {
 	});
 
 	describe('saveUser', () => {
-		it('should return ok when save succeeds', async () => {
+		it('should return success when save succeeds', () => {
 			const user = {
 				id: 'user-123',
 				email: 'user@example.com',
 				name: 'John Doe',
 			};
-			const result = await saveUser(user);
-			expect(result.isOk()).toBe(true);
-			if (result.isOk()) {
+			const result = saveUser(user);
+			expect(Result.isSuccess(result)).toBe(true);
+			if (Result.isSuccess(result)) {
 				expect(result.value).toEqual(user);
 			}
 		});
 
-		it('should return InfrastructureError when save fails', async () => {
+		it('should return InfrastructureError when save fails', () => {
 			const user = {
 				id: 'user-123',
 				email: 'fail@example.com',
 				name: 'John Doe',
 			};
-			const result = await saveUser(user);
-			expect(result.isErr()).toBe(true);
-			if (result.isErr()) {
+			const result = saveUser(user);
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
 				expect(result.error._tag).toBe('InfrastructureError');
 				expect(result.error.message).toContain('Failed to save');
 			}
@@ -108,29 +109,68 @@ describe('neverthrow implementation', () => {
 	});
 
 	describe('registerUser', () => {
-		it('should successfully register a valid user', async () => {
+		it('should successfully register a valid user', () => {
 			const input: CreateUserInput = {
 				email: 'newuser@example.com',
 				name: 'Jane Doe',
 			};
-			const result = await registerUser(input);
-			expect(result.isOk()).toBe(true);
-			if (result.isOk()) {
+			const result = registerUser(input);
+			expect(Result.isSuccess(result)).toBe(true);
+			if (Result.isSuccess(result)) {
 				expect(result.value.email).toBe(input.email);
 				expect(result.value.name).toBe(input.name);
 				expect(result.value.id).toBeDefined();
 			}
 		});
 
-		it('should return ValidationError for invalid input', async () => {
+		it('should return ValidationError for invalid input', () => {
 			const input: CreateUserInput = {
 				email: '',
 				name: 'Jane Doe',
 			};
-			const result = await registerUser(input);
-			expect(result.isErr()).toBe(true);
-			if (result.isErr()) {
+			const result = registerUser(input);
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
 				expect(result.error._tag).toBe('ValidationError');
+			}
+		});
+
+		it('should return ConflictError if user exists', () => {
+			const input: CreateUserInput = {
+				email: 'test@example.com',
+				name: 'Jane Doe',
+			};
+			const result = registerUser(input);
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
+				expect(result.error._tag).toBe('ConflictError');
+			}
+		});
+
+		it('should return InfrastructureError if save fails', () => {
+			const input: CreateUserInput = {
+				email: 'fail@example.com',
+				name: 'Jane Doe',
+			};
+			const result = registerUser(input);
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
+				expect(result.error._tag).toBe('InfrastructureError');
+			}
+		});
+	});
+
+	describe('registerUserAsync', () => {
+		it('should successfully register a valid user', async () => {
+			const input: CreateUserInput = {
+				email: 'newuser2@example.com',
+				name: 'Jane Doe',
+			};
+			const result = await registerUserAsync(input);
+			expect(Result.isSuccess(result)).toBe(true);
+			if (Result.isSuccess(result)) {
+				expect(result.value.email).toBe(input.email);
+				expect(result.value.name).toBe(input.name);
 			}
 		});
 
@@ -139,9 +179,9 @@ describe('neverthrow implementation', () => {
 				email: 'test@example.com',
 				name: 'Jane Doe',
 			};
-			const result = await registerUser(input);
-			expect(result.isErr()).toBe(true);
-			if (result.isErr()) {
+			const result = await registerUserAsync(input);
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
 				expect(result.error._tag).toBe('ConflictError');
 			}
 		});
@@ -151,37 +191,34 @@ describe('neverthrow implementation', () => {
 				email: 'fail@example.com',
 				name: 'Jane Doe',
 			};
-			const result = await registerUser(input);
-			expect(result.isErr()).toBe(true);
-			if (result.isErr()) {
+			const result = await registerUserAsync(input);
+			expect(Result.isFailure(result)).toBe(true);
+			if (Result.isFailure(result)) {
 				expect(result.error._tag).toBe('InfrastructureError');
 			}
 		});
 	});
 
-	describe('registerUserFunctional', () => {
-		it('should successfully register a valid user', async () => {
-			const input: CreateUserInput = {
-				email: 'newuser2@example.com',
-				name: 'Jane Doe',
-			};
-			const result = await registerUserFunctional(input);
-			expect(result.isOk()).toBe(true);
-			if (result.isOk()) {
-				expect(result.value.email).toBe(input.email);
-				expect(result.value.name).toBe(input.name);
-			}
+	describe('byethrow API usage', () => {
+		it('should work with Result.isSuccess', () => {
+			const result = Result.succeed(42);
+			expect(Result.isSuccess(result)).toBe(true);
 		});
 
-		it('should return ConflictError if user exists', async () => {
-			const input: CreateUserInput = {
-				email: 'test@example.com',
-				name: 'Jane Doe',
-			};
-			const result = await registerUserFunctional(input);
-			expect(result.isErr()).toBe(true);
-			if (result.isErr()) {
-				expect(result.error._tag).toBe('ConflictError');
+		it('should work with Result.isFailure', () => {
+			const result = Result.fail('error');
+			expect(Result.isFailure(result)).toBe(true);
+		});
+
+		it('should support pipe composition', () => {
+			const result = Result.pipe(
+				Result.succeed(5),
+				Result.andThen((x) => Result.succeed(x * 2)),
+				Result.andThen((x) => Result.succeed(x + 1)),
+			);
+			expect(Result.isSuccess(result)).toBe(true);
+			if (Result.isSuccess(result)) {
+				expect(result.value).toBe(11);
 			}
 		});
 	});
