@@ -2,10 +2,11 @@
 
 ## 実装概要
 
-4つのResult型ライブラリを使用して、同じユーザー登録ロジックを実装しました。
+ピュアなTypeScriptと4つのResult型ライブラリを使用して、同じユーザー登録ロジックを実装しました。
 
 ### 実装パッケージ
 
+0. **packages/sample-un-result/** - Pure TypeScript（ベースライン）
 1. **packages/sample-byethrow/** - @praha/byethrowを使用
 2. **packages/sample-neverthrow/** - neverthrowを使用
 3. **packages/sample-effect-ts/** - effect-tsを使用  
@@ -13,10 +14,11 @@
 
 ## テスト結果
 
-✅ **全テスト合格**: 62テスト (sample-byethrow: 18, sample-neverthrow: 14, sample-effect-ts: 14, sample-fp-ts: 16)
+✅ **全テスト合格**: 83テスト (sample-un-result: 21, sample-byethrow: 18, sample-neverthrow: 14, sample-effect-ts: 14, sample-fp-ts: 16)
 
 ```bash
 # 各パッケージのテスト実行
+cd packages/sample-un-result && pnpm test
 cd packages/sample-byethrow && pnpm test
 cd packages/sample-neverthrow && pnpm test
 cd packages/sample-effect-ts && pnpm test
@@ -58,6 +60,31 @@ pnpm build  # すべてのパッケージをビルド
    - `registerUser()` - 上記を合成した登録処理
 
 ### 各ライブラリの実装スタイル
+
+#### 0. Pure TypeScript (sample-un-result) - ベースライン
+
+**スタイル**: try-catch例外処理
+
+```typescript
+export function registerUser(input: CreateUserInput): 
+  { success: true; data: User } | { success: false; error: AppError } {
+  try {
+    const validatedInput = validateInput(input);
+    checkUserExists(validatedInput.email);
+    const user = saveUser(createUser(validatedInput));
+    return { success: true, data: user };
+  } catch (error) {
+    return { success: false, error: error as AppError };
+  }
+}
+```
+
+**代替実装**: Async版、Null返却版も提供
+
+**特徴**:
+- 追加依存なし
+- try-catchが冗長
+- 型安全性に欠ける
 
 #### 1. byethrow (sample-byethrow)
 
@@ -147,6 +174,7 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
+| Pure TypeScript | ⭐ | エラーが型に現れない |
 | byethrow | ⭐⭐⭐⭐⭐ | 優秀。自動型推論が強力 |
 | neverthrow | ⭐⭐⭐⭐ | 優秀。エラー型も自動追跡 |
 | effect-ts | ⭐⭐⭐⭐⭐ | 非常に優秀。タグ付きエラーで完璧 |
@@ -156,6 +184,7 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
+| Pure TypeScript | ⭐⭐ | try-catchが冗長 |
 | byethrow | ⭐⭐⭐⭐⭐ | Promise自動処理。同期/非同期統一 |
 | neverthrow | ⭐⭐⭐⭐⭐ | async/awaitと完全に統合 |
 | effect-ts | ⭐⭐⭐⭐ | Effectの概念理解が必要 |
@@ -165,7 +194,7 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
-| byethrow | ⭐⭐⭐⭐⭐ | Result.pipeで非常に読みやすい |
+| Pure TypeScript | ⭐ | try-catchのネストが読みづらい |
 | byethrow | ⭐⭐⭐⭐⭐ | Result.pipeで非常に読みやすい |
 | neverthrow | ⭐⭐⭐⭐⭐ | 命令型スタイルで直感的 |
 | effect-ts | ⭐⭐⭐ | pipeは慣れが必要 |
@@ -175,6 +204,7 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
+| Pure TypeScript | ⭐ (最低) | ネイティブだが落とし穴多い |
 | byethrow | ⭐⭐ (低) | シンプルで学習しやすい |
 | neverthrow | ⭐⭐ (低) | シンプルで学習しやすい |
 | effect-ts | ⭐⭐⭐⭐ (高) | 関数型プログラミングの知識が必要 |
@@ -184,12 +214,18 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 | ライブラリ | 評価 | コメント |
 |----------|------|---------|
+| Pure TypeScript | ⭐⭐ | try-catchブロックが冗長 |
 | byethrow | ⭐⭐⭐⭐⭐ | 最小限 |
 | neverthrow | ⭐⭐⭐⭐⭐ | 最小限 |
 | effect-ts | ⭐⭐⭐ | シンプルなケースではやや冗長 |
 | fp-ts | ⭐⭐⭐ | インポートが多い |
 
 ## 推奨ユースケース
+
+### Pure TypeScript を使う場合（非推奨）
+- ❌ 依存関係を絶対に追加できない制約がある
+- ⚠️ 既存コードベースが全てtry-catchパターン
+- ⚠️ **注意**: 型安全性の欠如とエラーハンドリング忘れのリスクが高い
 
 ### byethrow を選ぶべき場合
 - ✅ 軽量でモダンなライブラリを求める
@@ -223,6 +259,14 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 
 ```
 packages/
+├── sample-un-result/         # Pure TypeScript（ベースライン）
+│   ├── README.md             # ライブラリ説明
+│   ├── index.ts              # 実装コード
+│   ├── index.test.ts         # テストコード (21 tests)
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vitest.config.ts
+│
 ├── sample-byethrow/          # byethrow実装
 │   ├── README.md             # ライブラリ説明
 │   ├── index.ts              # 実装コード
@@ -232,6 +276,7 @@ packages/
 │   └── vitest.config.ts
 │
 ├── sample-neverthrow/        # neverthrow実装
+│   ├── README.md
 │   ├── index.ts              # 実装コード
 │   ├── index.test.ts         # テストコード (14 tests)
 │   ├── package.json
@@ -260,8 +305,9 @@ docs/
 
 ## 結論
 
-4つのライブラリはそれぞれ異なる強みを持っています:
+5つの実装はそれぞれ異なる強みを持っています:
 
+- **Pure TypeScript**: ベースライン。型安全性に欠けるが依存なし
 - **byethrow**: 軽量・モダン・ツリーシェイク可能な最新ライブラリ
 - **neverthrow**: 簡潔さと実用性のバランスが最高
 - **effect-ts**: 高度な機能と型安全性で大規模プロジェクト向き

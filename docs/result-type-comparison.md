@@ -1,9 +1,10 @@
-# Result型ライブラリ比較: byethrow vs neverthrow vs effect-ts vs fp-ts
+# Result型ライブラリ比較: Pure TypeScript vs byethrow vs neverthrow vs effect-ts vs fp-ts
 
-このドキュメントでは、4つの異なるResult型ライブラリを使用した実装を比較します。
+このドキュメントでは、ピュアなTypeScriptと4つの異なるResult型ライブラリを使用した実装を比較します。
 
-## 対象ライブラリ
+## 対象実装
 
+0. **Pure TypeScript** (`packages/sample-un-result/`) - **ベースライン**
 1. **byethrow** (`packages/sample-byethrow/`)
 2. **neverthrow** (`packages/sample-neverthrow/`)
 3. **effect-ts** (`packages/sample-effect-ts/`)
@@ -18,6 +19,50 @@
 - **データ保存**: ユーザー情報のDB保存（モック）
 
 ## 比較結果
+
+### 0. Pure TypeScript (ベースライン)
+
+**特徴**:
+- ネイティブのtry-catch構文
+- 例外をthrowするエラーハンドリング
+- 追加の依存関係なし
+- 慣れ親しんだパターン
+
+**型推論**:
+- ❌ エラーが型シグネチャに現れない
+- ❌ catchブロックでの型安全性がない
+- ❌ エラー処理の忘れやすさ
+
+**非同期処理**:
+- ✅ async/awaitで動作
+- ❌ エラーハンドリングが冗長
+- ❌ 合成が困難
+
+**可読性**:
+```typescript
+try {
+  const validated = validateInput(input);
+  checkUserExists(validated.email);
+  return { success: true, data: saveUser(createUser(validated)) };
+} catch (error) {
+  return { success: false, error: error as AppError };
+}
+```
+
+**ボイラープレート**:
+- ⚠️ try-catchブロックが冗長
+- ❌ 型ガードが必要
+- ❌ エラーハンドリングが散在
+
+**学習コスト**: ⭐ (最低)
+
+**問題点**:
+- エラーが型システムで追跡されない
+- エラーハンドリングを忘れがち
+- 合成が困難で冗長
+- null返却パターンはエラー情報を失う
+
+---
 
 ### 1. byethrow
 
@@ -162,6 +207,11 @@ return pipe(
 
 ## 推奨用途
 
+### Pure TypeScriptを使う場合（非推奨）
+- 依存関係を絶対に追加したくない
+- 既存コードベースが既にtry-catchパターン
+- **注意**: エラー追跡とtype safetyの欠如に注意
+
 ### byethrowが適している場合
 - 軽量でツリーシェイク可能なライブラリが必要
 - モダンなAPIデザインを好む
@@ -191,12 +241,15 @@ return pipe(
 
 | ライブラリ | バンドルサイズ | 実行速度 |
 |----------|--------------|---------|
+| Pure TypeScript | 0KB | ⭐⭐⭐⭐⭐ |
 | byethrow | ~3KB | ⭐⭐⭐⭐⭐ |
 | neverthrow | ~5KB | ⭐⭐⭐⭐⭐ |
 | effect-ts | ~100KB+ | ⭐⭐⭐ |
 | fp-ts | ~50KB | ⭐⭐⭐⭐ |
 
 ## まとめ
+
+**ベースライン**: Pure TypeScript - ネイティブだが型安全性に欠ける
 
 **初心者向け**: byethrow / neverthrow - シンプルで学習しやすい
 
@@ -209,6 +262,9 @@ return pipe(
 各パッケージのテストを実行:
 
 ```bash
+# Pure TypeScript (ベースライン)
+cd packages/sample-un-result && pnpm test
+
 # byethrow
 cd packages/sample-byethrow && pnpm test
 
