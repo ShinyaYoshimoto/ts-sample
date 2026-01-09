@@ -1,18 +1,18 @@
 # sample-un-result
 
-This package demonstrates error handling using **pure TypeScript** without any Result-type libraries. It serves as a baseline comparison to understand the benefits and trade-offs of using Result types.
+このパッケージは、Result型ライブラリを使用せずに **純粋なTypeScript** でエラーハンドリングを実装したものです。Result型を使用する利点とトレードオフを理解するためのベースライン比較として機能します。
 
-## Overview
+## 概要
 
-This implementation uses traditional error handling approaches in TypeScript:
-- **try-catch blocks** for exception handling
-- **Throwing errors** for failure cases
-- **Union types** for success/error responses
-- **null/undefined** returns (anti-pattern shown for comparison)
+この実装では、TypeScriptの伝統的なエラーハンドリング手法を使用しています：
+- **try-catchブロック** による例外処理
+- **エラーのthrow** による失敗ケースの処理
+- **ユニオン型** による成功/エラーレスポンス
+- **null/undefined** の返却（比較のためのアンチパターン）
 
-## Implementation Features
+## 実装の特徴
 
-### 1. Traditional throw-based Errors
+### 1. 伝統的なthrowベースのエラー
 ```typescript
 export function validateInput(input: CreateUserInput): CreateUserInput {
   if (!input.email || input.email.trim() === '') {
@@ -22,7 +22,7 @@ export function validateInput(input: CreateUserInput): CreateUserInput {
 }
 ```
 
-### 2. Try-Catch Error Handling
+### 2. Try-Catchエラーハンドリング
 ```typescript
 export function registerUser(input: CreateUserInput): 
   { success: true; data: User } | { success: false; error: AppError } {
@@ -37,82 +37,82 @@ export function registerUser(input: CreateUserInput):
 }
 ```
 
-### 3. Null Pattern (Anti-pattern)
+### 3. Nullパターン（アンチパターン）
 ```typescript
 export function registerUserNullable(input: CreateUserInput): User | null {
   try {
-    // ... operations
+    // ... 処理
     return user;
   } catch {
-    return null; // Loses all error information!
+    return null; // すべてのエラー情報を失う！
   }
 }
 ```
 
-## Characteristics
+## 特徴
 
-### Pros
-- ✅ Native to JavaScript/TypeScript
-- ✅ No additional dependencies
-- ✅ Familiar to most developers
-- ✅ Works with existing ecosystem
+### 長所
+- ✅ JavaScript/TypeScriptにネイティブ
+- ✅ 追加の依存関係なし
+- ✅ ほとんどの開発者に馴染みがある
+- ✅ 既存のエコシステムと連携
 
-### Cons
-- ❌ Errors not tracked in type signatures
-- ❌ Easy to forget error handling
-- ❌ try-catch blocks are verbose
-- ❌ Errors can be thrown from anywhere
-- ❌ Type narrowing requires manual checks
-- ❌ Null pattern loses error information
-- ❌ Stack traces can be misleading
-- ❌ Difficult to compose operations safely
+### 短所
+- ❌ エラーが型シグネチャで追跡されない
+- ❌ エラーハンドリングを忘れやすい
+- ❌ try-catchブロックが冗長
+- ❌ どこからでもエラーがthrowされる可能性
+- ❌ 型の絞り込みに手動チェックが必要
+- ❌ Nullパターンはエラー情報を失う
+- ❌ スタックトレースが誤解を招く可能性
+- ❌ 操作の安全な合成が困難
 
-## Common Problems
+## よくある問題
 
-### 1. No Compile-Time Error Tracking
+### 1. コンパイル時のエラー追跡なし
 ```typescript
-// Function signature doesn't tell you it can throw
+// 関数シグネチャはthrowする可能性を示さない
 function validateInput(input: CreateUserInput): CreateUserInput {
-  throw new Error(); // Surprise!
+  throw new Error(); // サプライズ！
 }
 
-// Caller has no way to know they should handle errors
-const result = validateInput(input); // Might crash!
+// 呼び出し側はエラー処理が必要だと知る術がない
+const result = validateInput(input); // クラッシュするかも！
 ```
 
-### 2. Easy to Forget Error Handling
+### 2. エラーハンドリングを忘れやすい
 ```typescript
-// This compiles fine but will crash if validation fails
+// これはコンパイルできるが、バリデーション失敗時にクラッシュする
 const validated = validateInput(input);
 const user = saveUser(createUser(validated));
-// No reminder to handle errors!
+// エラー処理のリマインダーなし！
 ```
 
-### 3. Type Safety Issues
+### 3. 型安全性の問題
 ```typescript
 try {
   // ...
 } catch (error) {
-  // error is 'unknown' or 'any'
-  // Need manual type guards
+  // errorは'unknown'または'any'型
+  // 手動の型ガードが必要
   if (error && typeof error === 'object' && '_tag' in error) {
-    // Now we can use it
+    // これで使える
   }
 }
 ```
 
-### 4. Null Pattern Loses Context
+### 4. Nullパターンはコンテキストを失う
 ```typescript
 const user = registerUserNullable(input);
 if (user === null) {
-  // Why did it fail? Validation? Conflict? Infrastructure?
-  // No way to know!
+  // なぜ失敗した？バリデーション？競合？インフラ？
+  // 知る方法がない！
 }
 ```
 
-### 5. Difficult Composition
+### 5. 合成が困難
 ```typescript
-// Can't easily chain operations
+// 操作を簡単にチェインできない
 try {
   const a = operationA();
   try {
@@ -121,82 +121,82 @@ try {
       const c = operationC(b);
       return c;
     } catch (errorC) {
-      // Handle C error
+      // Cのエラーを処理
     }
   } catch (errorB) {
-    // Handle B error
+    // Bのエラーを処理
   }
 } catch (errorA) {
-  // Handle A error
+  // Aのエラーを処理
 }
 ```
 
-## Comparison with Result Types
+## Result型との比較
 
-| Aspect | Pure TypeScript | Result Types |
+| 側面 | 純粋なTypeScript | Result型 |
 |--------|----------------|--------------|
-| Error tracking | ❌ Runtime only | ✅ Compile-time |
-| Type safety | ⚠️ Requires guards | ✅ Automatic |
-| Composition | ❌ Verbose | ✅ Clean |
-| Explicitness | ❌ Hidden throws | ✅ Explicit |
-| Learning curve | ✅ Low | ⚠️ Medium |
-| Boilerplate | ⚠️ try-catch blocks | ✅ Minimal |
+| エラー追跡 | ❌ 実行時のみ | ✅ コンパイル時 |
+| 型安全性 | ⚠️ ガードが必要 | ✅ 自動 |
+| 合成 | ❌ 冗長 | ✅ クリーン |
+| 明示性 | ❌ 隠れたthrow | ✅ 明示的 |
+| 学習コスト | ✅ 低い | ⚠️ 中程度 |
+| ボイラープレート | ⚠️ try-catchブロック | ✅ 最小限 |
 
-## Usage Examples
+## 使用例
 
-### Basic Usage
+### 基本的な使用
 ```typescript
 const result = registerUser({ email: "test@example.com", name: "Test" });
 
 if (result.success) {
-  console.log("User registered:", result.data);
+  console.log("ユーザー登録成功:", result.data);
 } else {
-  console.error("Error:", result.error);
+  console.error("エラー:", result.error);
 }
 ```
 
-### Async Usage
+### 非同期での使用
 ```typescript
 const result = await registerUserAsync({ email: "test@example.com", name: "Test" });
 
 if (result.success) {
-  console.log("User registered:", result.data);
+  console.log("ユーザー登録成功:", result.data);
 } else {
-  console.error("Error:", result.error);
+  console.error("エラー:", result.error);
 }
 ```
 
-### Null Pattern (Not Recommended)
+### Nullパターン（非推奨）
 ```typescript
 const user = registerUserNullable({ email: "test@example.com", name: "Test" });
 
 if (user === null) {
-  console.error("Failed to register user"); // But why?
+  console.error("ユーザー登録失敗"); // しかしなぜ？
 } else {
-  console.log("User registered:", user);
+  console.log("ユーザー登録成功:", user);
 }
 ```
 
-## Why Use Result Types Instead?
+## なぜResult型を使うべきか？
 
-After implementing this baseline, the benefits of Result-type libraries become clear:
+このベースライン実装を通じて、Result型ライブラリの利点が明確になります：
 
-1. **Type Safety**: Errors are tracked in the type system
-2. **Explicitness**: Function signatures show what can fail
-3. **Composition**: Easy to chain fallible operations
-4. **No Surprises**: Can't forget to handle errors
-5. **Better DX**: IDE support for error handling
-6. **Functional**: Pure functions without side effects
+1. **型安全性**: エラーが型システムで追跡される
+2. **明示性**: 関数シグネチャが失敗する可能性を示す
+3. **合成**: 失敗する可能性のある操作を簡単にチェインできる
+4. **サプライズなし**: エラー処理を忘れることができない
+5. **優れたDX**: エラーハンドリングのIDE補完サポート
+6. **関数型**: 副作用のない純粋な関数
 
-See the other packages (`sample-byethrow`, `sample-neverthrow`, `sample-effect-ts`, `sample-fp-ts`) for better approaches to error handling.
+より良いエラーハンドリング手法については、他のパッケージ（`sample-byethrow`、`sample-neverthrow`、`sample-effect-ts`、`sample-fp-ts`）を参照してください。
 
-## Running Tests
+## テストの実行
 
 ```bash
 pnpm test
 ```
 
-## Building
+## ビルド
 
 ```bash
 pnpm build

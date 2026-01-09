@@ -1,25 +1,25 @@
 # sample-byethrow
 
-This package demonstrates error handling using **@praha/byethrow**, a lightweight, tree-shakable Result type library for TypeScript.
+このパッケージは、TypeScript向けの軽量でツリーシェイク可能なResult型ライブラリ **@praha/byethrow** を使用したエラーハンドリングを実装したものです。
 
-## Overview
+## 概要
 
-@praha/byethrow is a modern Result type library that provides:
-- Tree-shakable and lightweight design
-- Object-based (no classes)
-- Consistent API for both sync and async operations
-- Simple, readable composition with `Result.pipe`
-- Automatic Promise handling
+@praha/byethrowは、以下の機能を提供するモダンなResult型ライブラリです：
+- ツリーシェイク可能で軽量な設計
+- オブジェクトベース（クラス不要）
+- 同期・非同期操作の一貫したAPI
+- `Result.pipe`によるシンプルで読みやすい合成
+- 自動的なPromise処理
 
-## Implementation Features
+## 実装の特徴
 
-### 1. Simple Result Type
+### 1. シンプルなResult型
 ```typescript
 function validateInput(input: CreateUserInput): Result.Result<CreateUserInput, ValidationError>
 ```
 
-### 2. Pipe-based Composition
-The `registerUser` function demonstrates clean composition:
+### 2. パイプベースの合成
+`registerUser`関数はクリーンな合成を示しています：
 ```typescript
 export function registerUser(input: CreateUserInput): Result.Result<User, AppError> {
   return Result.pipe(
@@ -30,73 +30,73 @@ export function registerUser(input: CreateUserInput): Result.Result<User, AppErr
 }
 ```
 
-### 3. Async Support
-byethrow automatically handles async operations:
+### 3. 非同期サポート
+byethrowは非同期操作を自動的に処理します：
 ```typescript
 export async function registerUserAsync(input: CreateUserInput): Promise<Result.Result<User, AppError>>
 ```
 
-## Key Characteristics
+## 主な特徴
 
-### Pros
-- ✅ Lightweight and tree-shakable
-- ✅ Clean, consistent API
-- ✅ Excellent TypeScript type inference
-- ✅ Unified sync/async handling
-- ✅ Simple composition with `Result.pipe`
-- ✅ Object-based (no class inheritance)
+### 長所
+- ✅ 軽量でツリーシェイク可能
+- ✅ クリーンで一貫したAPI
+- ✅ 優れたTypeScript型推論
+- ✅ 同期/非同期の統一処理
+- ✅ `Result.pipe`によるシンプルな合成
+- ✅ オブジェクトベース（クラス継承なし）
 
-### Cons
-- ❌ Newer library (smaller community than neverthrow/fp-ts)
-- ❌ Less ecosystem integrations
+### 短所
+- ❌ 新しいライブラリ（neverthrow/fp-tsより小さいコミュニティ）
+- ❌ エコシステムの統合が少ない
 
-## API Highlights
+## APIハイライト
 
-### Core Functions
-- `Result.succeed(value)` - Create a success result
-- `Result.fail(error)` - Create a failure result
-- `Result.isSuccess(result)` - Check if result is success
-- `Result.isFailure(result)` - Check if result is failure
+### コア関数
+- `Result.succeed(value)` - 成功結果を作成
+- `Result.fail(error)` - 失敗結果を作成
+- `Result.isSuccess(result)` - 結果が成功かチェック
+- `Result.isFailure(result)` - 結果が失敗かチェック
 
-### Composition
-- `Result.pipe()` - Chain multiple operations
-- `Result.andThen(fn)` - Map and chain (flatMap equivalent)
-- `Result.andThrough(fn)` - Execute but discard result (useful for validation)
-- `Result.map(fn)` - Transform success value
+### 合成
+- `Result.pipe()` - 複数の操作をチェイン
+- `Result.andThen(fn)` - マップとチェイン（flatMapと同等）
+- `Result.andThrough(fn)` - 実行するが結果を破棄（バリデーションに便利）
+- `Result.map(fn)` - 成功値を変換
 
-## Usage Example
+## 使用例
 
 ```typescript
 const result = registerUser({ email: "test@example.com", name: "Test" });
 
 if (Result.isSuccess(result)) {
-  console.log("User registered:", result.value);
+  console.log("ユーザー登録成功:", result.value);
 } else {
-  console.error("Error:", result.error);
+  console.error("エラー:", result.error);
 }
 ```
 
-## Comparison with neverthrow
+## neverthrowとの比較
 
-Both libraries provide similar functionality, but byethrow offers:
-- Tree-shakable design for smaller bundles
-- Object-based instead of class-based
-- More consistent API naming
-- Better async/sync unification
+両ライブラリは似た機能を提供しますが、byethrowは以下を提供します：
+- より小さなバンドルのためのツリーシェイク可能な設計
+- クラスベースではなくオブジェクトベース
+- より一貫したAPIネーミング
+- より良い非同期/同期の統一
 
-## Running Tests
+## テストの実行
 
 ```bash
 pnpm test
 ```
 
-## Building
+## ビルド
 
 ```bash
 pnpm build
 ```
 
-## Learn More
+## 詳細情報
 
 - [byethrow GitHub](https://github.com/praha-inc/byethrow)
-- [byethrow Documentation](https://praha-inc.github.io/byethrow/)
+- [byethrow ドキュメント](https://praha-inc.github.io/byethrow/)

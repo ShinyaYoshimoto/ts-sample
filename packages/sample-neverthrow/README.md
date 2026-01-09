@@ -1,71 +1,71 @@
 # sample-neverthrow
 
-This package demonstrates error handling using **neverthrow**, a lightweight Result type library for TypeScript.
+このパッケージは、TypeScript向けの軽量Result型ライブラリ **neverthrow** を使用したエラーハンドリングを実装したものです。
 
-## Overview
+## 概要
 
-neverthrow provides a `Result<T, E>` type (similar to Rust's Result) without requiring the use of `throw` statements. It offers:
-- Type-safe error handling
-- Explicit error types in function signatures
-- Simple, lightweight API
-- Good async/await integration
+neverthrowは、`throw`文を使用せずに`Result<T, E>`型（Rustの Resultに類似）を提供します。以下の機能があります：
+- 型安全なエラーハンドリング
+- 関数シグネチャでの明示的なエラー型
+- シンプルで軽量なAPI
+- async/awaitとの良好な統合
 
-## Implementation Features
+## 実装の特徴
 
-### 1. Basic Result Pattern
+### 1. 基本的なResultパターン
 ```typescript
 async function validateInput(input: CreateUserInput): Promise<Result<CreateUserInput, ValidationError>>
 ```
 
-### 2. Error Composition
-The `registerUser` function demonstrates sequential error handling:
+### 2. エラーの合成
+`registerUser`関数は逐次的なエラーハンドリングを示しています：
 ```typescript
 export async function registerUser(
   input: CreateUserInput,
 ): Promise<Result<User, AppError>>
 ```
 
-### 3. Functional Composition (Alternative)
-The `registerUserFunctional` shows neverthrow's functional chaining with `ResultAsync`:
+### 3. 関数型合成（代替実装）
+`registerUserFunctional`はneverthrowの`ResultAsync`による関数型チェイニングを示しています：
 ```typescript
 return ResultAsync.fromPromise(validateInput(input), ...)
   .andThen((validatedInput) => ...)
   .andThen((validatedInput) => ...)
 ```
 
-## Key Characteristics
+## 主な特徴
 
-### Pros
-- ✅ Very lightweight (~5KB)
-- ✅ Simple, intuitive API
-- ✅ Great TypeScript type inference
-- ✅ Works well with async/await
-- ✅ Low learning curve
+### 長所
+- ✅ 非常に軽量（~5KB）
+- ✅ シンプルで直感的なAPI
+- ✅ 優れたTypeScript型推論
+- ✅ async/awaitとの良好な連携
+- ✅ 低い学習コスト
 
-### Cons
-- ❌ Smaller ecosystem compared to effect-ts
-- ❌ Less powerful composition tools than fp-ts
-- ❌ Manual error type widening needed in some cases
+### 短所
+- ❌ effect-tsと比べて小さいエコシステム
+- ❌ fp-tsより弱い合成ツール
+- ❌ 一部のケースで手動のエラー型拡張が必要
 
-## Usage Example
+## 使用例
 
 ```typescript
 const result = await registerUser({ email: "test@example.com", name: "Test" });
 
 if (result.isOk()) {
-  console.log("User registered:", result.value);
+  console.log("ユーザー登録成功:", result.value);
 } else {
-  console.error("Error:", result.error);
+  console.error("エラー:", result.error);
 }
 ```
 
-## Running Tests
+## テストの実行
 
 ```bash
 pnpm test
 ```
 
-## Building
+## ビルド
 
 ```bash
 pnpm build

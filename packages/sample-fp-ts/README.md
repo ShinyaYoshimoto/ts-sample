@@ -1,26 +1,26 @@
 # sample-fp-ts
 
-This package demonstrates error handling using **fp-ts**, the standard functional programming library for TypeScript.
+このパッケージは、TypeScript向けの標準的な関数型プログラミングライブラリ **fp-ts** を使用したエラーハンドリングを実装したものです。
 
-## Overview
+## 概要
 
-fp-ts is a comprehensive functional programming library for TypeScript, inspired by Scala and Haskell. It provides:
-- `Either<E, A>` type for synchronous error handling
-- `TaskEither<E, A>` type for asynchronous error handling
-- Extensive functional programming utilities
-- Pipe-based composition
-- Battle-tested and widely adopted
+fp-tsは、ScalaとHaskellに触発されたTypeScript向けの包括的な関数型プログラミングライブラリです。以下を提供します：
+- 同期エラーハンドリングのための`Either<E, A>`型
+- 非同期エラーハンドリングのための`TaskEither<E, A>`型
+- 広範な関数型プログラミングユーティリティ
+- パイプベースの合成
+- 実戦でテストされ広く採用されている
 
-## Implementation Features
+## 実装の特徴
 
-### 1. TaskEither Type
-Functions return `TaskEither<Error, Success>` for async operations:
+### 1. TaskEither型
+関数は非同期操作に対して`TaskEither<Error, Success>`を返します：
 ```typescript
 function validateInput(input: CreateUserInput): TE.TaskEither<ValidationError, CreateUserInput>
 ```
 
-### 2. Pipe-based Composition
-fp-ts uses the `pipe` function for composition:
+### 2. パイプベースの合成
+fp-tsは合成に`pipe`関数を使用します：
 ```typescript
 return pipe(
   validateInput(input),
@@ -29,8 +29,8 @@ return pipe(
 )
 ```
 
-### 3. Do Notation (Alternative)
-fp-ts also supports "do notation" for imperative-style composition:
+### 3. Do記法（代替実装）
+fp-tsは命令型スタイルの合成のために「do記法」もサポートしています：
 ```typescript
 return pipe(
   TE.Do,
@@ -40,56 +40,56 @@ return pipe(
 )
 ```
 
-## Key Characteristics
+## 主な特徴
 
-### Pros
-- ✅ Mature and battle-tested
-- ✅ Comprehensive functional programming toolkit
-- ✅ Strong type inference
-- ✅ Large community and ecosystem
-- ✅ Modular design (tree-shakeable)
-- ✅ Well-documented
+### 長所
+- ✅ 成熟し実戦でテスト済み
+- ✅ 包括的な関数型プログラミングツールキット
+- ✅ 強力な型推論
+- ✅ 大規模なコミュニティとエコシステム
+- ✅ モジュラー設計（ツリーシェイク可能）
+- ✅ よく文書化されている
 
-### Cons
-- ❌ Steeper learning curve for FP beginners
-- ❌ More verbose than simpler alternatives
-- ❌ Requires understanding of FP concepts (Monad, Functor, etc.)
-- ❌ Can be overwhelming with many abstractions
+### 短所
+- ❌ FP初心者には急な学習曲線
+- ❌ よりシンプルな代替手段より冗長
+- ❌ FPの概念（Monad、Functorなど）の理解が必要
+- ❌ 多くの抽象化により圧倒される可能性
 
-## Usage Example
+## 使用例
 
 ```typescript
 const taskEither = registerUser({ email: "test@example.com", name: "Test" });
 
-// Run and handle result
+// 実行して結果を処理
 const result = await runTaskEither(taskEither);
 
 if (E.isRight(result)) {
-  console.log("User registered:", result.right);
+  console.log("ユーザー登録成功:", result.right);
 } else {
-  console.error("Error:", result.left);
+  console.error("エラー:", result.left);
 }
 
-// Using fold for pattern matching
+// パターンマッチングにfoldを使用
 const message = E.fold(
-  (error) => `Error: ${error.message}`,
-  (user) => `Success: ${user.email}`
+  (error) => `エラー: ${error.message}`,
+  (user) => `成功: ${user.email}`
 )(result);
 ```
 
-## Running Tests
+## テストの実行
 
 ```bash
 pnpm test
 ```
 
-## Building
+## ビルド
 
 ```bash
 pnpm build
 ```
 
-## Learn More
+## 詳細情報
 
-- [fp-ts Documentation](https://gcanti.github.io/fp-ts/)
-- [fp-ts Learning Resources](https://github.com/gcanti/fp-ts/blob/master/docs/learning-resources.md)
+- [fp-ts ドキュメント](https://gcanti.github.io/fp-ts/)
+- [fp-ts 学習リソース](https://github.com/gcanti/fp-ts/blob/master/docs/learning-resources.md)
