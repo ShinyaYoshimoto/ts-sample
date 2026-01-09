@@ -1,15 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
+	type ConflictError,
+	type CreateUserInput,
+	type InfrastructureError,
+	type ValidationError,
+	checkUserExists,
 	registerUser,
 	registerUserAsync,
 	registerUserNullable,
-	validateInput,
-	checkUserExists,
 	saveUser,
-	type CreateUserInput,
-	type ValidationError,
-	type ConflictError,
-	type InfrastructureError,
+	validateInput,
 } from './index';
 
 describe('pure TypeScript implementation (no Result types)', () => {
@@ -104,7 +104,9 @@ describe('pure TypeScript implementation (no Result types)', () => {
 				saveUser(user);
 			} catch (error) {
 				expect((error as InfrastructureError)._tag).toBe('InfrastructureError');
-				expect((error as InfrastructureError).message).toContain('Failed to save');
+				expect((error as InfrastructureError).message).toContain(
+					'Failed to save',
+				);
 			}
 		});
 	});

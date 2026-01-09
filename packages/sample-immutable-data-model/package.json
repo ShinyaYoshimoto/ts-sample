@@ -1,40 +1,40 @@
 {
-  "name": "@ts-sample/sample-immutable-data-model",
-  "version": "0.1.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "private": false,
-  "description": "イミュータブルデータモデルについて学ぶ - [参考ページ](https://scrapbox.io/kawasima/%E3%82%A4%E3%83%9F%E3%83%A5%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E3%83%87%E3%83%BC%E3%82%BF%E3%83%A2%E3%83%87%E3%83%AB)",
-  "type": "module",
-  "scripts": {
-    "generate": "prisma generate --schema=prisma/schema.prisma",
-    "build": "tsc -p tsconfig.json",
-    "lint": "echo 'No lint configured'",
-    "test": "vitest",
-    "prisma:seed": "tsx seed.ts",
-    "prisma:studio": "prisma studio",
-    "prisma:migrate": "prisma migrate dev",
-    "exec:order": "tsx adapter/in/script/orderController.ts",
-    "exec:confirmOrder": "tsx adapter/in/script/confirmOrderController.ts",
-    "exec:schedulePayment": "tsx adapter/in/script/schedulePaymentController.ts",
-    "exec:pay": "tsx adapter/in/script/payController.ts",
-    "exec:issueInvoice": "tsx adapter/in/script/issueInvoiceController.ts",
-    "exec:cancelOrder": "tsx adapter/in/script/cancelOrderController.ts",
-    "exec:loadOrder": "tsx adapter/in/script/loadOrderController.ts",
-    "exec:searchOrder": "tsx adapter/in/script/searchOrderController.ts"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "catalog:",
-    "prisma": "catalog:",
-    "ts-node": "catalog:",
-    "tsx": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
-  },
-  "dependencies": {
-    "@prisma/client": "catalog:"
-  }
+	"name": "@ts-sample/sample-immutable-data-model",
+	"version": "0.1.0",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"private": false,
+	"description": "イミュータブルデータモデルについて学ぶ - [参考ページ](https://scrapbox.io/kawasima/%E3%82%A4%E3%83%9F%E3%83%A5%E3%83%BC%E3%82%BF%E3%83%96%E3%83%AB%E3%83%87%E3%83%BC%E3%82%BF%E3%83%A2%E3%83%87%E3%83%AB)",
+	"type": "module",
+	"scripts": {
+		"generate": "prisma generate --schema=prisma/schema.prisma",
+		"build": "tsc -p tsconfig.json",
+		"lint": "echo 'No lint configured'",
+		"test": "vitest",
+		"prisma:seed": "tsx seed.ts",
+		"prisma:studio": "prisma studio",
+		"prisma:migrate": "prisma migrate dev",
+		"exec:order": "tsx adapter/in/script/orderController.ts",
+		"exec:confirmOrder": "tsx adapter/in/script/confirmOrderController.ts",
+		"exec:schedulePayment": "tsx adapter/in/script/schedulePaymentController.ts",
+		"exec:pay": "tsx adapter/in/script/payController.ts",
+		"exec:issueInvoice": "tsx adapter/in/script/issueInvoiceController.ts",
+		"exec:cancelOrder": "tsx adapter/in/script/cancelOrderController.ts",
+		"exec:loadOrder": "tsx adapter/in/script/loadOrderController.ts",
+		"exec:searchOrder": "tsx adapter/in/script/searchOrderController.ts"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"prisma": "catalog:",
+		"ts-node": "catalog:",
+		"tsx": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"dependencies": {
+		"@prisma/client": "catalog:"
+	}
 }

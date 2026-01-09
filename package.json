@@ -4,9 +4,7 @@
 	"version": "0.0.0",
 	"description": "Typescript sample code collection with monorepo structure",
 	"packageManager": "pnpm@10.8.0",
-	"workspaces": [
-		"packages/*"
-	],
+	"workspaces": ["packages/*"],
 	"scripts": {
 		"build": "pnpm -r run build",
 		"lint": "pnpm -r run lint",

@@ -1,17 +1,17 @@
 {
-  "name": "@ts-sample/prisma",
-  "version": "0.1.0",
-  "private": false,
-  "scripts": {
-    "generate": "prisma generate",
-    "migrate": "prisma migrate dev",
-    "studio": "prisma studio",
-    "build": "prisma generate",
-    "lint": "echo 'No lint configured'",
-    "test": "echo 'No tests configured'"
-  },
-  "devDependencies": {
-    "@prisma/client": "catalog:",
-    "prisma": "catalog:"
-  }
+	"name": "@ts-sample/prisma",
+	"version": "0.1.0",
+	"private": false,
+	"scripts": {
+		"generate": "prisma generate",
+		"migrate": "prisma migrate dev",
+		"studio": "prisma studio",
+		"build": "prisma generate",
+		"lint": "echo 'No lint configured'",
+		"test": "echo 'No tests configured'"
+	},
+	"devDependencies": {
+		"@prisma/client": "catalog:",
+		"prisma": "catalog:"
+	}
 }

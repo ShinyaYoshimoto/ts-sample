@@ -1,4 +1,4 @@
-import { Result, ok, err } from 'neverthrow';
+import { type Result, err, ok } from 'neverthrow';
 
 // ========================================
 // Data Models & Errors
@@ -24,7 +24,7 @@ export type AppError = ValidationError | ConflictError | InfrastructureError;
 /**
  * Validates the input for creating a user.
  * Returns ValidationError if email is empty or invalid format.
- * 
+ *
  * NOTE: This uses simplified validation for demonstration purposes.
  * Production code should use a proper email validation library.
  */

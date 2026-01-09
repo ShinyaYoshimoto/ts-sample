@@ -22,7 +22,7 @@ export type AppError = ValidationError | ConflictError | InfrastructureError;
 /**
  * Validates the input for creating a user.
  * Throws ValidationError if validation fails.
- * 
+ *
  * NOTE: This uses simplified validation for demonstration purposes.
  * Production code should use a proper email validation library.
  */
@@ -145,9 +145,13 @@ export function registerUser(
  */
 export async function registerUserAsync(
 	input: CreateUserInput,
-): Promise<{ success: true; data: User } | { success: false; error: AppError }> {
+): Promise<
+	{ success: true; data: User } | { success: false; error: AppError }
+> {
 	// Simulate async operations
-	const validateAsync = async (input: CreateUserInput): Promise<CreateUserInput> => {
+	const validateAsync = async (
+		input: CreateUserInput,
+	): Promise<CreateUserInput> => {
 		await new Promise((resolve) => setTimeout(resolve, 1));
 		return validateInput(input);
 	};
@@ -202,9 +206,7 @@ export async function registerUserAsync(
  * Alternative implementation returning null on error.
  * This is a common pattern but loses error information.
  */
-export function registerUserNullable(
-	input: CreateUserInput,
-): User | null {
+export function registerUserNullable(input: CreateUserInput): User | null {
 	try {
 		const validatedInput = validateInput(input);
 		checkUserExists(validatedInput.email);
