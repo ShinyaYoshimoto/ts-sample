@@ -175,6 +175,18 @@ importers:
         specifier: ^5.2.0
         version: 5.4.21(@types/node@24.10.4)
 
+  packages/sample-generator:
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.10.4
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.4(@types/node@24.10.4)
+
   packages/sample-hexagonal-architecture:
     devDependencies:
       typescript:
