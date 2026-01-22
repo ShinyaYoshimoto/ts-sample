@@ -40,8 +40,8 @@ export function* streamLogReader(
 
 /**
  * logFilter is an intermediate generator that filters log entries based on a specified level.
- * It uses generator delegation (yield*) to efficiently pass through only the log entries
- * that match the specified level.
+ * It uses a for...of loop to iterate through the source generator and conditionally yields
+ * only the log entries that match the specified level.
  *
  * @param source - Generator that provides log entries to be filtered
  * @param level - The log level to filter for ('INFO' or 'ERROR')
