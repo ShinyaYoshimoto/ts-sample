@@ -13,6 +13,8 @@
 - **@ts-sample/sample-hexagonal-architecture** - ヘキサゴナルアーキテクチャのサンプル実装
 - **@ts-sample/sample-immutable-data-model** - イミュータブルデータモデルのサンプル
 - **@ts-sample/sample-zod** - Zodを使ったバリデーションのサンプル
+- **@ts-sample/elasticsearch-client** - Elasticsearch共有クライアントパッケージ
+- **@ts-sample/sample-elasticsearch-app** - Elasticsearchを使った商品検索のサンプル
 - **@ts-sample/prisma** - Prismaスキーマとマイグレーション
 
 ### コマンド
@@ -29,7 +31,23 @@ pnpm test
 
 # 全パッケージのlintを実行
 pnpm lint
+
+# Elasticsearchとデータベースを起動
+docker-compose up -d
 ```
+
+### Elasticsearch サンプルの実行
+
+```bash
+# Elasticsearchを起動
+docker-compose up -d elasticsearch kibana
+
+# サンプルアプリケーションを実行
+cd packages/sample-elasticsearch-app
+pnpm start
+```
+
+Kibanaは http://localhost:5601 でアクセスできます。
 
 ## やりたいこと（順次更新）
 
@@ -50,7 +68,7 @@ pnpm lint
   - [ ] postgres
   - [ ] redis
   - [ ] firestore
-  - [ ] elasticsearch
+  - [x] elasticsearch
   - [ ] Prisma
   - [ ] effect-ts
   - [x] lint, formatter
