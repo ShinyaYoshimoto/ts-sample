@@ -1,8 +1,8 @@
 /**
- * LogEntry represents a single log entry in the system.
- * @property level - The severity level of the log (INFO or ERROR)
- * @property message - The log message content
- * @property timestamp - Optional timestamp for when the log was created
+ * システム内の単一のログエントリーを表します。
+ * @property level - ログの重大度レベル（INFO または ERROR）
+ * @property message - ログメッセージの内容
+ * @property timestamp - ログが作成された際のタイムスタンプ（オプショナル）
  */
 export interface LogEntry {
 	level: 'INFO' | 'ERROR';
@@ -11,13 +11,13 @@ export interface LogEntry {
 }
 
 /**
- * streamLogReader is a generator function that processes log entries one at a time.
- * This provides memory-efficient processing of large log datasets by yielding
- * entries individually instead of loading all data into memory at once.
+ * ログエントリーを1件ずつ処理するジェネレーター関数です。
+ * すべてのデータを一度にメモリに読み込むのではなく、エントリーを個別にyieldすることで、
+ * 大規模なログデータセットをメモリ効率的に処理します。
  *
- * @param logs - Array of log entries to be processed
- * @yields Individual log entries from the input array
- * @returns Generator that yields LogEntry objects
+ * @param logs - 処理対象のログエントリーの配列
+ * @yields 入力配列から1件ずつログエントリーを返す
+ * @returns LogEntryオブジェクトをyieldするジェネレーター
  *
  * @example
  * ```typescript
@@ -39,14 +39,14 @@ export function* streamLogReader(
 }
 
 /**
- * logFilter is an intermediate generator that filters log entries based on a specified level.
- * It uses a for...of loop to iterate through the source generator and conditionally yields
- * only the log entries that match the specified level.
+ * 指定されたレベルに基づいてログエントリーをフィルタリングする中間ジェネレーターです。
+ * for...ofループを使用してソースジェネレーターを反復処理し、
+ * 指定されたレベルに一致するログエントリーのみを条件付きでyieldします。
  *
- * @param source - Generator that provides log entries to be filtered
- * @param level - The log level to filter for ('INFO' or 'ERROR')
- * @yields Log entries that match the specified level
- * @returns Generator that yields filtered LogEntry objects
+ * @param source - フィルタリング対象のログエントリーを提供するジェネレーター
+ * @param level - フィルタリングするログレベル（'INFO' または 'ERROR'）
+ * @yields 指定されたレベルに一致するログエントリー
+ * @returns フィルタリングされたLogEntryオブジェクトをyieldするジェネレーター
  *
  * @example
  * ```typescript
@@ -57,7 +57,7 @@ export function* streamLogReader(
  * ];
  * const pipeline = logFilter(streamLogReader(logs), 'ERROR');
  * for (const errorLog of pipeline) {
- *   console.log(errorLog.message); // Only 'Connection failed'
+ *   console.log(errorLog.message); // 'Connection failed' のみ出力
  * }
  * ```
  */

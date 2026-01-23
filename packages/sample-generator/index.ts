@@ -1,8 +1,10 @@
 /**
- * sample-generator package
+ * sample-generator パッケージ
  * 
- * This package provides memory-efficient log processing using JavaScript Generators.
- * It demonstrates how to process large datasets without loading everything into memory.
+ * このパッケージは、JavaScriptのジェネレーターを使用した
+ * メモリ効率の良いログ処理を提供します。
+ * すべてのデータをメモリに読み込むことなく、大規模なデータセットを
+ * 処理する方法を示しています。
  * 
  * @packageDocumentation
  */
