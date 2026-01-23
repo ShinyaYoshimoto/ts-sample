@@ -9,4 +9,10 @@
  * @packageDocumentation
  */
 
-export { type LogEntry, streamLogReader, logFilter } from './src/logProcessor';
+export {
+	type LogEntry,
+	streamLogReader,
+	logFilter,
+	asyncStreamLogReader,
+	asyncLogFilter,
+} from './src/logProcessor';

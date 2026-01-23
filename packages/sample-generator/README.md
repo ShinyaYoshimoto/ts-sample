@@ -49,7 +49,41 @@ function* logFilter(
 - パイプライン処理による柔軟な組み合わせ
 - 条件に合致しないデータはスキップ
 
+### asyncStreamLogReader（非同期版）
+
+非同期データソースから大量のログデータを1件ずつyieldする非同期Generator：
+
+```typescript
+async function* asyncStreamLogReader(
+  logs: LogEntry[] | Promise<LogEntry[]>,
+  delayMs?: number
+): AsyncGenerator<LogEntry, void, unknown>
+```
+
+**特徴:**
+- ファイルI/O、データベースクエリ、APIリクエストなどの非同期処理に対応
+- Promise で包まれたデータソースを直接処理可能
+- 遅延時間を設定して非同期I/Oをシミュレート可能
+
+### asyncLogFilter（非同期版）
+
+特定の条件に合致するログだけを非同期でフィルタリングする中間非同期Generator：
+
+```typescript
+async function* asyncLogFilter(
+  source: AsyncGenerator<LogEntry, void, unknown>,
+  level: 'INFO' | 'ERROR'
+): AsyncGenerator<LogEntry, void, unknown>
+```
+
+**特徴:**
+- `for await...of`を使用した非同期委譲処理
+- 非同期パイプライン処理による柔軟な組み合わせ
+- 非同期データストリームのフィルタリング
+
 ## 使用例
+
+### 同期処理
 
 ```typescript
 import { LogEntry, streamLogReader, logFilter } from '@ts-sample/sample-generator';
@@ -69,6 +103,30 @@ const pipeline = logFilter(streamLogReader(logs), 'ERROR');
 // 1件ずつ処理（メモリ効率的）
 for (const errorLog of pipeline) {
   console.log(`[${errorLog.timestamp}] ${errorLog.message}`);
+}
+```
+
+### 非同期処理
+
+```typescript
+import { asyncStreamLogReader, asyncLogFilter } from '@ts-sample/sample-generator';
+
+// 非同期でログを取得する関数
+async function fetchLogs(): Promise<LogEntry[]> {
+  // データベースやAPIからログを取得
+  const response = await fetch('/api/logs');
+  return await response.json();
+}
+
+// 非同期パイプライン処理
+const logs = fetchLogs(); // Promise<LogEntry[]>
+const pipeline = asyncLogFilter(asyncStreamLogReader(logs), 'ERROR');
+
+// 1件ずつ非同期処理（メモリ効率的）
+for await (const errorLog of pipeline) {
+  console.log(`[${errorLog.timestamp}] ${errorLog.message}`);
+  // 非同期処理（例：データベースへの保存）
+  await saveToDatabase(errorLog);
 }
 ```
 
@@ -115,34 +173,82 @@ pnpm build
 
 このパターンは以下のような拡張が可能です：
 
-### AsyncGeneratorへの対応
+### 非同期ストリームからの読み込み（実装済み）
+
+`asyncStreamLogReader` と `asyncLogFilter` を使用して、非同期データソースから効率的にデータを処理できます：
 
 ```typescript
-async function* asyncStreamLogReader(
-  logSource: AsyncIterable<LogEntry>
+// AsyncIterableからの読み込み
+async function* readFromAsyncSource(
+  source: AsyncIterable<LogEntry>
 ): AsyncGenerator<LogEntry, void, unknown> {
-  for await (const log of logSource) {
+  for await (const log of source) {
     yield log;
   }
+}
+
+// 使用例
+const asyncSource = readFromDatabase(); // AsyncIterable<LogEntry>
+for await (const log of readFromAsyncSource(asyncSource)) {
+  console.log(log);
 }
 ```
 
 ### 複数のフィルタの組み合わせ
 
 ```typescript
-const pipeline = logFilter(
+// 同期版
+function* messageFilter(
+  source: Generator<LogEntry, void, unknown>,
+  keyword: string
+): Generator<LogEntry, void, unknown> {
+  for (const log of source) {
+    if (log.message.includes(keyword)) {
+      yield log;
+    }
+  }
+}
+
+const pipeline = messageFilter(
   logFilter(streamLogReader(logs), 'ERROR'),
-  (log) => log.message.includes('timeout')
+  'timeout'
+);
+
+// 非同期版
+async function* asyncMessageFilter(
+  source: AsyncGenerator<LogEntry, void, unknown>,
+  keyword: string
+): AsyncGenerator<LogEntry, void, unknown> {
+  for await (const log of source) {
+    if (log.message.includes(keyword)) {
+      yield log;
+    }
+  }
+}
+
+const asyncPipeline = asyncMessageFilter(
+  asyncLogFilter(asyncStreamLogReader(logs), 'ERROR'),
+  'timeout'
 );
 ```
 
 ### データ変換
 
 ```typescript
+// 同期版
 function* logTransform(
   source: Generator<LogEntry, void, unknown>
 ): Generator<string, void, unknown> {
   for (const log of source) {
+    yield `[${log.level}] ${log.message}`;
+  }
+}
+
+// 非同期版
+async function* asyncLogTransform(
+  source: AsyncGenerator<LogEntry, void, unknown>
+): AsyncGenerator<string, void, unknown> {
+  for await (const log of source) {
     yield `[${log.level}] ${log.message}`;
   }
 }
