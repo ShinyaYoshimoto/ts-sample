@@ -105,17 +105,10 @@ export class ElasticsearchClient {
 	): Promise<void> {
 		const { index, mappings, settings } = options;
 
-		const body: any = {};
-		if (mappings) {
-			body.mappings = mappings;
-		}
-		if (settings) {
-			body.settings = settings;
-		}
-
 		await this.client.indices.create({
 			index,
-			body: Object.keys(body).length > 0 ? body : undefined,
+			mappings,
+			settings,
 		});
 	}
 
@@ -175,11 +168,9 @@ export class ElasticsearchClient {
 
 		const response = await this.client.search({
 			index,
-			body: {
-				query,
-				size,
-				from,
-			},
+			query,
+			size,
+			from,
 		});
 
 		const hits = response.hits.hits.map((hit: any) => ({

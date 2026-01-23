@@ -46,8 +46,8 @@ describe('ProductService Integration Tests', () => {
 		const docId = await productService.indexProduct(product);
 		expect(docId).toBeDefined();
 
-		// Wait a bit for indexing
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		// Refresh index to make document searchable immediately
+		await client.getClient().indices.refresh({ index: 'products' });
 
 		const retrieved = await productService.getProduct(docId);
 		expect(retrieved).toBeDefined();
@@ -79,9 +79,6 @@ describe('ProductService Integration Tests', () => {
 		];
 
 		await productService.bulkIndexProducts(testProducts);
-
-		// Wait for indexing
-		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		const results = await productService.searchProducts({
 			keyword: 'iPhone',
