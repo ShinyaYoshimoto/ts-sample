@@ -1,0 +1,24 @@
+{
+	"name": "@ts-sample/elasticsearch-client",
+	"version": "0.1.0",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"private": false,
+	"packageManager": "pnpm@10.8.0",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"lint": "echo 'No lint configured'",
+		"test": "vitest"
+	},
+	"keywords": ["elasticsearch", "search", "client"],
+	"author": "ysmt",
+	"license": "ISC",
+	"dependencies": {
+		"@elastic/elasticsearch": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}
