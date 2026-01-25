@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
 	type LogEntry,
-	streamLogReader,
-	logFilter,
-	asyncStreamLogReader,
 	asyncLogFilter,
+	asyncStreamLogReader,
+	logFilter,
+	streamLogReader,
 } from '../logProcessor';
 
 describe('Generatorベースのログ処理', () => {
@@ -64,7 +64,7 @@ describe('Generatorベースのログ処理', () => {
 			];
 
 			const generator = streamLogReader(logs);
-			
+
 			// 最初の呼び出しは最初のログを返す
 			const first = generator.next();
 			expect(first.done).toBe(false);
@@ -92,7 +92,7 @@ describe('Generatorベースのログ処理', () => {
 
 			const result: LogEntry[] = [];
 			const pipeline = logFilter(streamLogReader(logs), 'ERROR');
-			
+
 			for (const log of pipeline) {
 				result.push(log);
 			}
@@ -100,7 +100,7 @@ describe('Generatorベースのログ処理', () => {
 			expect(result).toHaveLength(2);
 			expect(result[0].message).toBe('エラー 1');
 			expect(result[1].message).toBe('エラー 2');
-			expect(result.every(log => log.level === 'ERROR')).toBe(true);
+			expect(result.every((log) => log.level === 'ERROR')).toBe(true);
 		});
 
 		it('INFOログのみをフィルタリングする', () => {
@@ -112,7 +112,7 @@ describe('Generatorベースのログ処理', () => {
 
 			const result: LogEntry[] = [];
 			const pipeline = logFilter(streamLogReader(logs), 'INFO');
-			
+
 			for (const log of pipeline) {
 				result.push(log);
 			}
@@ -120,7 +120,7 @@ describe('Generatorベースのログ処理', () => {
 			expect(result).toHaveLength(2);
 			expect(result[0].message).toBe('情報 1');
 			expect(result[1].message).toBe('情報 2');
-			expect(result.every(log => log.level === 'INFO')).toBe(true);
+			expect(result.every((log) => log.level === 'INFO')).toBe(true);
 		});
 
 		it('一致するログがない場合は空を返す', () => {
@@ -131,7 +131,7 @@ describe('Generatorベースのログ処理', () => {
 
 			const result: LogEntry[] = [];
 			const pipeline = logFilter(streamLogReader(logs), 'ERROR');
-			
+
 			for (const log of pipeline) {
 				result.push(log);
 			}
@@ -143,7 +143,7 @@ describe('Generatorベースのログ処理', () => {
 			const logs: LogEntry[] = [];
 			const result: LogEntry[] = [];
 			const pipeline = logFilter(streamLogReader(logs), 'ERROR');
-			
+
 			for (const log of pipeline) {
 				result.push(log);
 			}
@@ -159,7 +159,7 @@ describe('Generatorベースのログ処理', () => {
 			];
 
 			const generator = logFilter(streamLogReader(logs), 'ERROR');
-			
+
 			// 最初の呼び出しは最初のERRORログを返す
 			const first = generator.next();
 			expect(first.done).toBe(false);
@@ -188,7 +188,7 @@ describe('Generatorベースのログ処理', () => {
 
 			const errorLogs: LogEntry[] = [];
 			const pipeline = logFilter(streamLogReader(logs), 'ERROR');
-			
+
 			for (const errorLog of pipeline) {
 				errorLogs.push(errorLog);
 			}
@@ -201,12 +201,16 @@ describe('Generatorベースのログ処理', () => {
 		it('フィルタリングされたログのtimestampフィールドを処理する', () => {
 			const logs: LogEntry[] = [
 				{ level: 'INFO', message: '情報', timestamp: '2024-01-01T00:00:00Z' },
-				{ level: 'ERROR', message: 'エラー', timestamp: '2024-01-01T00:01:00Z' },
+				{
+					level: 'ERROR',
+					message: 'エラー',
+					timestamp: '2024-01-01T00:01:00Z',
+				},
 			];
 
 			const errorLogs: LogEntry[] = [];
 			const pipeline = logFilter(streamLogReader(logs), 'ERROR');
-			
+
 			for (const errorLog of pipeline) {
 				errorLogs.push(errorLog);
 			}
@@ -221,7 +225,7 @@ describe('Generatorベースのログ処理', () => {
 			// 10万件のログエントリーを生成
 			const logCount = 100_000;
 			const logs: LogEntry[] = [];
-			
+
 			for (let i = 0; i < logCount; i++) {
 				logs.push({
 					level: i % 2 === 0 ? 'INFO' : 'ERROR',
@@ -233,7 +237,7 @@ describe('Generatorベースのログ処理', () => {
 			// メモリ使用パターンを測定 - generatorは一度に1件ずつ処理する
 			let processedCount = 0;
 			const errorLogs: string[] = []; // 処理を検証するためにメッセージのみを保存
-			
+
 			// ジェネレーターパイプラインを通じて処理
 			for (const log of logFilter(streamLogReader(logs), 'ERROR')) {
 				processedCount++;
@@ -245,7 +249,7 @@ describe('Generatorベースのログ処理', () => {
 
 			// 5万件のERRORログ（10万件の半分）を処理したはず
 			expect(processedCount).toBe(50_000);
-			
+
 			// 先頭と末尾のサンプルを検証
 			expect(errorLogs[0]).toBe('ログエントリー 1');
 			expect(errorLogs[9]).toBe('ログエントリー 19');
@@ -254,7 +258,7 @@ describe('Generatorベースのログ処理', () => {
 		it('10万件のエントリーをすべてのフィルタリング結果を一度に読み込まずに処理する', () => {
 			const logCount = 100_000;
 			const logs: LogEntry[] = [];
-			
+
 			for (let i = 0; i < logCount; i++) {
 				logs.push({
 					level: i % 10 === 0 ? 'ERROR' : 'INFO',
@@ -265,7 +269,7 @@ describe('Generatorベースのログ処理', () => {
 			// ジェネレーターを使用して最初の100件のERRORログのみを処理
 			const generator = logFilter(streamLogReader(logs), 'ERROR');
 			const samples: LogEntry[] = [];
-			
+
 			for (let i = 0; i < 100; i++) {
 				const { value, done } = generator.next();
 				if (done) break;
@@ -282,7 +286,7 @@ describe('Generatorベースのログ処理', () => {
 		it('ジェネレーターの遅延評価を実証する', () => {
 			const logCount = 100_000;
 			const logs: LogEntry[] = [];
-			
+
 			for (let i = 0; i < logCount; i++) {
 				logs.push({
 					level: 'ERROR',
@@ -292,13 +296,13 @@ describe('Generatorベースのログ処理', () => {
 
 			// ジェネレーターを作成するが消費しない
 			const generator = logFilter(streamLogReader(logs), 'ERROR');
-			
+
 			// ジェネレーターは作成されたが処理はまだ発生していない
 			// 1つのアイテムだけを消費
 			const first = generator.next();
 			expect(first.done).toBe(false);
 			expect(first.value?.message).toBe('ログ 0');
-			
+
 			// 処理を続行できることを検証
 			const second = generator.next();
 			expect(second.done).toBe(false);
@@ -308,7 +312,7 @@ describe('Generatorベースのログ処理', () => {
 		it('残りのアイテムを処理せずに早期終了を許可する', () => {
 			const logCount = 100_000;
 			const logs: LogEntry[] = [];
-			
+
 			for (let i = 0; i < logCount; i++) {
 				logs.push({
 					level: 'ERROR',
@@ -319,7 +323,7 @@ describe('Generatorベースのログ処理', () => {
 			// 特定の条件が見つかるまで処理
 			let found = false;
 			let iterationCount = 0;
-			
+
 			for (const log of logFilter(streamLogReader(logs), 'ERROR')) {
 				iterationCount++;
 				if (log.message === 'ログ 1000') {
@@ -388,11 +392,11 @@ describe('Generatorベースのログ処理', () => {
 
 				const startTime = Date.now();
 				const result: LogEntry[] = [];
-				
+
 				for await (const log of asyncStreamLogReader(logs, 10)) {
 					result.push(log);
 				}
-				
+
 				const elapsed = Date.now() - startTime;
 
 				expect(result).toHaveLength(2);
@@ -407,7 +411,7 @@ describe('Generatorベースのログ処理', () => {
 				];
 
 				const generator = asyncStreamLogReader(logs);
-				
+
 				// 最初の呼び出しは最初のログを返す
 				const first = await generator.next();
 				expect(first.done).toBe(false);
@@ -435,7 +439,7 @@ describe('Generatorベースのログ処理', () => {
 
 				const result: LogEntry[] = [];
 				const pipeline = asyncLogFilter(asyncStreamLogReader(logs), 'ERROR');
-				
+
 				for await (const log of pipeline) {
 					result.push(log);
 				}
@@ -443,7 +447,7 @@ describe('Generatorベースのログ処理', () => {
 				expect(result).toHaveLength(2);
 				expect(result[0].message).toBe('エラー 1');
 				expect(result[1].message).toBe('エラー 2');
-				expect(result.every(log => log.level === 'ERROR')).toBe(true);
+				expect(result.every((log) => log.level === 'ERROR')).toBe(true);
 			});
 
 			it('INFOログのみを非同期でフィルタリングする', async () => {
@@ -455,7 +459,7 @@ describe('Generatorベースのログ処理', () => {
 
 				const result: LogEntry[] = [];
 				const pipeline = asyncLogFilter(asyncStreamLogReader(logs), 'INFO');
-				
+
 				for await (const log of pipeline) {
 					result.push(log);
 				}
@@ -463,7 +467,7 @@ describe('Generatorベースのログ処理', () => {
 				expect(result).toHaveLength(2);
 				expect(result[0].message).toBe('情報 1');
 				expect(result[1].message).toBe('情報 2');
-				expect(result.every(log => log.level === 'INFO')).toBe(true);
+				expect(result.every((log) => log.level === 'INFO')).toBe(true);
 			});
 
 			it('一致するログがない場合は空を返す', async () => {
@@ -474,7 +478,7 @@ describe('Generatorベースのログ処理', () => {
 
 				const result: LogEntry[] = [];
 				const pipeline = asyncLogFilter(asyncStreamLogReader(logs), 'ERROR');
-				
+
 				for await (const log of pipeline) {
 					result.push(log);
 				}
@@ -490,7 +494,7 @@ describe('Generatorベースのログ処理', () => {
 				];
 
 				const generator = asyncLogFilter(asyncStreamLogReader(logs), 'ERROR');
-				
+
 				// 最初の呼び出しは最初のERRORログを返す
 				const first = await generator.next();
 				expect(first.done).toBe(false);
@@ -519,7 +523,7 @@ describe('Generatorベースのログ処理', () => {
 
 				const errorLogs: LogEntry[] = [];
 				const pipeline = asyncLogFilter(asyncStreamLogReader(logs), 'ERROR');
-				
+
 				for await (const errorLog of pipeline) {
 					errorLogs.push(errorLog);
 				}
@@ -537,8 +541,11 @@ describe('Generatorベースのログ処理', () => {
 				const asyncLogs = Promise.resolve(logs);
 
 				const errorLogs: LogEntry[] = [];
-				const pipeline = asyncLogFilter(asyncStreamLogReader(asyncLogs), 'ERROR');
-				
+				const pipeline = asyncLogFilter(
+					asyncStreamLogReader(asyncLogs),
+					'ERROR',
+				);
+
 				for await (const errorLog of pipeline) {
 					errorLogs.push(errorLog);
 				}
@@ -556,15 +563,12 @@ describe('Generatorベースのログ処理', () => {
 
 				const startTime = Date.now();
 				const errorLogs: LogEntry[] = [];
-				const pipeline = asyncLogFilter(
-					asyncStreamLogReader(logs, 5),
-					'ERROR'
-				);
-				
+				const pipeline = asyncLogFilter(asyncStreamLogReader(logs, 5), 'ERROR');
+
 				for await (const errorLog of pipeline) {
 					errorLogs.push(errorLog);
 				}
-				
+
 				const elapsed = Date.now() - startTime;
 
 				expect(errorLogs).toHaveLength(2);
@@ -575,7 +579,7 @@ describe('Generatorベースのログ処理', () => {
 			it('早期終了を非同期パイプラインでサポートする', async () => {
 				const logCount = 1000;
 				const logs: LogEntry[] = [];
-				
+
 				for (let i = 0; i < logCount; i++) {
 					logs.push({
 						level: 'ERROR',
@@ -585,8 +589,11 @@ describe('Generatorベースのログ処理', () => {
 
 				let found = false;
 				let iterationCount = 0;
-				
-				for await (const log of asyncLogFilter(asyncStreamLogReader(logs), 'ERROR')) {
+
+				for await (const log of asyncLogFilter(
+					asyncStreamLogReader(logs),
+					'ERROR',
+				)) {
 					iterationCount++;
 					if (log.message === 'ログ 100') {
 						found = true;
@@ -603,7 +610,7 @@ describe('Generatorベースのログ処理', () => {
 			it('10万件のログを非同期で効率的に処理する', async () => {
 				const logCount = 100_000;
 				const logs: LogEntry[] = [];
-				
+
 				for (let i = 0; i < logCount; i++) {
 					logs.push({
 						level: i % 2 === 0 ? 'INFO' : 'ERROR',
@@ -613,8 +620,11 @@ describe('Generatorベースのログ処理', () => {
 
 				let processedCount = 0;
 				const samples: string[] = [];
-				
-				for await (const log of asyncLogFilter(asyncStreamLogReader(logs), 'ERROR')) {
+
+				for await (const log of asyncLogFilter(
+					asyncStreamLogReader(logs),
+					'ERROR',
+				)) {
 					processedCount++;
 					if (processedCount <= 5) {
 						samples.push(log.message);
@@ -630,7 +640,7 @@ describe('Generatorベースのログ処理', () => {
 			it('非同期ジェネレーターで一部のアイテムのみを処理できる', async () => {
 				const logCount = 10_000;
 				const logs: LogEntry[] = [];
-				
+
 				for (let i = 0; i < logCount; i++) {
 					logs.push({
 						level: i % 3 === 0 ? 'ERROR' : 'INFO',
@@ -640,7 +650,7 @@ describe('Generatorベースのログ処理', () => {
 
 				const generator = asyncLogFilter(asyncStreamLogReader(logs), 'ERROR');
 				const samples: LogEntry[] = [];
-				
+
 				for (let i = 0; i < 50; i++) {
 					const { value, done } = await generator.next();
 					if (done) break;

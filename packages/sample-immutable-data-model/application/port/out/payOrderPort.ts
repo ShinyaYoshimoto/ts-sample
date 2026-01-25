@@ -1,6 +1,6 @@
-import { Payment } from '../../domain/model/payment';
-import { Order } from '../../domain/model/order';
+import type { Order } from '../../domain/model/order';
+import type { Payment } from '../../domain/model/payment';
 
 export interface PayOrderPort {
-  createPayment(order: Order): Promise<Payment>;
+	createPayment(order: Order): Promise<Payment>;
 }

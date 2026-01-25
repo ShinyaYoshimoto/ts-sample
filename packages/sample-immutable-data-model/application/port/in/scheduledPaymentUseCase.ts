@@ -1,3 +1,3 @@
 export interface ScheduledPaymentUseCase {
-  scheduledPayment(): boolean;
+	scheduledPayment(): boolean;
 }

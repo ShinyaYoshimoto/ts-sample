@@ -1,3 +1,3 @@
 export interface PaymentUseCase {
-  payment(): boolean;
+	payment(): boolean;
 }

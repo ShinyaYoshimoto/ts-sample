@@ -1,5 +1,5 @@
-import { Member } from '../../domain/model/member';
+import type { Member } from '../../domain/model/member';
 
 export class OrderCommand {
-  constructor(readonly member: Member) {}
+	constructor(readonly member: Member) {}
 }

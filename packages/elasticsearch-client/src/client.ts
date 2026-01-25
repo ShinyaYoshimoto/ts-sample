@@ -1,4 +1,4 @@
-import { Client, ClientOptions } from '@elastic/elasticsearch';
+import { Client, type ClientOptions } from '@elastic/elasticsearch';
 
 export interface ElasticsearchConfig {
 	node: string;

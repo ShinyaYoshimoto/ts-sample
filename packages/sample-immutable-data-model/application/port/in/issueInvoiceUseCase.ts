@@ -1,6 +1,6 @@
-import { IssueInvoiceCommand } from './issueInvoiceCommand';
-import { InvoiceIssuance } from '../../domain/model/invoiceIssuance';
+import type { InvoiceIssuance } from '../../domain/model/invoiceIssuance';
+import type { IssueInvoiceCommand } from './issueInvoiceCommand';
 
 export interface IssueInvoiceUseCase {
-  issueInvoice(command: IssueInvoiceCommand): Promise<InvoiceIssuance | null>;
+	issueInvoice(command: IssueInvoiceCommand): Promise<InvoiceIssuance | null>;
 }

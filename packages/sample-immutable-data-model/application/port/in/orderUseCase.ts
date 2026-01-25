@@ -1,6 +1,6 @@
 import { Order } from '../../domain/model/order';
-import { OrderCommand } from './orderCommand';
+import type { OrderCommand } from './orderCommand';
 
 export interface OrderUseCase {
-  order(command: OrderCommand): Promise<void>;
+	order(command: OrderCommand): Promise<void>;
 }

@@ -1,23 +1,23 @@
 import { SearchOrderService } from '../../../application/domain/service/searchOrderService';
-import { SearchOrderUseCase } from '../../../application/port/in/searchOrderUseCase';
+import type { SearchOrderUseCase } from '../../../application/port/in/searchOrderUseCase';
 import { PrismaClient } from '../../../generated/prisma';
 import { OrderPersistenceAdapter } from '../../out/persistence/orderPersistenceAdapter';
 
 export class SearchOrderController {
-  constructor(private readonly searchOrderUseCase: SearchOrderUseCase) {}
+	constructor(private readonly searchOrderUseCase: SearchOrderUseCase) {}
 
-  public handle = async (request: Request) => {
-    try {
-      console.log('SearchOrderController: start');
+	public handle = async (request: Request) => {
+		try {
+			console.log('SearchOrderController: start');
 
-      const orders = await this.searchOrderUseCase.searchOrders();
+			const orders = await this.searchOrderUseCase.searchOrders();
 
-      console.log('SearchOrderController: end', orders);
-    } catch (error) {
-      console.error('SearchOrderController: failed', error);
-      throw error;
-    }
-  };
+			console.log('SearchOrderController: end', orders);
+		} catch (error) {
+			console.error('SearchOrderController: failed', error);
+			throw error;
+		}
+	};
 }
 
 type Request = {};

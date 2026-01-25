@@ -1,6 +1,6 @@
-import { GetPaymentQuery } from './getPaymentQuery';
-import { Payment } from '../../domain/model/payment';
+import type { Payment } from '../../domain/model/payment';
+import type { GetPaymentQuery } from './getPaymentQuery';
 
 export interface GetPaymentUseCase {
-  getPayment(query: GetPaymentQuery): Promise<Payment | null>;
+	getPayment(query: GetPaymentQuery): Promise<Payment | null>;
 }

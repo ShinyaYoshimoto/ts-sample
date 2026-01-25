@@ -1,3 +1,3 @@
 export class GetAdministratorQuery {
-  constructor(public readonly administratorId: number) {}
+	constructor(public readonly administratorId: number) {}
 }

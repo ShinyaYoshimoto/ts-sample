@@ -1,15 +1,15 @@
-import { describe, it, expect } from 'vitest';
 import * as E from 'fp-ts/Either';
+import { describe, expect, it } from 'vitest';
 import {
-	registerUser,
-	registerUserDo,
-	validateInput,
-	checkUserExists,
-	saveUser,
-	runTaskEither,
+	type AppError,
 	type CreateUserInput,
 	type User,
-	type AppError,
+	checkUserExists,
+	registerUser,
+	registerUserDo,
+	runTaskEither,
+	saveUser,
+	validateInput,
 } from './index';
 
 describe('fp-ts implementation', () => {

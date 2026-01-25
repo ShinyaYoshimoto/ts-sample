@@ -1,3 +1,3 @@
 export interface InvoiceIssuanceUseCase {
-  invoiceIssuance(): boolean;
+	invoiceIssuance(): boolean;
 }

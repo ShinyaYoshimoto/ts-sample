@@ -1,5 +1,5 @@
+import type * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 
 // ========================================
@@ -26,7 +26,7 @@ export type AppError = ValidationError | ConflictError | InfrastructureError;
 /**
  * Validates the input for creating a user.
  * Returns ValidationError if email is empty or invalid format.
- * 
+ *
  * NOTE: This uses simplified validation for demonstration purposes.
  * Production code should use a proper email validation library.
  */

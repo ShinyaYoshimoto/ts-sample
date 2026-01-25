@@ -1,7 +1,5 @@
-import { Order } from '../../domain/model/order';
+import type { Order } from '../../domain/model/order';
 
 export class PayCommand {
-  constructor(
-    public readonly order: Order,
-  ) {}
+	constructor(public readonly order: Order) {}
 }

@@ -1,7 +1,10 @@
-import { Order } from '../../domain/model/order';
-import { Administrator } from '../../domain/model/administrator';
-import { OrderConfirmation } from '../../domain/model/orderConfirmation';
+import type { Administrator } from '../../domain/model/administrator';
+import type { Order } from '../../domain/model/order';
+import type { OrderConfirmation } from '../../domain/model/orderConfirmation';
 
 export interface ConfirmOrderPort {
-  confirmOrder(order: Order, administrator: Administrator): Promise<OrderConfirmation>;
+	confirmOrder(
+		order: Order,
+		administrator: Administrator,
+	): Promise<OrderConfirmation>;
 }

@@ -1,9 +1,9 @@
-import { Order } from '../../domain/model/order';
-import { Administrator } from '../../domain/model/administrator';
+import type { Administrator } from '../../domain/model/administrator';
+import type { Order } from '../../domain/model/order';
 
 export class OrderConfirmationCommand {
-  constructor(
-    public readonly order: Order,
-    public readonly administrator: Administrator,
-  ) {}
+	constructor(
+		public readonly order: Order,
+		public readonly administrator: Administrator,
+	) {}
 }

@@ -32,7 +32,7 @@ export type AppError = ValidationError | ConflictError | InfrastructureError;
 /**
  * Validates the input for creating a user.
  * Returns ValidationError if email is empty or invalid format.
- * 
+ *
  * NOTE: This uses simplified validation for demonstration purposes.
  * Production code should use a proper email validation library.
  */
@@ -76,9 +76,7 @@ export function checkUserExists(
  * Saves a user to the database.
  * Returns InfrastructureError on failure.
  */
-export function saveUser(
-	user: User,
-): Effect.Effect<User, InfrastructureError> {
+export function saveUser(user: User): Effect.Effect<User, InfrastructureError> {
 	// Mock: simulate random infrastructure failure
 	const shouldFail = user.email.includes('fail');
 

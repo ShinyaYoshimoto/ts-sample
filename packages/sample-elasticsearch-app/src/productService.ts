@@ -1,8 +1,8 @@
-import {
+import type {
 	ElasticsearchClient,
 	SearchResult,
 } from '@ts-sample/elasticsearch-client';
-import { Product, ProductSearchQuery } from './types';
+import type { Product, ProductSearchQuery } from './types';
 
 const PRODUCTS_INDEX = 'products';
 

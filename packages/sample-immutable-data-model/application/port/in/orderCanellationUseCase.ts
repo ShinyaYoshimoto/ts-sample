@@ -1,3 +1,3 @@
 export interface OrderCanellationUseCase {
-  orderCanellation(): boolean;
+	orderCanellation(): boolean;
 }

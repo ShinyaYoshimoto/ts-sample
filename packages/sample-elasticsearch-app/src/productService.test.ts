@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { ElasticsearchClient } from '@ts-sample/elasticsearch-client';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { ProductService } from './productService';
-import { Product } from './types';
+import type { Product } from './types';
 
 describe('ProductService Integration Tests', () => {
 	let client: ElasticsearchClient;

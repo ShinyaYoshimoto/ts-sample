@@ -1,14 +1,14 @@
-import { OrderConfirmationUseCase } from '../../port/in/orderConfirmationUseCase';
-import { OrderConfirmationCommand } from '../../port/in/orderConfirmationCommand';
-import { ConfirmOrderPort } from '../../port/out/confirmOrderPort';
+import type { OrderConfirmationCommand } from '../../port/in/orderConfirmationCommand';
+import type { OrderConfirmationUseCase } from '../../port/in/orderConfirmationUseCase';
+import type { ConfirmOrderPort } from '../../port/out/confirmOrderPort';
 
 export class OrderConfirmationService implements OrderConfirmationUseCase {
-  constructor(private readonly confirmOrderPort: ConfirmOrderPort) {}
+	constructor(private readonly confirmOrderPort: ConfirmOrderPort) {}
 
-  async confirmOrder(command: OrderConfirmationCommand): Promise<void> {
-    await this.confirmOrderPort.confirmOrder(
-      command.order,
-      command.administrator,
-    );
-  }
+	async confirmOrder(command: OrderConfirmationCommand): Promise<void> {
+		await this.confirmOrderPort.confirmOrder(
+			command.order,
+			command.administrator,
+		);
+	}
 }

@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
 import { Result } from '@praha/byethrow';
+import { describe, expect, it } from 'vitest';
 import {
+	type CreateUserInput,
+	checkUserExists,
 	registerUser,
 	registerUserAsync,
-	validateInput,
-	checkUserExists,
 	saveUser,
-	type CreateUserInput,
+	validateInput,
 } from './index';
 
 describe('byethrow implementation', () => {

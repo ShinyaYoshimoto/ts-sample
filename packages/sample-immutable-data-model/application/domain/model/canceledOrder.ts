@@ -1,8 +1,8 @@
-import { Order } from './order';
+import type { Order } from './order';
 
 export class CanceledOrder {
-  constructor(
-    readonly order: Order,
-    readonly canceledAt: Date,
-  ) {}
+	constructor(
+		readonly order: Order,
+		readonly canceledAt: Date,
+	) {}
 }

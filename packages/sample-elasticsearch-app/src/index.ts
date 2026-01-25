@@ -1,6 +1,6 @@
 import { ElasticsearchClient } from '@ts-sample/elasticsearch-client';
-import { ProductService } from './productService';
 import { mockProducts } from './mockData';
+import { ProductService } from './productService';
 
 /**
  * Main entry point for the Elasticsearch sample application
@@ -16,7 +16,9 @@ async function main() {
 	const isConnected = await client.ping();
 	if (!isConnected) {
 		console.error('Failed to connect to Elasticsearch');
-		console.error('Please make sure Elasticsearch is running on http://localhost:9200');
+		console.error(
+			'Please make sure Elasticsearch is running on http://localhost:9200',
+		);
 		console.error('Run: docker-compose up -d elasticsearch');
 		process.exit(1);
 	}
@@ -57,9 +59,7 @@ async function main() {
 		});
 		console.log(`Found ${iphoneResults.total} products`);
 		iphoneResults.hits.forEach((hit) => {
-			console.log(
-				`- ${hit._source.name} (score: ${hit._score.toFixed(2)})`,
-			);
+			console.log(`- ${hit._source.name} (score: ${hit._score.toFixed(2)})`);
 		});
 		console.log();
 
@@ -70,9 +70,7 @@ async function main() {
 		});
 		console.log(`Found ${smartphones.total} smartphones`);
 		smartphones.hits.forEach((hit) => {
-			console.log(
-				`- ${hit._source.name} - $${hit._source.price}`,
-			);
+			console.log(`- ${hit._source.name} - $${hit._source.price}`);
 		});
 		console.log();
 
@@ -83,9 +81,7 @@ async function main() {
 		});
 		console.log(`Found ${affordableProducts.total} products`);
 		affordableProducts.hits.forEach((hit) => {
-			console.log(
-				`- ${hit._source.name} - $${hit._source.price}`,
-			);
+			console.log(`- ${hit._source.name} - $${hit._source.price}`);
 		});
 		console.log();
 
@@ -119,9 +115,7 @@ async function main() {
 		});
 		console.log(`Found ${fuzzyResults.total} products (fuzzy matching)`);
 		fuzzyResults.hits.forEach((hit) => {
-			console.log(
-				`- ${hit._source.name} (score: ${hit._score.toFixed(2)})`,
-			);
+			console.log(`- ${hit._source.name} (score: ${hit._score.toFixed(2)})`);
 		});
 		console.log();
 

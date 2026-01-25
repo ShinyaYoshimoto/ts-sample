@@ -1,4 +1,4 @@
-import { Product } from './types';
+import type { Product } from './types';
 
 /**
  * Generate mock product data for testing
@@ -6,7 +6,8 @@ import { Product } from './types';
 export const mockProducts: Product[] = [
 	{
 		name: 'iPhone 15 Pro',
-		description: 'Latest Apple smartphone with A17 Pro chip and titanium design',
+		description:
+			'Latest Apple smartphone with A17 Pro chip and titanium design',
 		price: 999.99,
 		category: 'smartphones',
 		brand: 'Apple',

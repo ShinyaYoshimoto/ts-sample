@@ -1,5 +1,5 @@
-import { Member } from '../../domain/model/member';
+import type { Member } from '../../domain/model/member';
 
 export interface LoadMemberPort {
-  loadMember(memberId: number): Promise<Member>;
+	loadMember(memberId: number): Promise<Member>;
 }

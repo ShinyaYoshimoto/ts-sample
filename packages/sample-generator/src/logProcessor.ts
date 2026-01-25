@@ -101,7 +101,7 @@ export async function* asyncStreamLogReader(
 	const resolvedLogs = await Promise.resolve(logs);
 	for (const log of resolvedLogs) {
 		if (delayMs > 0) {
-			await new Promise(resolve => setTimeout(resolve, delayMs));
+			await new Promise((resolve) => setTimeout(resolve, delayMs));
 		}
 		yield log;
 	}

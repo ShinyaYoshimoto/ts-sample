@@ -1,3 +1,3 @@
 export class GetOrderQuery {
-  constructor(public readonly orderId: number) {}
+	constructor(public readonly orderId: number) {}
 }
