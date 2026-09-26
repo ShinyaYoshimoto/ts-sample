@@ -48,6 +48,14 @@ pnpm lint
 docker-compose up -d
 ```
 
+### CI の手動実行
+
+GitHub の Actions タブ →「CI」→「Run workflow」から手動でビルド・テストを実行できます。
+
+- `packages` に `packages/` 配下のディレクトリ名を指定すると、そのパッケージだけをテストします（スペースまたはカンマ区切りで複数指定可。例: `sample-trpc sample-elasticsearch-app`）
+- 指定したパッケージが依存するワークスペースパッケージはビルド対象に自動で含まれます
+- 空欄の場合は全パッケージを対象にします
+
 ### Elasticsearch サンプルの実行
 
 ```bash
