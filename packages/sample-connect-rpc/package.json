@@ -1,0 +1,29 @@
+{
+	"name": "@ts-sample/sample-connect-rpc",
+	"version": "0.1.0",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"private": false,
+	"packageManager": "pnpm@10.8.0",
+	"scripts": {
+		"generate": "buf generate",
+		"build": "tsc -p tsconfig.json",
+		"lint": "echo 'No lint configured'",
+		"test": "vitest"
+	},
+	"keywords": ["grpc", "connect", "protobuf", "result-pattern"],
+	"author": "ysmt",
+	"license": "ISC",
+	"devDependencies": {
+		"@bufbuild/buf": "^1.47.2",
+		"@bufbuild/protoc-gen-es": "^1.10.0",
+		"@connectrpc/protoc-gen-connect-es": "^1.7.0",
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"dependencies": {
+		"@bufbuild/protobuf": "^1.10.0",
+		"@connectrpc/connect": "^1.7.0"
+	}
+}
