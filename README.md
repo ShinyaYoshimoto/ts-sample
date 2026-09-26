@@ -7,27 +7,17 @@
 
 このリポジトリはpnpm workspaceを使用したモノレポ構成になっています。
 
-### Packages
+### ディレクトリ構成
 
-- **@ts-sample/sample-gemini** - Gemini APIを使ったサンプル（React + Vite）
-- **@ts-sample/sample-generator** - Generatorを使ったメモリ効率の良いストリーム処理のサンプル
-- **@ts-sample/sample-hexagonal-architecture** - ヘキサゴナルアーキテクチャのサンプル実装
-- **@ts-sample/sample-immutable-data-model** - イミュータブルデータモデルのサンプル
-- **@ts-sample/sample-zod** - Zodを使ったバリデーションのサンプル
-- **@ts-sample/elasticsearch-client** - Elasticsearch共有クライアントパッケージ
-- **@ts-sample/sample-elasticsearch-app** - Elasticsearchを使った商品検索のサンプル
-- **@ts-sample/prisma** - Prismaスキーマとマイグレーション
+```
+packages/
+├── <サンプル名>/   # 1テーマ = 1パッケージ（詳細は各パッケージの README.md）
+└── shared/         # 複数のサンプルから使う共通ライブラリ
+```
 
-#### Result型 / エラーハンドリング
-
-- **@ts-sample/sample-un-result** - Result型ライブラリを使わない素のTypeScriptによるベースライン実装
-- **@ts-sample/sample-neverthrow** - neverthrowを使ったResult型のサンプル
-- **@ts-sample/sample-byethrow** - @praha/byethrowを使ったResult型のサンプル
-- **@ts-sample/sample-fp-ts** - fp-tsを使ったエラーハンドリングのサンプル
-- **@ts-sample/sample-effect-ts** - Effectを使ったエラーハンドリングのサンプル
-- **@ts-sample/sample-trpc** - tRPCでResult型（Discriminated Union）をクライアントへ伝搬するサンプル
-- **@ts-sample/sample-graphql-union** - GraphQL Union型を用いたResult Patternの実装
-- **@ts-sample/sample-connect-rpc** - Protobuf `oneof` とConnect (gRPC) を用いたContract-firstなResult Pattern
+- パッケージ名は `@ts-sample/<ディレクトリ名>`（例: `packages/result-type` → `@ts-sample/result-type`）
+- 同じ目的で比較したい実装は、1つのパッケージにまとめてサブディレクトリで分けます（例: `result-type/src/neverthrow`）
+- 各パッケージの目的や使い方は、そのパッケージの `README.md` に書きます
 
 ### コマンド
 
@@ -52,7 +42,7 @@ docker-compose up -d
 
 GitHub の Actions タブ →「CI」→「Run workflow」から手動でビルド・テストを実行できます。
 
-- `packages` に `packages/` 配下のディレクトリ名を指定すると、そのパッケージだけをテストします（スペースまたはカンマ区切りで複数指定可。例: `sample-trpc sample-elasticsearch-app`）
+- `packages` に `packages/` からのパスを指定すると、そのパッケージだけをテストします（スペースまたはカンマ区切りで複数指定可。例: `result-type trpc shared/elasticsearch-client`）
 - 指定したパッケージが依存するワークスペースパッケージはビルド対象に自動で含まれます
 - 空欄の場合は全パッケージを対象にします
 
@@ -63,7 +53,7 @@ GitHub の Actions タブ →「CI」→「Run workflow」から手動でビル�
 docker-compose up -d elasticsearch kibana
 
 # サンプルアプリケーションを実行
-cd packages/sample-elasticsearch-app
+cd packages/elasticsearch-app
 pnpm start
 ```
 
@@ -76,7 +66,7 @@ Kibanaは http://localhost:5601 でアクセスできます。
 - 開発
   - [ ] ヘキサゴナルアーキテクチャ
   - [ ] 関数型プログラミング
-  - [x] Result型の実装
+  - [x] Result型の実装（[packages/result-type](packages/result-type)）
     - [x] tRPCによるResult型の伝搬
     - [x] GraphQL Union型を用いたResult Pattern
     - [x] Connect (gRPC) を用いたContract-firstなResult Pattern

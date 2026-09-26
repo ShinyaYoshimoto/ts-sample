@@ -7,8 +7,8 @@ on:
     inputs:
       packages:
         description: >-
-          テスト対象のパッケージ（packages/ 配下のディレクトリ名）。
-          スペースまたはカンマ区切りで複数指定可（例: sample-trpc sample-elasticsearch-app）。
+          テスト対象のパッケージ（packages/ からのパス）。
+          スペースまたはカンマ区切りで複数指定可（例: result-type trpc shared/elasticsearch-client）。
           空欄なら全パッケージ。
         required: false
         default: ''
@@ -17,7 +17,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     services:
-      # sample-elasticsearch-app の統合テスト用（docker-compose.yaml と同じ設定）
+      # elasticsearch-app の統合テスト用（docker-compose.yaml と同じ設定）
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
         ports:
@@ -48,6 +48,7 @@ jobs:
           INPUT_PACKAGES: ${{ inputs.packages }}
         run: |
           # 入力はシェルに直接埋め込まず、環境変数経由で検証してから使う
+          set -f  # 入力中の * などをファイル名に展開しない
           names=$(echo "${INPUT_PACKAGES}" | tr ',' ' ' | xargs)
           if [ -z "$names" ]; then
             echo "対象: 全パッケージ"
@@ -55,12 +56,14 @@ jobs:
             echo "TEST_FILTER=-r" >> "$GITHUB_ENV"
             exit 0
           fi
+          # ワークスペースに登録されているパッケージ（packages/ からのパス）
+          available=$(pnpm ls -r --depth -1 --parseable | sed "s|^$PWD/packages/||" | grep -v "^$PWD$" | sort)
           build_filter=""
           test_filter=""
           for name in $names; do
-            if ! [[ "$name" =~ ^[a-z0-9][a-z0-9_-]*$ ]] || [ ! -f "packages/$name/package.json" ]; then
-              echo "::error::パッケージが見つかりません: $name（packages/ 配下のディレクトリ名を指定してください）"
-              echo "指定できるパッケージ:"; ls packages
+            if ! grep -qxF -- "$name" <<< "$available"; then
+              echo "::error::パッケージが見つかりません: $name（packages/ からのパスを指定してください）"
+              echo "指定できるパッケージ:"; echo "$available"
               exit 1
             fi
             # ビルドは依存しているワークスペースパッケージも含める（末尾の ...）

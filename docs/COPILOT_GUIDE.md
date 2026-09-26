@@ -57,7 +57,7 @@
 
 ### Prisma の移動
 
-- Prisma は `packages/prisma` に配置
+- Prisma は `packages/shared/prisma` に配置
 - `schema.prisma` はそのまま利用
 - 接続情報はルートの `.env` を参照
 - `git mv` で履歴を保持して移動

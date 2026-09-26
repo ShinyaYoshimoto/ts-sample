@@ -6,23 +6,19 @@
 
 ### 実装パッケージ
 
-0. **packages/sample-un-result/** - Pure TypeScript（ベースライン）
-1. **packages/sample-byethrow/** - @praha/byethrowを使用
-2. **packages/sample-neverthrow/** - neverthrowを使用
-3. **packages/sample-effect-ts/** - effect-tsを使用  
-4. **packages/sample-fp-ts/** - fp-tsを使用
+0. **packages/result-type/src/un-result/** - Pure TypeScript（ベースライン）
+1. **packages/result-type/src/byethrow/** - @praha/byethrowを使用
+2. **packages/result-type/src/neverthrow/** - neverthrowを使用
+3. **packages/result-type/src/effect-ts/** - effect-tsを使用  
+4. **packages/result-type/src/fp-ts/** - fp-tsを使用
 
 ## テスト結果
 
-✅ **全テスト合格**: 83テスト (sample-un-result: 21, sample-byethrow: 18, sample-neverthrow: 14, sample-effect-ts: 14, sample-fp-ts: 16)
+✅ **全テスト合格**: 83テスト (un-result: 21, byethrow: 18, neverthrow: 14, effect-ts: 14, fp-ts: 16)
 
 ```bash
-# 各パッケージのテスト実行
-cd packages/sample-un-result && pnpm test
-cd packages/sample-byethrow && pnpm test
-cd packages/sample-neverthrow && pnpm test
-cd packages/sample-effect-ts && pnpm test
-cd packages/sample-fp-ts && pnpm test
+# 5実装の個別テストと共通仕様テストをまとめて実行
+cd packages/result-type && pnpm test
 ```
 
 ## ビルド結果
@@ -61,7 +57,7 @@ pnpm build  # すべてのパッケージをビルド
 
 ### 各ライブラリの実装スタイル
 
-#### 0. Pure TypeScript (sample-un-result) - ベースライン
+#### 0. Pure TypeScript (un-result) - ベースライン
 
 **スタイル**: try-catch例外処理
 
@@ -86,7 +82,7 @@ export function registerUser(input: CreateUserInput):
 - try-catchが冗長
 - 型安全性に欠ける
 
-#### 1. byethrow (sample-byethrow)
+#### 1. byethrow (byethrow)
 
 **スタイル**: 関数型パイプライン
 
@@ -107,7 +103,7 @@ export function registerUser(input: CreateUserInput): Result.Result<User, AppErr
 - 一貫したAPI
 - バンドルサイズが最小 (~3KB)
 
-#### 2. neverthrow (sample-neverthrow)
+#### 2. neverthrow (neverthrow)
 
 **スタイル**: 命令型 + 関数型のハイブリッド
 
@@ -128,7 +124,7 @@ export async function registerUser(input: CreateUserInput): Promise<Result<User,
 - async/awaitとの統合が自然
 - バンドルサイズが小さい (~5KB)
 
-#### 3. effect-ts (sample-effect-ts)
+#### 3. effect-ts (effect-ts)
 
 **スタイル**: 純粋関数型プログラミング
 
@@ -147,7 +143,7 @@ export function registerUser(input: CreateUserInput): Effect.Effect<User, AppErr
 - 豊富なエコシステム
 - 高度な機能（retry, timeout, etc）
 
-#### 4. fp-ts (sample-fp-ts)
+#### 4. fp-ts (fp-ts)
 
 **スタイル**: 関数型プログラミング (TaskEither)
 
@@ -258,49 +254,16 @@ export function registerUser(input: CreateUserInput): TE.TaskEither<AppError, Us
 ## ファイル構成
 
 ```
-packages/
-├── sample-un-result/         # Pure TypeScript（ベースライン）
-│   ├── README.md             # ライブラリ説明
-│   ├── index.ts              # 実装コード
-│   ├── index.test.ts         # テストコード (21 tests)
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vitest.config.ts
-│
-├── sample-byethrow/          # byethrow実装
-│   ├── README.md             # ライブラリ説明
-│   ├── index.ts              # 実装コード
-│   ├── index.test.ts         # テストコード (18 tests)
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vitest.config.ts
-│
-├── sample-neverthrow/        # neverthrow実装
-│   ├── README.md
-│   ├── index.ts              # 実装コード
-│   ├── index.test.ts         # テストコード (14 tests)
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vitest.config.ts
-│
-├── sample-effect-ts/         # effect-ts実装
-│   ├── README.md
-│   ├── index.ts
-│   ├── index.test.ts         # (14 tests)
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vitest.config.ts
-│
-└── sample-fp-ts/             # fp-ts実装
-    ├── README.md
-    ├── index.ts
-    ├── index.test.ts         # (16 tests)
-    ├── package.json
-    ├── tsconfig.json
-    └── vitest.config.ts
-
-docs/
-└── result-type-comparison.md # 比較ドキュメント
+packages/result-type/
+├── README.md                 # 比較ドキュメント
+├── package.json              # 5実装の依存をまとめて管理
+└── src/
+    ├── contract.test.ts      # 全実装に共通の仕様テスト
+    ├── un-result/            # Pure TypeScript（ベースライン） index.ts / index.test.ts (21 tests)
+    ├── byethrow/             # byethrow実装 (18 tests)
+    ├── neverthrow/           # neverthrow実装 (14 tests)
+    ├── effect-ts/            # effect-ts実装 (14 tests)
+    └── fp-ts/                # fp-ts実装 (16 tests)
 ```
 
 ## 結論
