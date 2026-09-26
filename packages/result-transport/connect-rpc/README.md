@@ -129,7 +129,7 @@ return new RegisterUserResponse({
 ## Project Structure
 
 ```
-sample-connect-rpc/
+packages/result-transport/connect-rpc/
 ├── proto/                      # Protocol Buffer definitions
 │   └── user/v1/
 │       └── user.proto          # User service definition with Result pattern
@@ -146,6 +146,8 @@ sample-connect-rpc/
 ```
 
 ## Running the Sample
+
+> Run the commands in the package directory (`packages/result-transport`).
 
 ### Install Dependencies
 
@@ -168,7 +170,7 @@ This runs `buf generate` which:
 ### Run Tests
 
 ```bash
-pnpm test
+pnpm test connect-rpc
 ```
 
 ### Build

@@ -16,7 +16,7 @@ tRPCを使用したクライアント・サーバー間のResult型伝播のサ�
 ## ファイル構成
 
 ```
-packages/trpc/
+packages/result-transport/trpc/
 ├── result.ts         # Result型とヘルパー関数の定義
 ├── types.ts          # UserとAppErrorの型定義
 ├── server.ts         # tRPCサーバーとregisterUserミューテーションの実装
@@ -99,8 +99,10 @@ tRPCの型推論により、サーバー側で定義した型がクライアン�
 
 ## テストの実行
 
+> コマンドはパッケージのディレクトリ（`packages/result-transport`）で実行します。
+
 ```bash
-pnpm test
+pnpm test trpc
 ```
 
 ## ビルド
@@ -114,7 +116,7 @@ pnpm build
 型の絞り込みが動作する様子を確認するデモを実行できます：
 
 ```bash
-pnpm tsx type-narrowing-demo.ts
+pnpm demo:trpc
 ```
 
 このデモは以下を実演します：

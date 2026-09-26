@@ -6,8 +6,8 @@ This tech spike explored how to implement a Result pattern using Protocol Buffer
 ## Implementation Summary
 
 ### Package Created
-- **Name**: `@ts-sample/sample-connect-rpc`
-- **Location**: `packages/sample-connect-rpc/`
+- **Name**: `@ts-sample/result-transport`（`connect-rpc/` サブディレクトリ）
+- **Location**: `packages/result-transport/connect-rpc/`
 - **Dependencies**: 
   - `@connectrpc/connect` v1.7.0
   - `@bufbuild/protobuf` v1.10.0
@@ -215,16 +215,16 @@ All 7 tests pass:
 
 ## Files Created
 
-- `packages/sample-connect-rpc/proto/user/v1/user.proto` - Protocol definition
-- `packages/sample-connect-rpc/src/server/user-service.ts` - Server implementation
-- `packages/sample-connect-rpc/src/client/user-client.ts` - Client implementation
-- `packages/sample-connect-rpc/result-pattern.test.ts` - Comprehensive tests
-- `packages/sample-connect-rpc/README.md` - Full documentation
-- `packages/sample-connect-rpc/package.json` - Package configuration
-- `packages/sample-connect-rpc/buf.yaml` - Buf configuration
-- `packages/sample-connect-rpc/buf.gen.yaml` - Code generation config
-- `packages/sample-connect-rpc/tsconfig.json` - TypeScript config
-- `packages/sample-connect-rpc/vitest.config.ts` - Test config
+- `packages/result-transport/connect-rpc/proto/user/v1/user.proto` - Protocol definition
+- `packages/result-transport/connect-rpc/src/server/user-service.ts` - Server implementation
+- `packages/result-transport/connect-rpc/src/client/user-client.ts` - Client implementation
+- `packages/result-transport/connect-rpc/result-pattern.test.ts` - Comprehensive tests
+- `packages/result-transport/connect-rpc/README.md` - Full documentation
+- `packages/result-transport/package.json` - Package configuration
+- `packages/result-transport/connect-rpc/buf.yaml` - Buf configuration
+- `packages/result-transport/connect-rpc/buf.gen.yaml` - Code generation config
+- `packages/result-transport/tsconfig.json` - TypeScript config
+- `packages/result-transport/vitest.config.ts` - Test config
 
 ## Conclusion
 

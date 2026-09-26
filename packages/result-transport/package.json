@@ -1,0 +1,37 @@
+{
+	"name": "@ts-sample/result-transport",
+	"version": "0.1.0",
+	"private": false,
+	"description": "Result型を通信（API）の境界をまたいで受け渡す方法の比較（tRPC / GraphQL Union / Connect RPC）",
+	"packageManager": "pnpm@10.8.0",
+	"scripts": {
+		"generate": "cd connect-rpc && buf generate",
+		"build": "tsc -p tsconfig.json",
+		"lint": "echo 'No lint configured'",
+		"test": "vitest",
+		"demo:trpc": "tsx trpc/type-narrowing-demo.ts",
+		"dev:graphql": "tsx graphql-union/src/server.ts",
+		"demo:graphql": "tsx graphql-union/examples/demo.ts"
+	},
+	"keywords": ["result-pattern", "trpc", "graphql", "union", "grpc", "connect", "protobuf"],
+	"author": "ysmt",
+	"license": "ISC",
+	"dependencies": {
+		"@bufbuild/protobuf": "^1.10.0",
+		"@connectrpc/connect": "^1.7.0",
+		"@graphql-tools/schema": "^10.0.0",
+		"@trpc/client": "^11.0.0",
+		"@trpc/server": "^11.0.0",
+		"graphql": "^16.9.0",
+		"graphql-yoga": "^3.9.1"
+	},
+	"devDependencies": {
+		"@bufbuild/buf": "^1.47.2",
+		"@bufbuild/protoc-gen-es": "^1.10.0",
+		"@connectrpc/protoc-gen-connect-es": "^1.7.0",
+		"@types/node": "catalog:",
+		"tsx": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}
