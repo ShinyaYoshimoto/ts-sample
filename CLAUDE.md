@@ -4,33 +4,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This repository contains TypeScript sample code implementing hexagonal architecture patterns based on the book "Clean Architecture with Hexagonal Architecture". The main implementation is located in the `250604/` directory.
+A collection of TypeScript sample code, organized as a pnpm workspace monorepo. Each sample explores one topic (Result types, hexagonal architecture, immutable data modeling, Elasticsearch, etc.).
 
-## Architecture
+## Repository Layout
 
-The codebase follows hexagonal architecture (ports and adapters pattern) with clear separation between:
-
-- **Domain Layer** (`250604/application/domain/`): Core business logic including entities (Account, Activity, Money) and domain services
-- **Application Layer** (`250604/application/port/`): Use cases and interfaces defining inbound and outbound ports
-- **Adapter Layer** (`250604/adapter/`): Infrastructure implementations for web controllers and persistence
-
-Key architectural components:
-
-- **Inbound Ports**: Use case interfaces (e.g., `SendMoneyUseCase`, `GetAccountBalanceUseCase`)
-- **Outbound Ports**: Repository interfaces (e.g., `LoadAccountPort`, `UpdateAccountStatePort`)
-- **Domain Models**: `Account`, `Activity`, `ActivityWindow`, `Money` with business logic encapsulated
-- **Services**: Application services implementing use cases (e.g., `SendMoneyService`)
+- `packages/<name>/` — one sample (topic) per package, published as `@ts-sample/<name>`. Each package has its own `README.md` describing its purpose.
+- `packages/shared/<name>/` — shared libraries used by multiple samples (e.g. `elasticsearch-client`, `prisma`).
+- Implementations meant to be compared side by side live in a single package, split by subdirectory. Example: `packages/result-type/src/{un-result,neverthrow,byethrow,fp-ts,effect-ts}` share one contract test (`src/contract.test.ts`).
+- Do not use a `sample-` prefix for new packages; the whole repository is samples.
 
 ## Commands
 
-Working directory for all commands should be `250604/`:
+Run from the repository root:
 
-- **Run tests**: `pnpm test` (uses Vitest)
 - **Install dependencies**: `pnpm install`
+- **Build all**: `pnpm build`
+- **Test all**: `pnpm test`
+- **Single package**: `pnpm --filter ./packages/<path> run test --run` (e.g. `./packages/result-type`)
+- **Services** (Postgres / Elasticsearch / Kibana): `docker-compose up -d`
+
+`elasticsearch-app` integration tests need Elasticsearch on `http://localhost:9200` (`ELASTICSEARCH_NODE`).
+
+## CI
+
+`.github/workflows/ci.yml` runs build and test on push / pull_request, with Elasticsearch as a service container. It can also be run manually (workflow_dispatch) with a `packages` input to limit the target packages (paths relative to `packages/`, e.g. `result-type shared/elasticsearch-client`).
 
 ## Development Notes
 
-- Uses TypeScript with strict mode enabled
-- Test framework: Vitest with global test functions enabled
-- Package manager: pnpm (version 10.8.0)
-- Target: ES2020, CommonJS modules
+- TypeScript with strict mode (`tsconfig.base.json`: ES2020, CommonJS)
+- Test framework: Vitest (globals enabled)
+- Package manager: pnpm 10.8.0
+- Formatter / linter: Biome and Prettier
