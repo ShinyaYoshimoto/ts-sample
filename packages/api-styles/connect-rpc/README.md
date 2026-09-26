@@ -129,7 +129,7 @@ return new RegisterUserResponse({
 ## Project Structure
 
 ```
-packages/result-transport/connect-rpc/
+packages/api-styles/connect-rpc/
 ├── proto/                      # Protocol Buffer definitions
 │   └── user/v1/
 │       └── user.proto          # User service definition with Result pattern
@@ -147,7 +147,7 @@ packages/result-transport/connect-rpc/
 
 ## Running the Sample
 
-> Run the commands in the package directory (`packages/result-transport`).
+> Run the commands in the package directory (`packages/api-styles`).
 
 ### Install Dependencies
 

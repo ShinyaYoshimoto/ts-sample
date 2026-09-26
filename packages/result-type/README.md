@@ -3,7 +3,7 @@
 Result型によるエラーハンドリングを、同じユースケース（ユーザー登録）で実装して比較するパッケージです。
 ピュアなTypeScript（ベースライン）と4つのResult型ライブラリの実装を1つのパッケージにまとめています。
 
-Result型を通信（API）の境界をまたいで受け渡す方法（tRPC / GraphQL / Connect）は [`../result-transport`](../result-transport) を参照してください。
+API スタイル（tRPC / GraphQL / Connect）ごとに、Result 相当の結果をクライアントへ返す実装の比較は [`../api-styles`](../api-styles) を参照してください。
 
 ## 構成
 

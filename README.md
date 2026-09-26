@@ -42,7 +42,7 @@ docker-compose up -d
 
 GitHub の Actions タブ →「CI」→「Run workflow」から手動でビルド・テストを実行できます。
 
-- `packages` に `packages/` からのパスを指定すると、そのパッケージだけをテストします（スペースまたはカンマ区切りで複数指定可。例: `result-type result-transport shared/elasticsearch-client`）
+- `packages` に `packages/` からのパスを指定すると、そのパッケージだけをテストします（スペースまたはカンマ区切りで複数指定可。例: `result-type api-styles shared/elasticsearch-client`）
 - 指定したパッケージが依存するワークスペースパッケージはビルド対象に自動で含まれます
 - 空欄の場合は全パッケージを対象にします
 

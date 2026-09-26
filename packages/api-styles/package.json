@@ -1,8 +1,8 @@
 {
-	"name": "@ts-sample/result-transport",
+	"name": "@ts-sample/api-styles",
 	"version": "0.1.0",
 	"private": false,
-	"description": "Result型を通信（API）の境界をまたいで受け渡す方法の比較（tRPC / GraphQL Union / Connect RPC）",
+	"description": "API スタイル（tRPC / GraphQL / Connect RPC）ごとの実装と使い方の比較",
 	"packageManager": "pnpm@10.8.0",
 	"scripts": {
 		"generate": "cd connect-rpc && buf generate",
@@ -13,7 +13,7 @@
 		"dev:graphql": "tsx graphql-union/src/server.ts",
 		"demo:graphql": "tsx graphql-union/examples/demo.ts"
 	},
-	"keywords": ["result-pattern", "trpc", "graphql", "union", "grpc", "connect", "protobuf"],
+	"keywords": ["api", "trpc", "graphql", "grpc", "connect", "protobuf"],
 	"author": "ysmt",
 	"license": "ISC",
 	"dependencies": {

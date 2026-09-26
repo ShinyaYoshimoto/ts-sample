@@ -12,7 +12,7 @@ A collection of TypeScript sample code, organized as a pnpm workspace monorepo. 
 - `packages/shared/<name>/` — shared libraries used by multiple samples (e.g. `elasticsearch-client`, `prisma`).
 - Implementations meant to be compared side by side live in a single package, split by subdirectory:
   - `packages/result-type/src/{un-result,neverthrow,byethrow,fp-ts,effect-ts}` — Result type libraries. Input/output behavior is verified once in `src/contract.test.ts` for all implementations; each `index.test.ts` only covers library-specific API usage.
-  - `packages/result-transport/{trpc,graphql-union,connect-rpc}` — passing Result types across API boundaries. `connect-rpc/generated/` is produced by `pnpm generate` (buf), which also runs on `pnpm install`.
+  - `packages/api-styles/{trpc,graphql-union,connect-rpc}` — the same API implemented in each API style, to compare how each style is used. `connect-rpc/generated/` is produced by `pnpm generate` (buf), which also runs on `pnpm install`.
 - Do not use a `sample-` prefix for new packages; the whole repository is samples.
 
 ## Commands

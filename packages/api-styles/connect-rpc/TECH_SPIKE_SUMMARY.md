@@ -6,8 +6,8 @@ This tech spike explored how to implement a Result pattern using Protocol Buffer
 ## Implementation Summary
 
 ### Package Created
-- **Name**: `@ts-sample/result-transport`（`connect-rpc/` サブディレクトリ）
-- **Location**: `packages/result-transport/connect-rpc/`
+- **Name**: `@ts-sample/api-styles`（`connect-rpc/` サブディレクトリ）
+- **Location**: `packages/api-styles/connect-rpc/`
 - **Dependencies**: 
   - `@connectrpc/connect` v1.7.0
   - `@bufbuild/protobuf` v1.10.0
@@ -215,16 +215,16 @@ All 7 tests pass:
 
 ## Files Created
 
-- `packages/result-transport/connect-rpc/proto/user/v1/user.proto` - Protocol definition
-- `packages/result-transport/connect-rpc/src/server/user-service.ts` - Server implementation
-- `packages/result-transport/connect-rpc/src/client/user-client.ts` - Client implementation
-- `packages/result-transport/connect-rpc/result-pattern.test.ts` - Comprehensive tests
-- `packages/result-transport/connect-rpc/README.md` - Full documentation
-- `packages/result-transport/package.json` - Package configuration
-- `packages/result-transport/connect-rpc/buf.yaml` - Buf configuration
-- `packages/result-transport/connect-rpc/buf.gen.yaml` - Code generation config
-- `packages/result-transport/tsconfig.json` - TypeScript config
-- `packages/result-transport/vitest.config.ts` - Test config
+- `packages/api-styles/connect-rpc/proto/user/v1/user.proto` - Protocol definition
+- `packages/api-styles/connect-rpc/src/server/user-service.ts` - Server implementation
+- `packages/api-styles/connect-rpc/src/client/user-client.ts` - Client implementation
+- `packages/api-styles/connect-rpc/result-pattern.test.ts` - Comprehensive tests
+- `packages/api-styles/connect-rpc/README.md` - Full documentation
+- `packages/api-styles/package.json` - Package configuration
+- `packages/api-styles/connect-rpc/buf.yaml` - Buf configuration
+- `packages/api-styles/connect-rpc/buf.gen.yaml` - Code generation config
+- `packages/api-styles/tsconfig.json` - TypeScript config
+- `packages/api-styles/vitest.config.ts` - Test config
 
 ## Conclusion
 

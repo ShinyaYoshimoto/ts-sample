@@ -1,14 +1,15 @@
-# result-transport
+# api-styles
 
-Result型（成功 / 失敗を型で表す）を、**通信（API）の境界をまたいで**クライアントへ受け渡す方法を比較するパッケージです。
-どれも「ユーザー登録」を題材に、エラーを例外や HTTP ステータスではなく**レスポンスの型**として返し、クライアント側で型の絞り込みができるかを確かめています。
+API スタイル（tRPC / GraphQL / Connect RPC）ごとに、同じ「ユーザー登録」API を実装して**使い方を比較する**パッケージです。
+スキーマや型をどこで定義し、サーバーとクライアントでどう共有するか、成功と失敗をクライアントがどう判別するかを見比べられます。
 
-ライブラリ単体での Result 型の比較は [`../result-type`](../result-type) を参照してください。
+どのサンプルも、業務上のエラー（入力不正・重複など）をレスポンスの型として返し、クライアント側で型の絞り込みができる形にしています。
+言語内（ライブラリ単体）での Result 型の比較は [`../result-type`](../result-type) を参照してください。
 
 ## 構成
 
 ```
-packages/result-transport/
+packages/api-styles/
 ├── trpc/            # tRPC: サーバーの型をクライアントがそのまま使う（コード生成なし）
 ├── graphql-union/   # GraphQL: スキーマの Union 型で結果を表す
 └── connect-rpc/     # Connect (gRPC): Protobuf の oneof で結果を表す（buf でコード生成）
@@ -32,7 +33,7 @@ packages/result-transport/
 ## 実行方法
 
 ```bash
-cd packages/result-transport
+cd packages/api-styles
 pnpm test                  # 全サンプルのテスト
 pnpm test trpc             # 特定のサンプルのテストのみ（graphql-union / connect-rpc も同様）
 pnpm generate              # connect-rpc の Protobuf から TypeScript を生成（pnpm install 時にも自動実行）

@@ -8,7 +8,7 @@ on:
       packages:
         description: >-
           テスト対象のパッケージ（packages/ からのパス）。
-          スペースまたはカンマ区切りで複数指定可（例: result-type result-transport shared/elasticsearch-client）。
+          スペースまたはカンマ区切りで複数指定可（例: result-type api-styles shared/elasticsearch-client）。
           空欄なら全パッケージ。
         required: false
         default: ''

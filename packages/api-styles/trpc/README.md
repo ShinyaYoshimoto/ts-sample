@@ -16,7 +16,7 @@ tRPCを使用したクライアント・サーバー間のResult型伝播のサ�
 ## ファイル構成
 
 ```
-packages/result-transport/trpc/
+packages/api-styles/trpc/
 ├── result.ts         # Result型とヘルパー関数の定義
 ├── types.ts          # UserとAppErrorの型定義
 ├── server.ts         # tRPCサーバーとregisterUserミューテーションの実装
@@ -99,7 +99,7 @@ tRPCの型推論により、サーバー側で定義した型がクライアン�
 
 ## テストの実行
 
-> コマンドはパッケージのディレクトリ（`packages/result-transport`）で実行します。
+> コマンドはパッケージのディレクトリ（`packages/api-styles`）で実行します。
 
 ```bash
 pnpm test trpc

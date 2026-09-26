@@ -57,7 +57,7 @@ src/
 
 ### サーバーの起動
 
-> コマンドはパッケージのディレクトリ（`packages/result-transport`）で実行します。
+> コマンドはパッケージのディレクトリ（`packages/api-styles`）で実行します。
 
 ```bash
 pnpm install
