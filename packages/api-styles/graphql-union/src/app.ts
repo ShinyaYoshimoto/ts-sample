@@ -1,6 +1,6 @@
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { createYoga } from 'graphql-yoga';
-import { type UserService, createUserService } from '../../domain/user-service';
+import { type UserService, createUserService } from '@ts-sample/user-domain';
 import { createResolvers } from './resolvers';
 import { typeDefs } from './schema';
 

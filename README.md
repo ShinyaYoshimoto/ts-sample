@@ -34,7 +34,7 @@ pnpm test
 # 全パッケージのlintを実行
 pnpm lint
 
-# Elasticsearchとデータベースを起動
+# Elasticsearch・データベース・Pub/Sub エミュレーターを起動
 docker-compose up -d
 ```
 
@@ -82,6 +82,7 @@ Kibanaは http://localhost:5601 でアクセスできます。
   - [ ] redis
   - [ ] firestore
   - [x] elasticsearch
+  - [x] Google Cloud Pub/Sub（[packages/pubsub](packages/pubsub)）
   - [ ] Prisma
   - [ ] effect-ts
   - [x] lint, formatter

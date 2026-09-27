@@ -73,9 +73,22 @@ jobs:
           echo "対象: $names"
           echo "BUILD_FILTER=${build_filter# }" >> "$GITHUB_ENV"
           echo "TEST_FILTER=${test_filter# }" >> "$GITHUB_ENV"
+      # pubsub の結合テスト用。Push 型の配信先（テスト中に localhost で起動するサーバー）に届くよう、
+      # サービスコンテナではなくホストネットワークで起動する
+      - name: Start Pub/Sub emulator
+        run: >-
+          docker run -d --name pubsub-emulator --network host
+          gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators
+          gcloud beta emulators pubsub start --project=demo-project --host-port=0.0.0.0:8085
       - name: Build
         run: pnpm $BUILD_FILTER run build
       - name: Wait for Elasticsearch
         run: curl -fsS --retry 30 --retry-delay 2 --retry-all-errors "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=60s"
+      - name: Wait for Pub/Sub emulator
+        run: curl -fsS --retry 30 --retry-delay 2 --retry-all-errors http://localhost:8085
       - name: Test
+        env:
+          PUBSUB_EMULATOR_HOST: localhost:8085
+          # エミュレーター利用時は GCE のメタデータサーバーを探しに行かない
+          METADATA_SERVER_DETECTION: none
         run: pnpm $TEST_FILTER run test --run

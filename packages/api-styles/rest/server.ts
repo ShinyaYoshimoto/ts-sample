@@ -1,5 +1,5 @@
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
-import { type UserService, createUserService } from '../domain/user-service';
+import { type UserService, createUserService } from '@ts-sample/user-domain';
 import {
 	EmailAlreadyExistsErrorSchema,
 	RegisterUserRequestSchema,

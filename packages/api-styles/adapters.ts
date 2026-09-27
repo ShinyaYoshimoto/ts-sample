@@ -13,7 +13,7 @@ import {
 	toFetch as connectToFetch,
 	createRoutes,
 } from './connect-rpc/src/server/user-service.js';
-import { createUserService } from './domain/user-service';
+import { createUserService } from '@ts-sample/user-domain';
 import {
 	createGraphQLApp,
 	toFetch as graphqlToFetch,

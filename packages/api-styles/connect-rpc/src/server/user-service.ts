@@ -4,7 +4,7 @@ import {
 	type ApiError,
 	type UserService as DomainUserService,
 	createUserService,
-} from '../../../domain/user-service';
+} from '@ts-sample/user-domain';
 import { UserService } from '../../generated/user/v1/user_connect.js';
 import {
 	ErrorDetail,

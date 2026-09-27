@@ -1,4 +1,4 @@
-import type { ApiError, UserService } from '../../domain/user-service';
+import type { ApiError, UserService } from '@ts-sample/user-domain';
 
 /** ドメインのエラーコードを、GraphQL スキーマの型名に対応付ける */
 const typeNameByCode = {
