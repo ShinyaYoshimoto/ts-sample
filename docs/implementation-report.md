@@ -14,7 +14,7 @@
 
 ## テスト結果
 
-✅ **全テスト合格**: 83テスト (un-result: 21, byethrow: 18, neverthrow: 14, effect-ts: 14, fp-ts: 16)
+✅ **全テスト合格（スパイク実施時点）**: 83テスト (un-result: 21, byethrow: 18, neverthrow: 14, effect-ts: 14, fp-ts: 16)
 
 ```bash
 # 5実装の個別テストと共通仕様テストをまとめて実行
@@ -258,12 +258,12 @@ packages/result-type/
 ├── README.md                 # 比較ドキュメント
 ├── package.json              # 5実装の依存をまとめて管理
 └── src/
-    ├── contract.test.ts      # 全実装に共通の仕様テスト
-    ├── un-result/            # Pure TypeScript（ベースライン） index.ts / index.test.ts (21 tests)
-    ├── byethrow/             # byethrow実装 (18 tests)
-    ├── neverthrow/           # neverthrow実装 (14 tests)
-    ├── effect-ts/            # effect-ts実装 (14 tests)
-    └── fp-ts/                # fp-ts実装 (16 tests)
+    ├── contract.test.ts      # 全実装に共通の仕様テスト（入力と結果の対応はここで検証）
+    ├── un-result/            # Pure TypeScript（ベースライン）
+    ├── byethrow/             # byethrow実装
+    ├── neverthrow/           # neverthrow実装
+    ├── effect-ts/            # effect-ts実装
+    └── fp-ts/                # fp-ts実装
 ```
 
 ## 結論

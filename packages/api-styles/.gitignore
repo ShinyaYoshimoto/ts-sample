@@ -1,4 +1,5 @@
 node_modules
 dist
+connect-rpc/generated
 *.log
 .DS_Store

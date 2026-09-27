@@ -1,0 +1,52 @@
+{
+	"name": "@ts-sample/api-styles",
+	"version": "0.1.0",
+	"private": false,
+	"description": "API スタイル（REST / tRPC / GraphQL / Connect RPC）ごとの実装と使い方の比較",
+	"packageManager": "pnpm@10.8.0",
+	"scripts": {
+		"generate": "cd connect-rpc && buf generate",
+		"build": "tsc -p tsconfig.json",
+		"lint": "echo 'No lint configured'",
+		"test": "vitest",
+		"dev:rest": "tsx rest/dev-server.ts",
+		"demo:trpc": "tsx trpc/type-narrowing-demo.ts",
+		"dev:graphql": "tsx graphql-union/src/server.ts",
+		"demo:graphql": "tsx graphql-union/examples/demo.ts"
+	},
+	"keywords": [
+		"api",
+		"rest",
+		"openapi",
+		"hono",
+		"trpc",
+		"graphql",
+		"grpc",
+		"connect",
+		"protobuf"
+	],
+	"author": "ysmt",
+	"license": "ISC",
+	"dependencies": {
+		"@bufbuild/protobuf": "^1.10.0",
+		"@connectrpc/connect": "^1.7.0",
+		"@graphql-tools/schema": "^10.0.0",
+		"@hono/node-server": "^2.1.1",
+		"@hono/zod-openapi": "^1.6.3",
+		"@trpc/client": "^11.0.0",
+		"@trpc/server": "^11.0.0",
+		"graphql": "^16.9.0",
+		"graphql-yoga": "^3.9.1",
+		"hono": "^4.13.9",
+		"zod": "^4.0.0"
+	},
+	"devDependencies": {
+		"@bufbuild/buf": "^1.47.2",
+		"@bufbuild/protoc-gen-es": "^1.10.0",
+		"@connectrpc/protoc-gen-connect-es": "^1.7.0",
+		"@types/node": "catalog:",
+		"tsx": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

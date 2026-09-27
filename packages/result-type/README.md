@@ -3,6 +3,8 @@
 Result型によるエラーハンドリングを、同じユースケース（ユーザー登録）で実装して比較するパッケージです。
 ピュアなTypeScript（ベースライン）と4つのResult型ライブラリの実装を1つのパッケージにまとめています。
 
+API スタイル（REST / tRPC / GraphQL / Connect）ごとに、Result 相当の結果をクライアントへ返す実装の比較は [`../api-styles`](../api-styles) を参照してください。
+
 ## 構成
 
 ```
@@ -17,12 +19,14 @@ packages/result-type/
     └── fp-ts/              # 4. fp-ts
 ```
 
-各ディレクトリに `index.ts`（実装）、`index.test.ts`（その実装固有のテスト）、`README.md`（ライブラリの解説）があります。
+各ディレクトリに `index.ts`（実装）、`index.test.ts`（そのライブラリ固有の API の使い方を示すテスト）、`README.md`（ライブラリの解説）があります。
 
 ### 共通仕様テスト（`src/contract.test.ts`）
 
 実装ごとに戻り値の型（例外 / `Result` / `TaskEither` / `Effect`）は異なりますが、
-アダプタで共通の形に揃え、**同じ入力に対して全実装が同じ結果を返すこと**を検証しています。
+アダプタで共通の形に揃え、**同じ入力に対して全実装が同じ結果（エラーの種類とメッセージまで）を返すこと**を検証しています。
+各実装の派生版（`registerUserAsync` / `registerUserFunctional` / `registerUserDo`）も対象です。
+入力と結果の対応はこのテストだけで検証し、各実装の `index.test.ts` で重複して書かないようにしています。
 新しいライブラリを比較対象に追加するときは、`src/<ライブラリ名>/` を作り、`contract.test.ts` にアダプタを1つ足してください。
 
 | 入力 | 期待する結果 |

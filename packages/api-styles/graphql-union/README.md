@@ -57,9 +57,11 @@ src/
 
 ### サーバーの起動
 
+> コマンドはパッケージのディレクトリ（`packages/api-styles`）で実行します。
+
 ```bash
 pnpm install
-pnpm dev
+pnpm dev:graphql
 ```
 
 サーバーは `http://localhost:4000/graphql` で起動します。
@@ -69,7 +71,7 @@ pnpm dev
 エンドツーエンドのデモを実行して、すべての結果型の動作を確認できます：
 
 ```bash
-pnpm demo
+pnpm demo:graphql
 ```
 
 このデモでは以下をテストします：
@@ -220,7 +222,7 @@ console.log(`${conflictErrors.length} conflicts`);
 ## テストの実行
 
 ```bash
-pnpm test
+pnpm test graphql-union
 ```
 
 テストでは以下を検証しています：
