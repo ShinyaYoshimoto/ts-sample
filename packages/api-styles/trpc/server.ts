@@ -1,95 +1,40 @@
 import { initTRPC } from '@trpc/server';
-import { randomUUID } from 'node:crypto';
-import { failure, success, type Result } from './result';
-import type { AppError, User } from './types';
+import { z } from 'zod';
+import { type UserService, createUserService } from '../domain/user-service';
+import { type Result, failure, success } from './result';
+import type { GetUserError, RegisterUserError, User } from './types';
 
-/**
- * Initialize tRPC
- */
 const t = initTRPC.create();
 
 /**
- * Export router and procedure helpers
+ * tRPC のルーターを作る
+ *
+ * - コマンド（副作用あり）は mutation、クエリ（副作用なし）は query として定義する
+ * - 業務エラーは TRPCError を throw せず、Result 型として通常のレスポンスで返す
+ * - 入力の形（文字列であること）は zod で検証する。形が不正な場合は tRPC 標準の BAD_REQUEST になる
  */
-export const router = t.router;
-export const publicProcedure = t.procedure;
+export function createAppRouter(service: UserService = createUserService()) {
+	const toResult = <T, E>(
+		result: { ok: true; value: T } | { ok: false; error: E },
+	): Result<T, E> =>
+		result.ok ? success(result.value) : failure(result.error);
 
-/**
- * In-memory user store for demonstration
- */
-const users: User[] = [];
+	return t.router({
+		registerUser: t.procedure
+			.input(z.object({ email: z.string(), name: z.string() }))
+			.mutation(
+				({ input }): Result<User, RegisterUserError> =>
+					toResult(service.registerUser(input)),
+			),
 
-/**
- * Input type for user registration
- */
-type RegisterUserInput = {
-	name: string;
-	email: string;
-};
+		getUser: t.procedure
+			.input(z.object({ id: z.string() }))
+			.query(
+				({ input }): Result<User, GetUserError> =>
+					toResult(service.getUser(input.id)),
+			),
+	});
+}
 
-/**
- * App Router with registerUser mutation
- */
-export const appRouter = router({
-	registerUser: publicProcedure
-		.input((input: unknown): RegisterUserInput => {
-			// Note: For this demo, we use simple input coercion.
-			// In production, use zod or similar for proper schema validation.
-			// This pattern allows us to handle all errors through Result type.
-			if (
-				typeof input !== 'object' ||
-				input === null ||
-				!('name' in input) ||
-				!('email' in input)
-			) {
-				// Return empty values that will be caught by business logic validation
-				return { name: '', email: '' };
-			}
-			return input as RegisterUserInput;
-		})
-		.mutation(
-			async ({ input }): Promise<Result<User, AppError>> => {
-				// Validation
-				if (!input.name || input.name.length < 2) {
-					return failure({
-						type: 'VALIDATION_ERROR',
-						message: 'Name must be at least 2 characters',
-					});
-				}
-
-				// Email validation - intentionally simple for this demo
-				// In production, use a proper email validation library or regex
-				if (!input.email || !input.email.includes('@')) {
-					return failure({
-						type: 'VALIDATION_ERROR',
-						message: 'Invalid email format',
-					});
-				}
-
-				// Check for duplicate email
-				const existingUser = users.find((u) => u.email === input.email);
-				if (existingUser) {
-					return failure({
-						type: 'DUPLICATE_EMAIL',
-						email: input.email,
-					});
-				}
-
-				// Create new user
-				const newUser: User = {
-					id: randomUUID(),
-					name: input.name,
-					email: input.email,
-				};
-
-				users.push(newUser);
-
-				return success(newUser);
-			}
-		),
-});
-
-/**
- * Export type definition for the router
- */
-export type AppRouter = typeof appRouter;
+/** クライアントが import する型 */
+export type AppRouter = ReturnType<typeof createAppRouter>;

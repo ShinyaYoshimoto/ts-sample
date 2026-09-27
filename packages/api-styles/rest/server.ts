@@ -1,19 +1,21 @@
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
+import { type UserService, createUserService } from '../domain/user-service';
 import {
-	ConflictErrorSchema,
+	EmailAlreadyExistsErrorSchema,
 	RegisterUserRequestSchema,
-	type User,
+	UserIdParamSchema,
+	UserNotFoundErrorSchema,
 	UserSchema,
 	ValidationErrorSchema,
 } from './schema';
 
 /**
- * POST /users のルート定義
- *
  * REST では成功・失敗を HTTP ステータスコードで表す。
  * レスポンスごとにステータスとボディのスキーマを宣言しておくと、
  * OpenAPI ドキュメントとクライアントの型の両方に反映される。
  */
+
+/** コマンド: POST /users */
 const registerUserRoute = createRoute({
 	method: 'post',
 	path: '/users',
@@ -34,25 +36,42 @@ const registerUserRoute = createRoute({
 		},
 		409: {
 			description: '登録済みのメールアドレス',
-			content: { 'application/json': { schema: ConflictErrorSchema } },
+			content: {
+				'application/json': { schema: EmailAlreadyExistsErrorSchema },
+			},
 		},
 	},
 });
 
-/**
- * アプリケーションを作る。テストごとに独立したストアを使えるよう、ストアを引数で受け取る。
- */
-export function createApp(users: Map<string, User> = new Map()) {
+/** クエリ: GET /users/{id} */
+const getUserRoute = createRoute({
+	method: 'get',
+	path: '/users/{id}',
+	request: { params: UserIdParamSchema },
+	responses: {
+		200: {
+			description: '取得成功',
+			content: { 'application/json': { schema: UserSchema } },
+		},
+		404: {
+			description: 'ユーザーが存在しない',
+			content: { 'application/json': { schema: UserNotFoundErrorSchema } },
+		},
+	},
+});
+
+export function createApp(service: UserService = createUserService()) {
 	const app = new OpenAPIHono({
-		// zod の検証に失敗したら、400 と ValidationError のボディを返す
+		// リクエストの形が不正（文字列でないなど）なら、400 と ValidationError のボディを返す
 		defaultHook: (result, c) => {
 			if (!result.success) {
-				const issue = result.error.issues[0];
+				const field =
+					result.error.issues[0]?.path[0] === 'name' ? 'name' : 'email';
 				return c.json(
 					{
-						type: 'VALIDATION_ERROR' as const,
-						message: issue?.message ?? 'Invalid request',
-						field: issue?.path[0]?.toString(),
+						code: 'VALIDATION_ERROR' as const,
+						field,
+						message: result.error.issues[0]?.message ?? 'Invalid request',
 					},
 					400,
 				);
@@ -60,24 +79,24 @@ export function createApp(users: Map<string, User> = new Map()) {
 		},
 	});
 
-	const routes = app.openapi(registerUserRoute, (c) => {
-		const { email, name } = c.req.valid('json');
-
-		if (users.has(email)) {
-			return c.json(
-				{
-					type: 'DUPLICATE_EMAIL' as const,
-					message: 'User with this email already exists',
-					email,
-				},
-				409,
-			);
-		}
-
-		const user: User = { id: `user-${users.size + 1}`, email, name };
-		users.set(email, user);
-		return c.json(user, 201);
-	});
+	const routes = app
+		.openapi(registerUserRoute, (c) => {
+			const result = service.registerUser(c.req.valid('json'));
+			if (result.ok) {
+				return c.json(result.value, 201);
+			}
+			// エラーの種類ごとに HTTP ステータスへ変換する
+			switch (result.error.code) {
+				case 'VALIDATION_ERROR':
+					return c.json(result.error, 400);
+				case 'EMAIL_ALREADY_EXISTS':
+					return c.json(result.error, 409);
+			}
+		})
+		.openapi(getUserRoute, (c) => {
+			const result = service.getUser(c.req.valid('param').id);
+			return result.ok ? c.json(result.value, 200) : c.json(result.error, 404);
+		});
 
 	// OpenAPI ドキュメント（ルート定義から自動生成）
 	app.doc('/openapi.json', {

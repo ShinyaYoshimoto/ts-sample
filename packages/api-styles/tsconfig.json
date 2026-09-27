@@ -3,20 +3,17 @@
 	"compilerOptions": {
 		"rootDir": ".",
 		"outDir": "dist",
-		"types": [
-			"vitest/globals",
-			"node"
-		]
+		"types": ["vitest/globals", "node"]
 	},
 	"include": [
-		"trpc/**/*.ts",
+		"domain/**/*.ts",
 		"rest/**/*.ts",
+		"trpc/**/*.ts",
 		"graphql-union/src/**/*.ts",
 		"connect-rpc/src/**/*.ts",
-		"connect-rpc/generated/**/*.ts"
+		"connect-rpc/*.ts",
+		"connect-rpc/generated/**/*.ts",
+		"*.ts"
 	],
-	"exclude": [
-		"node_modules",
-		"dist"
-	]
+	"exclude": ["node_modules", "dist", "vitest.config.ts"]
 }

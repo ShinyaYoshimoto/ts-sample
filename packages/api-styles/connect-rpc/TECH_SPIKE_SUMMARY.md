@@ -1,5 +1,7 @@
 # Tech Spike Summary: Contract-first Result Pattern with Connect (gRPC)
 
+> **注記**: このドキュメントはスパイク実施時点の記録です。エラーコードやファイル構成は当時のもので、現在の仕様は [`README.md`](README.md) と [`../README.md`](../README.md) を参照してください。
+
 ## Overview
 This tech spike explored how to implement a Result pattern using Protocol Buffers' `oneof` construct with Connect-es (gRPC for TypeScript).
 

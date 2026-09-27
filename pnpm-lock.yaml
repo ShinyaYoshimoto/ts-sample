@@ -89,6 +89,9 @@ importers:
       '@connectrpc/connect':
         specifier: ^1.7.0
         version: 1.7.0(@bufbuild/protobuf@1.10.1)
+      '@connectrpc/connect-web':
+        specifier: ^1.7.0
+        version: 1.7.0(@bufbuild/protobuf@1.10.1)(@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.1))
       '@graphql-tools/schema':
         specifier: ^10.0.0
         version: 10.1.1(graphql@16.14.2)
@@ -511,6 +514,12 @@ packages:
 
   '@bufbuild/protoplugin@1.10.1':
     resolution: {integrity: sha512-LaSbfwabAFIvbVnbn8jWwElRoffCIxhVraO8arliVwWupWezHLXgqPHEYLXZY/SsAR+/YsFBQJa8tAGtNPJyaQ==}
+
+  '@connectrpc/connect-web@1.7.0':
+    resolution: {integrity: sha512-qyP0YOnUPRWwCc/VfsoydMJvkb7EyUPr2q9sHgBuJzbADjiqck1gKH5V5ZPzPhTLBvmz5UvG+wiZ5sMRQHU1MQ==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.10.0
+      '@connectrpc/connect': 1.7.0
 
   '@connectrpc/connect@1.7.0':
     resolution: {integrity: sha512-iNKdJRi69YP3mq6AePRT8F/HrxWCewrhxnLMNm0vpqXAR8biwzRtO6Hjx80C6UvtKJ5sFmffQT7I4Baecz389w==}
@@ -2593,6 +2602,11 @@ snapshots:
       typescript: 4.5.2
     transitivePeerDependencies:
       - supports-color
+
+  '@connectrpc/connect-web@1.7.0(@bufbuild/protobuf@1.10.1)(@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.1))':
+    dependencies:
+      '@bufbuild/protobuf': 1.10.1
+      '@connectrpc/connect': 1.7.0(@bufbuild/protobuf@1.10.1)
 
   '@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.1)':
     dependencies:

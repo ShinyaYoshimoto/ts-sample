@@ -1,195 +1,102 @@
-// Client-side type definitions matching the GraphQL schema
-// These would typically be manually written or generated
+/**
+ * GraphQL クライアント（コード生成なし）
+ *
+ * クエリの結果の型はスキーマに合わせて手書きする。__typename を判別キーにすると、
+ * switch や if で Union のメンバーごとに型が絞り込まれる。
+ */
 
-type User = {
-  __typename: 'User';
-  id: string;
-  email: string;
-  name: string;
+export type User = {
+	__typename: 'User';
+	id: string;
+	email: string;
+	name: string;
+};
+export type ValidationError = {
+	__typename: 'ValidationError';
+	code: 'VALIDATION_ERROR';
+	message: string;
+	field: 'email' | 'name';
+};
+export type EmailAlreadyExistsError = {
+	__typename: 'EmailAlreadyExistsError';
+	code: 'EMAIL_ALREADY_EXISTS';
+	message: string;
+};
+export type UserNotFoundError = {
+	__typename: 'UserNotFoundError';
+	code: 'USER_NOT_FOUND';
+	message: string;
 };
 
-type ValidationError = {
-  __typename: 'ValidationError';
-  message: string;
-  field?: string;
-};
+export type RegisterUserResult =
+	| User
+	| ValidationError
+	| EmailAlreadyExistsError;
+export type UserResult = User | UserNotFoundError;
 
-type ConflictError = {
-  __typename: 'ConflictError';
-  message: string;
-  conflictingId?: string;
-};
+const USER_FIELDS = /* GraphQL */ `
+  __typename
+  ... on User { id email name }
+  ... on AppError { code message }
+`;
 
-type RegisterUserResult = User | ValidationError | ConflictError;
-
-// GraphQL query result type
-type RegisterUserMutationResponse = {
-  registerUser: RegisterUserResult;
-};
-
-/**
- * Type-safe handler for RegisterUserResult using __typename discrimination
- */
-export function handleRegisterUserResult(result: RegisterUserResult): {
-  success: boolean;
-  message: string;
-  user?: User;
-} {
-  // Type narrowing based on __typename
-  switch (result.__typename) {
-    case 'User':
-      return {
-        success: true,
-        message: `User ${result.name} registered successfully`,
-        user: result,
-      };
-
-    case 'ValidationError':
-      return {
-        success: false,
-        message: `Validation failed: ${result.message}${
-          result.field ? ` (field: ${result.field})` : ''
-        }`,
-      };
-
-    case 'ConflictError':
-      return {
-        success: false,
-        message: `Conflict: ${result.message}${
-          result.conflictingId ? ` (ID: ${result.conflictingId})` : ''
-        }`,
-      };
-
-    default:
-      // Exhaustiveness check - TypeScript will error if we miss a case
-      const _exhaustive: never = result;
-      return {
-        success: false,
-        message: 'Unknown error type',
-      };
-  }
-}
-
-/**
- * Alternative approach: Using if-else with type guards
- */
-export function handleRegisterUserResultWithGuards(
-  result: RegisterUserResult
-): string {
-  if (result.__typename === 'User') {
-    // TypeScript knows result is User here
-    return `✅ Success! User registered with ID: ${result.id}`;
-  }
-
-  if (result.__typename === 'ValidationError') {
-    // TypeScript knows result is ValidationError here
-    return `❌ Validation Error: ${result.message}`;
-  }
-
-  if (result.__typename === 'ConflictError') {
-    // TypeScript knows result is ConflictError here
-    return `⚠️  Conflict: ${result.message}`;
-  }
-
-  // Exhaustiveness check
-  const _exhaustive: never = result;
-  return 'Unknown error';
-}
-
-/**
- * Example: Processing multiple registration attempts
- */
-export function processRegistrations(
-  results: RegisterUserResult[]
-): {
-  successful: User[];
-  validationErrors: ValidationError[];
-  conflictErrors: ConflictError[];
-} {
-  const successful: User[] = [];
-  const validationErrors: ValidationError[] = [];
-  const conflictErrors: ConflictError[] = [];
-
-  for (const result of results) {
-    switch (result.__typename) {
-      case 'User':
-        successful.push(result);
-        break;
-      case 'ValidationError':
-        validationErrors.push(result);
-        break;
-      case 'ConflictError':
-        conflictErrors.push(result);
-        break;
-    }
-  }
-
-  return { successful, validationErrors, conflictErrors };
-}
-
-/**
- * Type predicate functions for more flexible type narrowing
- */
-export function isUser(result: RegisterUserResult): result is User {
-  return result.__typename === 'User';
-}
-
-export function isValidationError(
-  result: RegisterUserResult
-): result is ValidationError {
-  return result.__typename === 'ValidationError';
-}
-
-export function isConflictError(
-  result: RegisterUserResult
-): result is ConflictError {
-  return result.__typename === 'ConflictError';
-}
-
-/**
- * GraphQL mutation for registering a user
- */
-const REGISTER_USER_MUTATION = `
+export const REGISTER_USER_MUTATION = /* GraphQL */ `
   mutation RegisterUser($email: String!, $name: String!) {
     registerUser(email: $email, name: $name) {
-      __typename
-      ... on User {
-        id
-        email
-        name
-      }
-      ... on ValidationError {
-        message
-        field
-      }
-      ... on ConflictError {
-        message
-        conflictingId
-      }
+      ${USER_FIELDS}
+      ... on ValidationError { field }
     }
   }
 `;
 
-/**
- * Example client function that makes a GraphQL request
- * (This is a mock - in real app, use fetch or GraphQL client)
- */
-export async function registerUser(
-  email: string,
-  name: string,
-  endpoint: string = 'http://localhost:4000/graphql'
-): Promise<RegisterUserResult> {
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: REGISTER_USER_MUTATION,
-      variables: { email, name },
-    }),
-  });
+export const USER_QUERY = /* GraphQL */ `
+  query User($id: ID!) {
+    user(id: $id) { ${USER_FIELDS} }
+  }
+`;
 
-  const json = await response.json();
-  return json.data.registerUser as RegisterUserResult;
+export function createClient(url: string, options?: { fetch?: typeof fetch }) {
+	const fetchFn = options?.fetch ?? fetch;
+
+	async function request<T>(
+		query: string,
+		variables: Record<string, unknown>,
+	): Promise<T> {
+		const res = await fetchFn(url, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ query, variables }),
+		});
+		const body = (await res.json()) as {
+			data?: T;
+			errors?: { message: string }[];
+		};
+		if (!body.data) {
+			// スキーマ違反などの GraphQL のエラー（業務エラーではない）
+			throw new Error(
+				body.errors?.map((e) => e.message).join(', ') ??
+					'Unknown GraphQL error',
+			);
+		}
+		return body.data;
+	}
+
+	return {
+		async registerUser(input: {
+			email: string;
+			name: string;
+		}): Promise<RegisterUserResult> {
+			const data = await request<{ registerUser: RegisterUserResult }>(
+				REGISTER_USER_MUTATION,
+				input,
+			);
+			return data.registerUser;
+		},
+		async getUser(id: string): Promise<UserResult> {
+			const data = await request<{ user: UserResult }>(USER_QUERY, { id });
+			return data.user;
+		},
+	};
 }
+
+export type Client = ReturnType<typeof createClient>;

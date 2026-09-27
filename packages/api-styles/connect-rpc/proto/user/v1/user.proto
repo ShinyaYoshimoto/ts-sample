@@ -9,10 +9,13 @@ message User {
   string email = 3;
 }
 
-// ErrorDetail represents error information
+// ErrorDetail represents a business error shared by all API styles.
+// code: VALIDATION_ERROR / EMAIL_ALREADY_EXISTS / USER_NOT_FOUND
 message ErrorDetail {
   string code = 1;
   string message = 2;
+  // Set only for VALIDATION_ERROR ("email" or "name")
+  optional string field = 3;
 }
 
 // RegisterUserRequest is the request to register a new user
@@ -21,9 +24,22 @@ message RegisterUserRequest {
   string email = 2;
 }
 
-// RegisterUserResponse contains the result of user registration
-// Using oneof to represent Result pattern
+// RegisterUserResponse contains the result of user registration.
+// The oneof represents the Result pattern.
 message RegisterUserResponse {
+  oneof result {
+    User user = 1;
+    ErrorDetail error = 2;
+  }
+}
+
+// GetUserRequest is the request to get a user by ID
+message GetUserRequest {
+  string id = 1;
+}
+
+// GetUserResponse contains the user or an error
+message GetUserResponse {
   oneof result {
     User user = 1;
     ErrorDetail error = 2;
@@ -32,5 +48,11 @@ message RegisterUserResponse {
 
 // UserService provides user management operations
 service UserService {
+  // Command (has side effects)
   rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+
+  // Query (no side effects). Connect clients can send it as HTTP GET.
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
 }
