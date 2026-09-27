@@ -1,297 +1,71 @@
-# Connect (gRPC) Result Pattern Sample
+# connect-rpc
 
-This package demonstrates Contract-first Result Pattern implementation using Connect (gRPC) and Protocol Buffers.
+Connect（gRPC 互換）と Protocol Buffers で、契約ファースト（Contract-first）に Result パターンを表すサンプルです。API の仕様（エラーコードなど）は [`../README.md`](../README.md) を参照してください。
 
-## Overview
+## 特徴
 
-This sample explores how to define a Result structure in Protocol Buffers using `oneof` and how it is represented in generated TypeScript code.
+- **契約は `.proto`**: `proto/user/v1/user.proto` からサーバー・クライアント両方の型を `buf generate` で生成する
+- **成功と失敗は `oneof`**: `oneof result { User user; ErrorDetail error; }` が TypeScript では `result.case` を判別キーにした Union になる
+- **エラーは1つのメッセージ型**: `ErrorDetail { code, message, optional field }`。`code` は文字列なので、種類ごとの型の区別はない
+- **コマンドとクエリ**: `GetUser` に `idempotency_level = NO_SIDE_EFFECTS` を付けると、クライアント（`useHttpGet: true`）は HTTP GET で送る
 
-## Key Findings
-
-### 1. Protobuf `oneof` to TypeScript Union Type Mapping
-
-The protobuf `oneof` field is mapped to a **discriminated union type** in TypeScript:
-
-```protobuf
-message RegisterUserResponse {
-  oneof result {
-    User user = 1;
-    ErrorDetail error = 2;
-  }
-}
-```
-
-This generates:
-
-```typescript
-export class RegisterUserResponse extends Message<RegisterUserResponse> {
-  result: {
-    value: User;
-    case: "user";
-  } | {
-    value: ErrorDetail;
-    case: "error";
-  } | { case: undefined; value?: undefined } = { case: undefined };
-}
-```
-
-**Key characteristics:**
-- Each variant has a `case` property indicating which type is present
-- Each variant has a `value` property containing the actual data
-- There's a third variant with `case: undefined` for when no value is set
-- TypeScript's type narrowing works automatically based on the `case` property
-
-### 2. Server Implementation
-
-The server uses the `case` property to specify which variant to return:
-
-```typescript
-// Success case
-response.result = {
-  case: 'user',
-  value: new User({ id: '123', name: 'John', email: 'john@example.com' })
-};
-
-// Error case
-response.result = {
-  case: 'error',
-  value: new ErrorDetail({ code: 'INVALID_EMAIL', message: 'Invalid email' })
-};
-```
-
-### 3. Client Implementation
-
-The client handles responses using case-based branching:
-
-```typescript
-switch (response.result.case) {
-  case 'user':
-    // TypeScript knows result.value is User
-    console.log('User created:', response.result.value.id);
-    break;
-  
-  case 'error':
-    // TypeScript knows result.value is ErrorDetail
-    console.error('Error:', response.result.value.code);
-    break;
-  
-  case undefined:
-    // No result was set
-    console.error('No result returned');
-    break;
-}
-```
-
-### 4. gRPC Status vs Message Body Result Pattern
-
-**When to use gRPC Status Codes:**
-- Network/transport errors (connection failure, timeout)
-- Authentication/authorization errors
-- Rate limiting
-- Service unavailable
-
-**When to use Message Body Result Pattern:**
-- Business logic validation errors
-- Domain-specific error codes
-- Multiple error types that need detailed information
-- When you want type-safe error handling
-- When errors are part of the normal flow (not exceptional)
-
-**Example boundaries:**
-
-```typescript
-// gRPC Status: Used for transport/infrastructure errors
-// HTTP 401 Unauthorized, Code.UNAUTHENTICATED
-throw new ConnectError('Not authenticated', Code.UNAUTHENTICATED);
-
-// Message Body Result: Used for business validation
-// HTTP 200 OK, but result contains error details
-return new RegisterUserResponse({
-  result: {
-    case: 'error',
-    value: new ErrorDetail({
-      code: 'INVALID_EMAIL',
-      message: 'Email format is invalid'
-    })
-  }
-});
-```
-
-## Benefits of This Approach
-
-1. **Type Safety**: TypeScript compiler enforces handling of all cases
-2. **No Exceptions**: Errors are values, not thrown exceptions
-3. **Contract-First**: API contract is defined in .proto files
-4. **Explicit**: All possible outcomes are visible in the type system
-5. **Composable**: Result types can be nested and combined
-6. **Language Agnostic**: Same pattern works in any language that supports gRPC
-
-## Project Structure
-
-```
-packages/api-styles/connect-rpc/
-├── proto/                      # Protocol Buffer definitions
-│   └── user/v1/
-│       └── user.proto          # User service definition with Result pattern
-├── generated/                  # Generated TypeScript code (from buf generate)
-│   └── user/v1/
-│       ├── user_pb.ts          # Generated message classes
-│       └── user_connect.ts     # Generated service definition
-├── src/
-│   ├── server/
-│   │   └── user-service.ts     # Server implementation
-│   └── client/
-│       └── user-client.ts      # Client implementation
-└── result-pattern.test.ts      # Tests demonstrating the pattern
-```
-
-## Running the Sample
-
-> Run the commands in the package directory (`packages/api-styles`).
-
-### Install Dependencies
-
-```bash
-pnpm install
-```
-
-### Generate TypeScript from Protobuf
-
-```bash
-pnpm generate
-```
-
-This runs `buf generate` which:
-1. Reads `.proto` files from the `proto/` directory
-2. Generates TypeScript code using `@bufbuild/protoc-gen-es`
-3. Generates Connect service code using `@connectrpc/protoc-gen-connect-es`
-4. Outputs to the `generated/` directory
-
-### Run Tests
-
-```bash
-pnpm test connect-rpc
-```
-
-### Build
-
-```bash
-pnpm build
-```
-
-## Code Examples
-
-### Defining the Result Pattern in Protobuf
-
-See `proto/user/v1/user.proto`:
+## Protobuf（抜粋）
 
 ```protobuf
-syntax = "proto3";
-
-package user.v1;
-
-message User {
-  string id = 1;
-  string name = 2;
-  string email = 3;
-}
-
 message ErrorDetail {
   string code = 1;
   string message = 2;
+  optional string field = 3;
 }
 
-message RegisterUserRequest {
-  string name = 1;
-  string email = 2;
-}
-
-message RegisterUserResponse {
-  oneof result {
-    User user = 1;
-    ErrorDetail error = 2;
-  }
-}
+message RegisterUserResponse { oneof result { User user = 1; ErrorDetail error = 2; } }
+message GetUserResponse      { oneof result { User user = 1; ErrorDetail error = 2; } }
 
 service UserService {
   rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
 }
 ```
 
-### Server Implementation
+## ファイル構成
 
-See `src/server/user-service.ts` for the complete implementation.
+```
+connect-rpc/
+├── proto/user/v1/user.proto     # 契約
+├── buf.yaml / buf.gen.yaml      # buf の設定（lint: STANDARD）
+├── generated/                   # 生成コード（gitignore。pnpm generate / pnpm install で生成）
+├── src/server/user-service.ts   # サービスの実装。ドメインの結果を oneof に変換する
+├── src/client/user-client.ts    # クライアントとトランスポート（fetch を差し替え可能）
+└── connect.test.ts              # Connect 固有のテスト（oneof の絞り込み、GET / POST、optional field）
+```
 
-### Client Implementation
-
-See `src/client/user-client.ts` for examples of both switch-case and if-else handling.
-
-## TypeScript Type Safety Examples
-
-The generated types provide excellent type safety:
+## 使用例
 
 ```typescript
-const response = await client.registerUser(request);
+const res = await client.registerUser({ email, name });
 
-// TypeScript knows the structure based on case
-if (response.result.case === 'user') {
-  // ✅ TypeScript knows result.value is User
-  const userId = response.result.value.id;
-  const userName = response.result.value.name;
-  
-  // ❌ TypeScript error: Property 'code' does not exist on type 'User'
-  // const code = response.result.value.code;
+switch (res.result.case) {
+  case 'user':  res.result.value.id; break;    // User 型
+  case 'error': res.result.value.code; break;  // ErrorDetail 型
+  default: break;                              // oneof が未設定（Protobuf ではあり得る）
 }
 
-if (response.result.case === 'error') {
-  // ✅ TypeScript knows result.value is ErrorDetail
-  const errorCode = response.result.value.code;
-  const errorMessage = response.result.value.message;
-  
-  // ❌ TypeScript error: Property 'id' does not exist on type 'ErrorDetail'
-  // const id = response.result.value.id;
-}
+const found = await client.getUser({ id: 'user-1' }); // HTTP GET で送られる
 ```
 
-## Comparison with Other Patterns
+## 補足
 
-### Traditional Exception-Based Error Handling
+- 業務エラーはレスポンスの `oneof` で返し、認証エラーや通信障害などの基盤のエラーは gRPC の Status（`ConnectError` と `Code`）で表す、という使い分けが一般的です。
+- `ErrorDetail.code` を文字列ではなく種類ごとのメッセージ型（`oneof` のメンバーを増やす）にすると、GraphQL の Union のように型で区別できるようになります。
 
-```typescript
-// Traditional approach (not type-safe)
-try {
-  const user = await registerUser(name, email);
-  console.log('Success:', user.id);
-} catch (error) {
-  // error is any/unknown, need runtime checks
-  console.error('Error:', error);
-}
+## 実行方法
+
+```bash
+cd packages/api-styles
+pnpm generate       # .proto から TypeScript を生成
+pnpm test connect   # Connect 固有のテスト（仕様のテストは pnpm test contract）
 ```
 
-### Result Pattern with oneof (This Sample)
-
-```typescript
-// Type-safe Result pattern
-const response = await client.registerUser(request);
-switch (response.result.case) {
-  case 'user':
-    // ✅ Compiler enforces handling
-    console.log('Success:', response.result.value.id);
-    break;
-  case 'error':
-    // ✅ Type-safe error handling
-    console.error('Error:', response.result.value.code);
-    break;
-}
-```
-
-## References
-
-- [Connect-ES Documentation](https://connectrpc.com/docs/node/getting-started)
-- [Protocol Buffers oneof](https://protobuf.dev/programming-guides/proto3/#oneof)
-- [Buf Documentation](https://buf.build/docs/)
-- [Result Type Pattern](https://en.wikipedia.org/wiki/Result_type)
-
-## License
-
-ISC
+スパイク実施時の記録は [`TECH_SPIKE_SUMMARY.md`](TECH_SPIKE_SUMMARY.md) にあります（当時の仕様のままです）。

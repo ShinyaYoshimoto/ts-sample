@@ -1,62 +1,71 @@
-import type { ConnectRouter } from '@connectrpc/connect';
+import { type ConnectRouter, createConnectRouter } from '@connectrpc/connect';
+import { createFetchHandler } from '@connectrpc/connect/protocol';
+import {
+	type ApiError,
+	type UserService as DomainUserService,
+	createUserService,
+} from '../../../domain/user-service';
 import { UserService } from '../../generated/user/v1/user_connect.js';
 import {
-	RegisterUserRequest,
+	ErrorDetail,
+	GetUserResponse,
 	RegisterUserResponse,
 	User,
-	ErrorDetail,
 } from '../../generated/user/v1/user_pb.js';
 
-/**
- * Implementation of UserService using Connect-es.
- * Demonstrates how to return Result pattern using oneof fields.
- */
-export function routes(router: ConnectRouter) {
-	router.service(UserService, {
-		registerUser: async (req: RegisterUserRequest) => {
-			const response = new RegisterUserResponse();
-
-			// Validation: check if email is valid
-			if (!req.email || !req.email.includes('@')) {
-				// Return error case
-				const error = new ErrorDetail({
-					code: 'INVALID_EMAIL',
-					message: 'Email address is invalid',
-				});
-				response.result = {
-					case: 'error',
-					value: error,
-				};
-				return response;
-			}
-
-			// Check if name is provided
-			if (!req.name || req.name.trim() === '') {
-				// Return error case
-				const error = new ErrorDetail({
-					code: 'INVALID_NAME',
-					message: 'Name is required',
-				});
-				response.result = {
-					case: 'error',
-					value: error,
-				};
-				return response;
-			}
-
-			// Success case: create user
-			const user = new User({
-				id: `user_${Date.now()}`,
-				name: req.name,
-				email: req.email,
-			});
-
-			response.result = {
-				case: 'user',
-				value: user,
+/** ドメインの結果を oneof（case: 'user' | 'error'）に変換する */
+function toOneof(
+	result:
+		| { ok: true; value: { id: string; email: string; name: string } }
+		| { ok: false; error: ApiError },
+) {
+	return result.ok
+		? { case: 'user' as const, value: new User(result.value) }
+		: {
+				case: 'error' as const,
+				value: new ErrorDetail({
+					code: result.error.code,
+					message: result.error.message,
+					field: 'field' in result.error ? result.error.field : undefined,
+				}),
 			};
+}
 
-			return response;
-		},
-	});
+/**
+ * UserService の実装（.proto の service 定義から生成されたインターフェースを実装する）
+ */
+export function createRoutes(service: DomainUserService = createUserService()) {
+	return (router: ConnectRouter) => {
+		router.service(UserService, {
+			registerUser: (req) =>
+				new RegisterUserResponse({
+					result: toOneof(service.registerUser(req)),
+				}),
+			getUser: (req) =>
+				new GetUserResponse({ result: toOneof(service.getUser(req.id)) }),
+		});
+	};
+}
+
+/**
+ * ルーターを Fetch API のハンドラーとして使う（Cloudflare Workers などと同じ方式）。
+ * テストやデモでは、これをクライアントの fetch に直結して実サーバーなしで呼び出す。
+ */
+export function toFetch(routes: (router: ConnectRouter) => void): typeof fetch {
+	const router = createConnectRouter();
+	routes(router);
+	const handlers = new Map(
+		router.handlers.map((handler) => [
+			handler.requestPath,
+			createFetchHandler(handler),
+		]),
+	);
+
+	return async (input, init) => {
+		const request = new Request(input, init);
+		const handler = handlers.get(new URL(request.url).pathname);
+		return handler
+			? handler(request)
+			: new Response('Not Found', { status: 404 });
+	};
 }

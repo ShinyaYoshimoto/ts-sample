@@ -9,10 +9,9 @@
 		"build": "tsc -p tsconfig.json",
 		"lint": "echo 'No lint configured'",
 		"test": "vitest",
+		"demo": "tsx demo.ts",
 		"dev:rest": "tsx rest/dev-server.ts",
-		"demo:trpc": "tsx trpc/type-narrowing-demo.ts",
-		"dev:graphql": "tsx graphql-union/src/server.ts",
-		"demo:graphql": "tsx graphql-union/examples/demo.ts"
+		"dev:graphql": "tsx graphql-union/src/server.ts"
 	},
 	"keywords": [
 		"api",
@@ -30,6 +29,7 @@
 	"dependencies": {
 		"@bufbuild/protobuf": "^1.10.0",
 		"@connectrpc/connect": "^1.7.0",
+		"@connectrpc/connect-web": "^1.7.0",
 		"@graphql-tools/schema": "^10.0.0",
 		"@hono/node-server": "^2.1.1",
 		"@hono/zod-openapi": "^1.6.3",

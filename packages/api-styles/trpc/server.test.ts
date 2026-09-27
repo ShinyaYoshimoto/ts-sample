@@ -1,215 +1,82 @@
-import { describe, it, expect } from 'vitest';
-import { appRouter } from './server';
-import type { User, AppError } from './types';
-import type { Result } from './result';
-
 /**
- * Test helper to create a caller for the router
- * This simulates what would happen when calling through tRPC
+ * tRPC 固有のテスト
+ *
+ * 入力と結果の対応（仕様）は ../contract.test.ts で全スタイル共通に検証する。
+ * ここでは tRPC ならではの部分（型の共有と絞り込み、query / mutation の違い、
+ * 業務エラーと TRPCError の境界）を確かめる。
  */
-const createCaller = () => {
-	return appRouter.createCaller({});
-};
+import { TRPCClientError } from '@trpc/client';
+import { describe, expect, expectTypeOf, it } from 'vitest';
+import { createClient } from './client';
+import { createFetchHandler } from './fetch-handler';
+import { type AppRouter, createAppRouter } from './server';
+import type { GetUserError, RegisterUserError, User } from './types';
 
-describe('tRPC Result Type Propagation', () => {
-	describe('Server-side Result creation', () => {
-		it('should return success result for valid user registration', async () => {
-			const caller = createCaller();
-			const result = await caller.registerUser({
-				name: 'John Doe',
-				email: 'john@example.com',
-			});
+function setup() {
+	const requests: { method: string; path: string }[] = [];
+	const handler = createFetchHandler(createAppRouter());
+	const client = createClient('http://localhost/trpc', {
+		fetch: async (input, init) => {
+			const url = new URL(
+				input instanceof Request ? input.url : input.toString(),
+			);
+			requests.push({ method: init?.method ?? 'GET', path: url.pathname });
+			return handler(input, init);
+		},
+	});
+	return { client, requests };
+}
 
-			expect(result.status).toBe('ok');
-			if (result.status === 'ok') {
-				// Type narrowing should work here
-				expect(result.data).toBeDefined();
-				expect(result.data.name).toBe('John Doe');
-				expect(result.data.email).toBe('john@example.com');
-				expect(result.data.id).toBeDefined();
-			}
+describe('tRPC', () => {
+	it('サーバーの型がクライアントに伝わり、status で型が絞り込まれる', async () => {
+		const { client } = setup();
+		const result = await client.registerUser.mutate({
+			email: 'a@example.com',
+			name: 'A',
 		});
 
-		it('should return failure result for invalid name', async () => {
-			const caller = createCaller();
-			const result = await caller.registerUser({
-				name: 'J',
-				email: 'j@example.com',
-			});
+		if (result.status === 'ok') {
+			expectTypeOf(result.data).toEqualTypeOf<User>();
+		} else {
+			expectTypeOf(result.error).toEqualTypeOf<RegisterUserError>();
+		}
 
-			expect(result.status).toBe('error');
-			if (result.status === 'error') {
-				// Type narrowing should work here
-				expect(result.error).toBeDefined();
-				expect(result.error.type).toBe('VALIDATION_ERROR');
-				if (result.error.type === 'VALIDATION_ERROR') {
-					expect(result.error.message).toContain('Name must be at least 2 characters');
-				}
-			}
-		});
-
-		it('should return failure result for invalid email', async () => {
-			const caller = createCaller();
-			const result = await caller.registerUser({
-				name: 'Jane Doe',
-				email: 'invalid-email',
-			});
-
-			expect(result.status).toBe('error');
-			if (result.status === 'error') {
-				expect(result.error.type).toBe('VALIDATION_ERROR');
-				if (result.error.type === 'VALIDATION_ERROR') {
-					expect(result.error.message).toContain('Invalid email format');
-				}
-			}
-		});
-
-		it('should return failure result for duplicate email', async () => {
-			const caller = createCaller();
-			
-			// Register first user
-			await caller.registerUser({
-				name: 'First User',
-				email: 'duplicate@example.com',
-			});
-
-			// Try to register with same email
-			const result = await caller.registerUser({
-				name: 'Second User',
-				email: 'duplicate@example.com',
-			});
-
-			expect(result.status).toBe('error');
-			if (result.status === 'error') {
-				expect(result.error.type).toBe('DUPLICATE_EMAIL');
-				if (result.error.type === 'DUPLICATE_EMAIL') {
-					expect(result.error.email).toBe('duplicate@example.com');
-				}
-			}
-		});
+		const found = await client.getUser.query({ id: 'user-1' });
+		if (found.status === 'error') {
+			expectTypeOf(found.error).toEqualTypeOf<GetUserError>();
+		}
+		expect(found.status).toBe('ok');
 	});
 
-	describe('Type Narrowing Verification', () => {
-		it('should narrow types correctly based on status field', async () => {
-			const caller = createCaller();
-			const result: Result<User, AppError> = await caller.registerUser({
-				name: 'Type Test',
-				email: 'type@example.com',
-			});
+	it('クエリは GET、コマンドは POST で送られる', async () => {
+		const { client, requests } = setup();
+		await client.registerUser.mutate({ email: 'a@example.com', name: 'A' });
+		await client.getUser.query({ id: 'user-1' });
 
-			// This test verifies that TypeScript correctly narrows the type
-			if (result.status === 'ok') {
-				// At this point, TypeScript should know result is Success<User>
-				const user: User = result.data; // Should not have type error
-				expect(user.name).toBe('Type Test');
-				
-				// Accessing result.error here would be a TypeScript error
-				// @ts-expect-error - error should not exist on success result
-				const shouldNotExist = result.error;
-				expect(shouldNotExist).toBeUndefined();
-			} else {
-				// At this point, TypeScript should know result is Failure<AppError>
-				const error: AppError = result.error; // Should not have type error
-				expect(error).toBeDefined();
-				
-				// Accessing result.data here would be a TypeScript error
-				// @ts-expect-error - data should not exist on failure result
-				const shouldNotExist = result.data;
-				expect(shouldNotExist).toBeUndefined();
-			}
-		});
-
-		it('should handle success case with proper type inference', async () => {
-			const caller = createCaller();
-			const result = await caller.registerUser({
-				name: 'Success Test',
-				email: 'success@example.com',
-			});
-
-			// Pattern matching style
-			const message = result.status === 'ok'
-				? `User created: ${result.data.name}`
-				: `Error: ${result.error.type}`;
-
-			expect(message).toBe('User created: Success Test');
-		});
-
-		it('should handle failure case with proper type inference', async () => {
-			const caller = createCaller();
-			const result = await caller.registerUser({
-				name: 'X',
-				email: 'x@example.com',
-			});
-
-			// Pattern matching style
-			const message = result.status === 'ok'
-				? `User created: ${result.data.name}`
-				: `Error: ${result.error.type}`;
-
-			expect(message).toBe('Error: VALIDATION_ERROR');
-		});
+		expect(requests).toEqual([
+			{ method: 'POST', path: '/trpc/registerUser' },
+			{ method: 'GET', path: '/trpc/getUser' },
+		]);
 	});
 
-	describe('Exhaustive Error Type Handling', () => {
-		it('should handle all error types correctly', async () => {
-			const caller = createCaller();
-			
-			// Test VALIDATION_ERROR
-			const validationError = await caller.registerUser({
-				name: '',
-				email: 'test@example.com',
-			});
-			expect(validationError.status).toBe('error');
-			if (validationError.status === 'error') {
-				expect(validationError.error.type).toBe('VALIDATION_ERROR');
-			}
+	it('業務エラーは Result で返り、入力の形が不正な場合だけ TRPCError（BAD_REQUEST）になる', async () => {
+		const { client } = setup();
 
-			// Test DUPLICATE_EMAIL
-			await caller.registerUser({
-				name: 'First',
-				email: 'dup@example.com',
-			});
-			const duplicateError = await caller.registerUser({
-				name: 'Second',
-				email: 'dup@example.com',
-			});
-			expect(duplicateError.status).toBe('error');
-			if (duplicateError.status === 'error') {
-				expect(duplicateError.error.type).toBe('DUPLICATE_EMAIL');
-			}
+		// 業務エラー: 例外にならず、Result の error として返る
+		const invalid = await client.registerUser.mutate({
+			email: 'invalid',
+			name: 'A',
 		});
-	});
+		expect(invalid.status).toBe('error');
 
-	describe('Client-side type safety demonstration', () => {
-		it('should demonstrate type-safe client usage pattern', async () => {
-			const caller = createCaller();
-			
-			// Simulating client-side code
-			const processRegistration = async (name: string, email: string): Promise<string> => {
-				const response = await caller.registerUser({ name, email });
-				
-				// Type narrowing works seamlessly
-				if (response.status === 'ok') {
-					// response.data is correctly typed as User
-					return `Welcome, ${response.data.name}!`;
-				}
-				
-				// response.error is correctly typed as AppError
-				switch (response.error.type) {
-					case 'VALIDATION_ERROR':
-						return `Validation failed: ${response.error.message}`;
-					case 'DUPLICATE_EMAIL':
-						return `Email ${response.error.email} is already registered`;
-					case 'DATABASE_ERROR':
-						return `System error: ${response.error.message}`;
-				}
-			};
-
-			const successMessage = await processRegistration('Alice', 'alice@example.com');
-			expect(successMessage).toBe('Welcome, Alice!');
-
-			const failureMessage = await processRegistration('A', 'a@example.com');
-			expect(failureMessage).toContain('Validation failed');
-		});
+		// 入力の形が不正: zod の検証で弾かれ、tRPC の標準エラーとして throw される
+		const error = await client.registerUser
+			// @ts-expect-error email に数値を渡す（型でも弾かれることの確認を兼ねる）
+			.mutate({ email: 123, name: 'A' })
+			.catch((e: unknown) => e);
+		expect(error).toBeInstanceOf(TRPCClientError);
+		expect((error as TRPCClientError<AppRouter>).data?.code).toBe(
+			'BAD_REQUEST',
+		);
 	});
 });

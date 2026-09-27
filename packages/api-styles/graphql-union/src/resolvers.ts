@@ -1,102 +1,34 @@
-// Type definitions for our domain
-export type User = {
-  __typename: 'User';
-  id: string;
-  email: string;
-  name: string;
-};
+import type { ApiError, UserService } from '../../domain/user-service';
 
-export type ValidationError = {
-  __typename: 'ValidationError';
-  message: string;
-  field?: string;
-};
+/** ドメインのエラーコードを、GraphQL スキーマの型名に対応付ける */
+const typeNameByCode = {
+	VALIDATION_ERROR: 'ValidationError',
+	EMAIL_ALREADY_EXISTS: 'EmailAlreadyExistsError',
+	USER_NOT_FOUND: 'UserNotFoundError',
+} as const satisfies Record<ApiError['code'], string>;
 
-export type ConflictError = {
-  __typename: 'ConflictError';
-  message: string;
-  conflictingId?: string;
-};
-
-export type RegisterUserResult = User | ValidationError | ConflictError;
-
-// Simple in-memory database
-const users: User[] = [];
-
-// Email validation helper
-function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+function toGraphQL<T>(
+	result: { ok: true; value: T } | { ok: false; error: ApiError },
+) {
+	return result.ok
+		? { __typename: 'User' as const, ...result.value }
+		: { __typename: typeNameByCode[result.error.code], ...result.error };
 }
 
-// Check if user already exists
-function userExists(email: string): User | undefined {
-  return users.find(u => u.email === email);
+const resolveType = (obj: { __typename: string }) => obj.__typename;
+
+export function createResolvers(service: UserService) {
+	return {
+		Query: {
+			user: (_parent: unknown, args: { id: string }) =>
+				toGraphQL(service.getUser(args.id)),
+		},
+		Mutation: {
+			registerUser: (_parent: unknown, args: { email: string; name: string }) =>
+				toGraphQL(service.registerUser(args)),
+		},
+		RegisterUserResult: { __resolveType: resolveType },
+		UserResult: { __resolveType: resolveType },
+		AppError: { __resolveType: resolveType },
+	};
 }
-
-export const resolvers = {
-  Query: {
-    hello: () => 'Hello from GraphQL Union Result Pattern!',
-  },
-  Mutation: {
-    registerUser: (
-      _parent: unknown,
-      args: { email: string; name: string }
-    ): RegisterUserResult => {
-      const { email, name } = args;
-
-      // Validation: Check if email is valid
-      if (!isValidEmail(email)) {
-        return {
-          __typename: 'ValidationError',
-          message: 'Invalid email format',
-          field: 'email',
-        };
-      }
-
-      // Validation: Check if name is not empty
-      if (!name || name.trim().length === 0) {
-        return {
-          __typename: 'ValidationError',
-          message: 'Name cannot be empty',
-          field: 'name',
-        };
-      }
-
-      // Validation: Check if name is too short
-      if (name.trim().length < 2) {
-        return {
-          __typename: 'ValidationError',
-          message: 'Name must be at least 2 characters long',
-          field: 'name',
-        };
-      }
-
-      // Conflict: Check if user already exists
-      const existingUser = userExists(email);
-      if (existingUser) {
-        return {
-          __typename: 'ConflictError',
-          message: 'User with this email already exists',
-          conflictingId: existingUser.id,
-        };
-      }
-
-      // Success: Create new user
-      const newUser: User = {
-        __typename: 'User',
-        id: `user-${users.length + 1}`,
-        email,
-        name: name.trim(),
-      };
-
-      users.push(newUser);
-      return newUser;
-    },
-  },
-  RegisterUserResult: {
-    __resolveType(obj: RegisterUserResult) {
-      return obj.__typename;
-    },
-  },
-};

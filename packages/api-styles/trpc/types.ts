@@ -1,16 +1,8 @@
 /**
- * User entity
+ * ドメインの型（全スタイル共通の仕様）をそのまま使う
  */
-export type User = {
-	id: string;
-	name: string;
-	email: string;
-};
-
-/**
- * Application error types
- */
-export type AppError =
-	| { type: 'VALIDATION_ERROR'; message: string }
-	| { type: 'DUPLICATE_EMAIL'; email: string }
-	| { type: 'DATABASE_ERROR'; message: string };
+export type {
+	GetUserError,
+	RegisterUserError,
+	User,
+} from '../domain/user-service';

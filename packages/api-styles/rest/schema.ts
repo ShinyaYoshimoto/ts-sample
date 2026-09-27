@@ -3,19 +3,23 @@ import { z } from '@hono/zod-openapi';
 /**
  * API のスキーマ定義
  *
- * zod のスキーマが「入力の検証」「TypeScript の型」「OpenAPI ドキュメント」の3つの元になる。
+ * zod のスキーマが「リクエストの形の検証」「TypeScript の型」「OpenAPI ドキュメント」の元になる。
+ * メールアドレスの形式などの業務ルールは全スタイル共通のドメイン（../domain）で判定し、
+ * ここでは型（文字列であること）だけを検証する。
  */
 
 export const RegisterUserRequestSchema = z
 	.object({
-		email: z.email({ message: 'Invalid email format' }).openapi({
-			example: 'alice@example.com',
-		}),
-		name: z.string().min(1, { message: 'Name is required' }).openapi({
-			example: 'Alice',
-		}),
+		email: z.string().openapi({ example: 'alice@example.com' }),
+		name: z.string().openapi({ example: 'Alice' }),
 	})
 	.openapi('RegisterUserRequest');
+
+export const UserIdParamSchema = z.object({
+	id: z
+		.string()
+		.openapi({ param: { name: 'id', in: 'path' }, example: 'user-1' }),
+});
 
 export const UserSchema = z
 	.object({
@@ -28,22 +32,24 @@ export const UserSchema = z
 /** 400: 入力が不正 */
 export const ValidationErrorSchema = z
 	.object({
-		type: z.literal('VALIDATION_ERROR'),
+		code: z.literal('VALIDATION_ERROR'),
+		field: z.enum(['email', 'name']),
 		message: z.string(),
-		field: z.string().optional(),
 	})
 	.openapi('ValidationError');
 
 /** 409: 登録済みのメールアドレス */
-export const ConflictErrorSchema = z
+export const EmailAlreadyExistsErrorSchema = z
 	.object({
-		type: z.literal('DUPLICATE_EMAIL'),
+		code: z.literal('EMAIL_ALREADY_EXISTS'),
 		message: z.string(),
-		email: z.string(),
 	})
-	.openapi('ConflictError');
+	.openapi('EmailAlreadyExistsError');
 
-export type RegisterUserRequest = z.infer<typeof RegisterUserRequestSchema>;
-export type User = z.infer<typeof UserSchema>;
-export type ValidationError = z.infer<typeof ValidationErrorSchema>;
-export type ConflictError = z.infer<typeof ConflictErrorSchema>;
+/** 404: ユーザーが存在しない */
+export const UserNotFoundErrorSchema = z
+	.object({
+		code: z.literal('USER_NOT_FOUND'),
+		message: z.string(),
+	})
+	.openapi('UserNotFoundError');
