@@ -1,0 +1,11 @@
+{
+	"names": {
+		"topic": "user-events",
+		"deadLetterTopic": "user-events-dead-letter",
+		"welcomeMailSubscription": "welcome-mail",
+		"searchIndexSubscription": "search-index",
+		"deadLetterSubscription": "user-events-dead-letter-inspect"
+	},
+	"maxDeliveryAttempts": 5,
+	"ackDeadlineSeconds": 10
+}

@@ -1,3 +1,5 @@
+import topology from './topology.json';
+
 /**
  * 環境変数から読み込む設定
  *
@@ -17,17 +19,23 @@ export const config = {
 	port: Number(process.env.PORT ?? 8080),
 };
 
-/** トピックとサブスクリプションの名前（prefix を付けると、テストごとに独立した名前にできる） */
+/**
+ * トピックとサブスクリプションの名前（prefix を付けると、テストごとに独立した名前にできる）
+ *
+ * 名前は topology.json に置き、Terraform（terraform/）からも同じファイルを読む。
+ * - topic / deadLetterTopic: イベントのトピックと Dead Letter トピック
+ * - welcomeMailSubscription: Pull 型（ウェルカムメール送信）
+ * - searchIndexSubscription: Push 型（検索インデックス更新）
+ * - deadLetterSubscription: Dead Letter に落ちたメッセージを確認するためのサブスクリプション
+ */
 export function resourceNames(prefix = '') {
+	const { names } = topology;
 	return {
-		topic: `${prefix}user-events`,
-		deadLetterTopic: `${prefix}user-events-dead-letter`,
-		/** Pull 型: ウェルカムメール送信 */
-		welcomeMailSubscription: `${prefix}welcome-mail`,
-		/** Push 型: 検索インデックス更新 */
-		searchIndexSubscription: `${prefix}search-index`,
-		/** Dead Letter に落ちたメッセージを確認するためのサブスクリプション */
-		deadLetterSubscription: `${prefix}user-events-dead-letter-inspect`,
+		topic: `${prefix}${names.topic}`,
+		deadLetterTopic: `${prefix}${names.deadLetterTopic}`,
+		welcomeMailSubscription: `${prefix}${names.welcomeMailSubscription}`,
+		searchIndexSubscription: `${prefix}${names.searchIndexSubscription}`,
+		deadLetterSubscription: `${prefix}${names.deadLetterSubscription}`,
 	};
 }
 

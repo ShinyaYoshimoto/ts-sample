@@ -92,3 +92,24 @@ jobs:
           # エミュレーター利用時は GCE のメタデータサーバーを探しに行かない
           METADATA_SERVER_DETECTION: none
         run: pnpm $TEST_FILTER run test --run
+
+  # packages/pubsub/terraform の静的チェックと terraform test（GCP には接続しない）
+  terraform:
+    if: ${{ !inputs.packages || contains(inputs.packages, 'pubsub') }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/pubsub/terraform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.16.5
+      - name: Format
+        run: terraform fmt -check -recursive -diff
+      - name: Init
+        run: terraform init -backend=false -input=false
+      - name: Validate
+        run: terraform validate
+      - name: Test
+        run: terraform test

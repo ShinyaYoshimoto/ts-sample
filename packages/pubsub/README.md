@@ -30,7 +30,8 @@ GCP のプロジェクトがなくても、Pub/Sub エミュレーターで全�
 src/
 ├── events.ts                  # イベントのスキーマ（zod）と、作成・検証
 ├── config.ts                  # 環境変数とトピック・サブスクリプション名
-├── topology.ts                # トピック・サブスクリプション・Dead Letter の作成（既にあれば何もしない）
+├── topology.json              # トピック名・配信回数など（Terraform と共通）
+├── topology.ts                # エミュレーター向けのトピック・サブスクリプション作成（既にあれば何もしない）
 ├── publisher.ts               # ユーザー登録 → イベント発行
 ├── consumers/
 │   ├── process-message.ts     # ack / nack の判断（Pull 型・Push 型で共通）
@@ -41,6 +42,7 @@ src/
 ├── cli/                       # 手元で動かすためのコマンド
 ├── consumers.test.ts          # 単体テスト（エミュレーター不要）
 └── emulator.test.ts           # 結合テスト（エミュレーターが必要）
+terraform/                     # 本物の GCP のリソースと IAM（tests/ に terraform test）
 ```
 
 ## 手元で動かす（エミュレーター）
@@ -79,20 +81,26 @@ CI（`.github/workflows/ci.yml`）では、エミュレーターをホストネ�
 
 ## 本物の GCP で動かす
 
-コードはそのままで動きます。`PUBSUB_EMULATOR_HOST` を外すと、クライアントライブラリが Application Default Credentials（ADC）で本物の Pub/Sub に接続します。
+アプリのコードはそのままで動きます。`PUBSUB_EMULATOR_HOST` を外すと、クライアントライブラリが Application Default Credentials（ADC）で本物の Pub/Sub に接続します。
+トピック・サブスクリプション・IAM は [`terraform/`](terraform) で管理します。
 
-### 1. プロジェクトと API
+| 環境 | リソースの作り方 |
+|---|---|
+| エミュレーター | `pnpm setup:topology`（`src/topology.ts`）。Terraform はエミュレーターに接続できないため |
+| 本物の GCP | `terraform apply`（`terraform/`）。Dead Letter や Push の IAM までまとめて管理できるため |
+
+トピック名や Dead Letter までの配信回数は [`src/topology.json`](src/topology.json) にあり、TypeScript と Terraform の両方がこのファイルを読みます。
+
+### 1. プロジェクトと認証
 
 ```bash
 export PROJECT_ID=your-project-id
 gcloud config set project $PROJECT_ID
-gcloud services enable pubsub.googleapis.com run.googleapis.com   # run は Push 型を Cloud Run で受ける場合
+gcloud auth application-default login   # 手元の ADC（Terraform とアプリの両方が使う）
 ```
 
 - 課金アカウントの紐付けが必要です。Pub/Sub は毎月 10 GiB まで無料枠があり、この検証の規模なら費用はほぼかかりません。
-- 検証が終わったら、トピック・サブスクリプション・Cloud Run サービスを削除してください。
-
-### 2. 認証
+- API の有効化（`pubsub.googleapis.com` など）も Terraform が行います。
 
 | 実行する場所 | 認証方法 |
 |---|---|
@@ -100,68 +108,86 @@ gcloud services enable pubsub.googleapis.com run.googleapis.com   # run は Push
 | Cloud Run | サービスに割り当てたサービスアカウント（キーファイル不要） |
 | GitHub Actions | Workload Identity 連携 + `google-github-actions/auth`（キーファイル不要） |
 
-必要なロールの目安:
+### 2. Terraform で作る
+
+```bash
+cd packages/pubsub/terraform
+cp terraform.tfvars.example terraform.tfvars   # project_id などを埋める
+terraform init
+terraform plan
+terraform apply
+```
+
+作られるもの:
+
+| リソース | 内容 |
+|---|---|
+| API | `pubsub.googleapis.com`、`iam.googleapis.com` |
+| トピック | `user-events`、`user-events-dead-letter` |
+| サブスクリプション | `welcome-mail`（Pull）、`search-index`（Push。`push_endpoint` を指定したときだけ）、`user-events-dead-letter-inspect` |
+| Dead Letter の権限 | Pub/Sub のサービスエージェントに、Dead Letter トピックの publisher と各サブスクリプションの subscriber |
+| Push 用サービスアカウント | `pubsub-push`（Push に OIDC トークンを付ける） |
+| アプリの権限（任意） | `publisher_members` / `welcome_mail_subscriber_members` に、トピック・サブスクリプション単位で付与 |
+
+`terraform apply` を実行するアカウントに必要な権限の目安です（検証用プロジェクトならオーナーでも構いません）。
 
 | 用途 | ロール |
 |---|---|
-| トピック・サブスクリプションを作る（`setup:topology`） | `roles/pubsub.editor` |
-| イベントを発行する | `roles/pubsub.publisher`（トピック単位で付与できる） |
-| Pull 型で受け取る | `roles/pubsub.subscriber`（サブスクリプション単位で付与できる） |
-| OIDC 付きの Push 型サブスクリプションを作る | 上記に加えて、Push 用サービスアカウントに対する `roles/iam.serviceAccountUser` |
+| API の有効化 | `roles/serviceusage.serviceUsageAdmin` |
+| トピック・サブスクリプションと、その IAM | `roles/pubsub.admin`（`pubsub.editor` では IAM を設定できない） |
+| サービスアカウントの作成と、その IAM | `roles/iam.serviceAccountAdmin` |
+| OIDC 付きの Push 型サブスクリプションを作る | Push 用サービスアカウントに対する `roles/iam.serviceAccountUser`（`actAs`） |
 
-### 3. トピックとサブスクリプション
+state は手元（`terraform.tfstate`）に置きます。複数人や CI から apply するようになったら、`versions.tf` のコメントにある GCS バックエンドに移してください。
+
+### 3. Pull 型を試す
 
 ```bash
 cd packages/pubsub
 export PUBSUB_PROJECT_ID=$PROJECT_ID
 unset PUBSUB_EMULATOR_HOST
-pnpm setup:topology   # Pull 型と Dead Letter まで作る（Push 型は手順 5 で）
-```
-
-Dead Letter を使うには、Pub/Sub のサービスエージェントに権限を付ける必要があります（エミュレーターでは不要）。
-
-```bash
-PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
-PUBSUB_SA=serviceAccount:service-${PROJECT_NUMBER}@gcp-sa-pubsub.iam.gserviceaccount.com
-
-gcloud pubsub topics add-iam-policy-binding user-events-dead-letter --member=$PUBSUB_SA --role=roles/pubsub.publisher
-gcloud pubsub subscriptions add-iam-policy-binding welcome-mail --member=$PUBSUB_SA --role=roles/pubsub.subscriber
-gcloud pubsub subscriptions add-iam-policy-binding search-index --member=$PUBSUB_SA --role=roles/pubsub.subscriber  # 手順 5 の後
-```
-
-### 4. Pull 型を試す
-
-```bash
 pnpm start:pull                          # 手元から本物のサブスクリプションを Pull する
 pnpm register alice@example.com Alice
 ```
 
-### 5. Push 型を試す
+### 4. Push 型を試す
 
 Push 型の配信先は、インターネットから届く **HTTPS** のエンドポイントである必要があります（`localhost` には届きません）。
-`push-app.ts` は Cloud Run にそのままデプロイできる形です（`PORT` 環境変数で待ち受けます）。デプロイ用の Dockerfile はまだ用意していません。
+`push-app.ts` は Cloud Run にそのままデプロイできる形です（`PORT` 環境変数で待ち受けます）。デプロイ用の Dockerfile と Cloud Run の Terraform はまだ用意していません。
 
 Pub/Sub 以外からの呼び出しを防ぐため、Cloud Run 側で認証を必須にし、Push に OIDC トークンを付けさせます。
 
 ```bash
-# Push 用のサービスアカウントに Cloud Run の呼び出し権限を付ける
-gcloud iam service-accounts create pubsub-push
+# 1. Cloud Run を認証必須（--no-allow-unauthenticated）でデプロイし、Push 用サービスアカウントに呼び出し権限を付ける
 gcloud run services add-iam-policy-binding <SERVICE> --region=<REGION> \
-  --member=serviceAccount:pubsub-push@${PROJECT_ID}.iam.gserviceaccount.com --role=roles/run.invoker
+  --member=serviceAccount:$(terraform -chdir=terraform output -raw push_service_account_email) \
+  --role=roles/run.invoker
 
-# setup:topology を実行する人（またはサービスアカウント）が、Push 用サービスアカウントとして
-# トークンを発行させられるようにする（iam.serviceAccounts.actAs。roles/pubsub.editor には含まれない）
-gcloud iam service-accounts add-iam-policy-binding pubsub-push@${PROJECT_ID}.iam.gserviceaccount.com \
-  --member=user:<YOUR_EMAIL> --role=roles/iam.serviceAccountUser
-
-# Push 型サブスクリプションを作る（OIDC トークン付き）
-PUSH_ENDPOINT=https://<SERVICE_URL>/pubsub/push \
-PUSH_AUTH_SERVICE_ACCOUNT=pubsub-push@${PROJECT_ID}.iam.gserviceaccount.com \
-pnpm setup:topology
+# 2. terraform.tfvars に push_endpoint を足して、Push 型サブスクリプションを作る
+#    push_endpoint = "https://<SERVICE_URL>/pubsub/push"
+terraform -chdir=terraform apply
 ```
 
-- Cloud Run は `--no-allow-unauthenticated` でデプロイします。トークンの検証は Cloud Run が行うので、アプリのコードでの検証は不要です。
-- 2021年4月8日より前に作られたプロジェクトでは、Pub/Sub のサービスエージェントに、Push 用サービスアカウントの `roles/iam.serviceAccountTokenCreator` を付ける必要があります。
+- トークンの検証は Cloud Run が行うので、アプリのコードでの検証は不要です。
+- 2021年4月8日より前に作られたプロジェクトでは、`grant_token_creator_to_pubsub_agent = true` にします（Pub/Sub のサービスエージェントが OIDC トークンを発行するために必要）。
+
+### 5. 片付け
+
+```bash
+terraform -chdir=terraform destroy
+```
+
+### Terraform のテスト
+
+GCP に接続せずに確認できるチェックを CI で実行しています（`.github/workflows/ci.yml` の `terraform` ジョブ）。
+
+```bash
+cd packages/pubsub/terraform
+terraform fmt -check -recursive
+terraform init -backend=false
+terraform validate
+terraform test   # mock_provider で plan の内容を確かめる（tests/）
+```
 
 ## 設計メモ（本番に向けて）
 

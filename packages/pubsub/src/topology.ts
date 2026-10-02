@@ -1,8 +1,12 @@
 import type { PubSub, Subscription, Topic } from '@google-cloud/pubsub';
 import type { ResourceNames } from './config';
+import topology from './topology.json';
 
-/** Dead Letter に送るまでの配信回数（Pub/Sub の最小値は 5） */
-export const MAX_DELIVERY_ATTEMPTS = 5;
+/** Dead Letter に送るまでの配信回数（Pub/Sub の最小値は 5）。値は Terraform と共通の topology.json にある */
+export const MAX_DELIVERY_ATTEMPTS = topology.maxDeliveryAttempts;
+
+/** 確認期限（秒）。これを過ぎても ack / nack がなければ再配信される */
+const ACK_DEADLINE_SECONDS = topology.ackDeadlineSeconds;
 
 async function ensureTopic(pubsub: PubSub, name: string): Promise<Topic> {
 	const topic = pubsub.topic(name);
@@ -28,7 +32,7 @@ async function ensureSubscription(
  * user-events ──┬─▶ welcome-mail（Pull 型）  ─┐
  *               └─▶ search-index（Push 型）  ─┴─ 5回失敗したら ▶ user-events-dead-letter
  *
- * 本物の GCP で Dead Letter を使うには、Pub/Sub のサービスエージェントへの IAM 付与も必要（README 参照）。
+ * エミュレーター向け。本物の GCP では terraform/ で同じ構成を作る（IAM も含めて管理できるため）。
  */
 export async function ensureTopology(
 	pubsub: PubSub,
@@ -46,7 +50,7 @@ export async function ensureTopology(
 		topic,
 		names.welcomeMailSubscription,
 		{
-			ackDeadlineSeconds: 10,
+			ackDeadlineSeconds: ACK_DEADLINE_SECONDS,
 			deadLetterPolicy,
 		},
 	);
@@ -59,7 +63,7 @@ export async function ensureTopology(
 						? { serviceAccountEmail: options.pushAuthServiceAccount }
 						: undefined,
 				},
-				ackDeadlineSeconds: 10,
+				ackDeadlineSeconds: ACK_DEADLINE_SECONDS,
 				deadLetterPolicy,
 			})
 		: undefined;
