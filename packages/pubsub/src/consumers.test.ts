@@ -67,6 +67,47 @@ describe('ウェルカムメール（eventId で重複を排除）', () => {
 		expect(await handle(event)).toBe('processed');
 		expect(send).toHaveBeenCalledTimes(2);
 	});
+
+	it('処理中にワーカーが落ちても、リースが切れたら再配信で送れる', async () => {
+		let now = 0;
+		const processed = new InMemoryProcessedEventStore(() => now);
+		const mailer = new FakeMailer();
+		const handle = createWelcomeMailHandler({
+			mailer,
+			processed,
+			leaseMs: 1000,
+		});
+		const event = createUserRegisteredEvent(user);
+
+		// リースを取ったまま落ちた（markDone も release も呼ばれない）
+		await processed.tryAcquire(event.eventId, 1000);
+		expect(await handle(event)).toBe('duplicate'); // リース中の再配信は読み飛ばす
+
+		now = 1001;
+		expect(await handle(event)).toBe('processed');
+		expect(mailer.sent).toHaveLength(1);
+	});
+
+	it('送信後・処理済みにする前に落ちても、冪等キーで二重送信にならない', async () => {
+		let now = 0;
+		const processed = new InMemoryProcessedEventStore(() => now);
+		const mailer = new FakeMailer();
+		const handle = createWelcomeMailHandler({
+			mailer,
+			processed,
+			leaseMs: 1000,
+		});
+		const event = createUserRegisteredEvent(user);
+
+		// 送信までは終わったが、処理済みにする前に落ちた
+		vi.spyOn(processed, 'markDone').mockRejectedValueOnce(new Error('crash'));
+		await expect(handle(event)).rejects.toThrow('crash');
+
+		now = 1001;
+		expect(await handle(event)).toBe('processed');
+		expect(mailer.sent).toHaveLength(1);
+		expect(mailer.sent[0].idempotencyKey).toBe(event.eventId);
+	});
 });
 
 describe('検索インデックス（upsert なので処理自体が冪等）', () => {
@@ -118,6 +159,17 @@ describe('Push 型の HTTP アプリ', () => {
 		const handler = vi.fn();
 		const app = createPushApp(handler, { logger: silentLogger });
 		const res = await post(app, envelope('not json'));
+		expect(res.status).toBe(204);
+		expect(handler).not.toHaveBeenCalled();
+	});
+
+	it('本文（data）のない属性だけのメッセージも 204（ack）で捨てる', async () => {
+		const handler = vi.fn();
+		const app = createPushApp(handler, { logger: silentLogger });
+		const res = await post(app, {
+			message: { attributes: { eventType: 'UserRegistered' }, messageId: '1' },
+			subscription: 'projects/demo-project/subscriptions/search-index',
+		});
 		expect(res.status).toBe(204);
 		expect(handler).not.toHaveBeenCalled();
 	});

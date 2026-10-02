@@ -18,7 +18,7 @@ GCP のプロジェクトがなくても、Pub/Sub エミュレーターで全�
 | 観点 | このサンプルでの扱い | テスト |
 |---|---|---|
 | 型安全なメッセージ | zod スキーマ（`events.ts`）で、発行時に作り・受信時に検証する | 単体 |
-| 少なくとも1回の配信 | 副作用のある処理（メール）は `eventId` で重複排除。上書きで済む処理（インデックス）は処理自体を冪等にする | 単体 / エミュレーター |
+| 少なくとも1回の配信 | 副作用のある処理（メール）は `eventId` のリースと処理済みの記録で重複排除し、送信 API にも `eventId` を冪等キーとして渡す。上書きで済む処理（インデックス）は処理自体を冪等にする | 単体 / エミュレーター |
 | 一時的な失敗 | Pull 型は nack、Push 型は 500 を返して再配信させる | エミュレーター |
 | Dead Letter | 5回失敗したら `user-events-dead-letter` に移る（配信回数などが属性に付く） | エミュレーター |
 | 不正なメッセージ | 何度再配信しても直らないので ack して捨て、ログに残す | 単体 / エミュレーター |
@@ -107,6 +107,7 @@ gcloud services enable pubsub.googleapis.com run.googleapis.com   # run は Push
 | トピック・サブスクリプションを作る（`setup:topology`） | `roles/pubsub.editor` |
 | イベントを発行する | `roles/pubsub.publisher`（トピック単位で付与できる） |
 | Pull 型で受け取る | `roles/pubsub.subscriber`（サブスクリプション単位で付与できる） |
+| OIDC 付きの Push 型サブスクリプションを作る | 上記に加えて、Push 用サービスアカウントに対する `roles/iam.serviceAccountUser` |
 
 ### 3. トピックとサブスクリプション
 
@@ -148,6 +149,11 @@ gcloud iam service-accounts create pubsub-push
 gcloud run services add-iam-policy-binding <SERVICE> --region=<REGION> \
   --member=serviceAccount:pubsub-push@${PROJECT_ID}.iam.gserviceaccount.com --role=roles/run.invoker
 
+# setup:topology を実行する人（またはサービスアカウント）が、Push 用サービスアカウントとして
+# トークンを発行させられるようにする（iam.serviceAccounts.actAs。roles/pubsub.editor には含まれない）
+gcloud iam service-accounts add-iam-policy-binding pubsub-push@${PROJECT_ID}.iam.gserviceaccount.com \
+  --member=user:<YOUR_EMAIL> --role=roles/iam.serviceAccountUser
+
 # Push 型サブスクリプションを作る（OIDC トークン付き）
 PUSH_ENDPOINT=https://<SERVICE_URL>/pubsub/push \
 PUSH_AUTH_SERVICE_ACCOUNT=pubsub-push@${PROJECT_ID}.iam.gserviceaccount.com \
@@ -160,6 +166,8 @@ pnpm setup:topology
 ## 設計メモ（本番に向けて）
 
 - **発行の取りこぼし**: `registerUserAndPublish` は、保存と発行が1つのトランザクションになりません。保存後・発行前に落ちるとイベントが失われるため、本番では Outbox パターン（DB に保存したイベントを別プロセスが発行する）などで補います。
-- **重複排除の記録**: `InMemoryProcessedEventStore` はプロセス内だけの記録です。本番では DB の一意制約や Firestore の `create` を使い、複数インスタンス間でも原子的に判定します。
+- **重複排除の記録**: `InMemoryProcessedEventStore` はプロセス内だけの記録です。本番では DB の条件付き更新や Firestore のトランザクションを使い、複数インスタンス間でも原子的に判定します。
+  - 処理前に永久の予約を置くと、処理中に落ちたときに再配信が「処理済み」と見なされてメールが失われます。そのため期限付きのリースにし、処理が終わってから処理済みにしています。
+  - 送信後・処理済みにする前に落ちると再送になります。これは記録だけでは防げないので、メール送信 API の冪等キー（`eventId`）で1通にまとめます。
 - **不正なメッセージ**: 今は ack して捨てています。調査のために残したい場合は、Dead Letter トピックに自分で発行してから ack する方法があります。
 - **順序**: 同じユーザーのイベントの順序を保証したい場合は、ordering key（例: ユーザー ID）を使います（このサンプルでは未使用）。

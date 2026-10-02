@@ -12,8 +12,12 @@ import {
  */
 export const PushEnvelopeSchema = z.object({
 	message: z.object({
-		/** Base64 でエンコードされたメッセージ本文 */
-		data: z.string(),
+		/**
+		 * Base64 でエンコードされたメッセージ本文。
+		 * 属性だけのメッセージでは省略されるので、空として受け取り「不正なメッセージ」として ack する
+		 * （400 を返すと再配信され続けてしまう）
+		 */
+		data: z.string().default(''),
 		messageId: z.string(),
 		attributes: z.record(z.string()).optional(),
 		publishTime: z.string().optional(),
