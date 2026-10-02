@@ -5,4 +5,4 @@ export type {
 	GetUserError,
 	RegisterUserError,
 	User,
-} from '../domain/user-service';
+} from '@ts-sample/user-domain';

@@ -39,6 +39,17 @@ services:
       elasticsearch:
         condition: service_healthy
 
+  # Pub/Sub エミュレーター（packages/pubsub で使う）。PUBSUB_EMULATOR_HOST=localhost:8085 で接続する
+  pubsub-emulator:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators
+    container_name: ts-sample-pubsub-emulator
+    command: gcloud beta emulators pubsub start --project=demo-project --host-port=0.0.0.0:8085
+    ports:
+      - 8085:8085
+    # Push 型の配信先としてホスト上のサーバー（http://host.docker.internal:8080）に届くようにする
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
 volumes:
   db-store:
   es-data:

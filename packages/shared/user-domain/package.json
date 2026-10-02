@@ -1,0 +1,22 @@
+{
+	"name": "@ts-sample/user-domain",
+	"version": "0.1.0",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"private": false,
+	"description": "ユーザー登録・取得のドメイン（業務ルールと統一エラー仕様）。api-styles と pubsub で共有する",
+	"packageManager": "pnpm@10.8.0",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"lint": "echo 'No lint configured'",
+		"test": "vitest"
+	},
+	"keywords": ["domain", "user"],
+	"author": "ysmt",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

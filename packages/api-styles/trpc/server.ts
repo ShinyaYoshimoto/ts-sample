@@ -1,6 +1,6 @@
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
-import { type UserService, createUserService } from '../domain/user-service';
+import { type UserService, createUserService } from '@ts-sample/user-domain';
 import { type Result, failure, success } from './result';
 import type { GetUserError, RegisterUserError, User } from './types';
 

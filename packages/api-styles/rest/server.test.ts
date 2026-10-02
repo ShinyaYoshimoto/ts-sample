@@ -11,7 +11,7 @@ import type {
 	User,
 	UserNotFoundError,
 	ValidationError,
-} from '../domain/user-service';
+} from '@ts-sample/user-domain';
 import { createApp } from './server';
 
 describe('REST (Hono + zod-openapi)', () => {
