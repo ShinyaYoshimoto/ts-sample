@@ -1,0 +1,15 @@
+# cp terraform.tfvars.example terraform.tfvars して値を埋める（terraform.tfvars はコミットしない）
+project_id = "your-project-id"
+region     = "asia-northeast1"
+
+# Push 型を作る場合だけ指定する（Cloud Run などの HTTPS エンドポイント）
+# push_endpoint = "https://<SERVICE_URL>/pubsub/push"
+# OIDC の audience（未指定なら push_endpoint のオリジン = Cloud Run のサービス URL）
+# push_audience = "https://<SERVICE_URL>"
+
+# アプリケーションのサービスアカウントに、必要な権限だけを付ける
+# publisher_members               = ["serviceAccount:app@your-project-id.iam.gserviceaccount.com"]
+# welcome_mail_subscriber_members = ["serviceAccount:worker@your-project-id.iam.gserviceaccount.com"]
+
+# 2021年4月8日より前に作ったプロジェクトなら true
+# grant_token_creator_to_pubsub_agent = true

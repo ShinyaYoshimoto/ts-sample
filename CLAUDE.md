@@ -14,7 +14,7 @@ A collection of TypeScript sample code, organized as a pnpm workspace monorepo. 
 - Implementations meant to be compared side by side live in a single package, split by subdirectory:
   - `packages/result-type/src/{un-result,neverthrow,byethrow,fp-ts,effect-ts}` — Result type libraries. Input/output behavior is verified once in `src/contract.test.ts` for all implementations; each `index.test.ts` only covers library-specific API usage.
   - `packages/api-styles/{rest,trpc,graphql-union,connect-rpc}` — the same API (`registerUser` command / `getUser` query) implemented in each API style, to compare how each style is used. Business rules come from `@ts-sample/user-domain`; each style only maps domain results to its own idiom. `contract.test.ts` verifies all styles through `adapters.ts`; per-style tests only cover style-specific behavior. `connect-rpc/generated/` is produced by `pnpm generate` (buf), which also runs on `pnpm install`.
-- `packages/pubsub` — Google Cloud Pub/Sub verification: publishes `UserRegistered` after `registerUser` and consumes it with a Pull subscription (idempotent by `eventId`) and a Push subscription (Hono endpoint), with a dead-letter topic. `emulator.test.ts` runs only when `PUBSUB_EMULATOR_HOST` is set (`docker compose up -d pubsub-emulator`).
+- `packages/pubsub` — Google Cloud Pub/Sub verification: publishes `UserRegistered` after `registerUser` and consumes it with a Pull subscription (idempotent by `eventId`) and a Push subscription (Hono endpoint), with a dead-letter topic. `emulator.test.ts` runs only when `PUBSUB_EMULATOR_HOST` is set (`docker compose up -d pubsub-emulator`). Real GCP resources (topics, subscriptions, dead-letter/push IAM) are managed by Terraform in `packages/pubsub/terraform`; resource names and delivery settings live in `src/topology.json`, read by both TypeScript and Terraform, so change them there only.
 - Do not use a `sample-` prefix for new packages; the whole repository is samples.
 
 ## Commands
@@ -31,7 +31,7 @@ Run from the repository root:
 
 ## CI
 
-`.github/workflows/ci.yml` runs build and test on push / pull_request, with Elasticsearch as a service container and the Pub/Sub emulator on the host network (so push subscriptions can reach test servers on `localhost`). It can also be run manually (workflow_dispatch) with a `packages` input to limit the target packages (paths relative to `packages/`, e.g. `result-type shared/elasticsearch-client`).
+`.github/workflows/ci.yml` runs build and test on push / pull_request, with Elasticsearch as a service container and the Pub/Sub emulator on the host network (so push subscriptions can reach test servers on `localhost`). A separate `terraform` job runs `fmt -check`, `validate` and `terraform test` (mock provider, no GCP access) for `packages/pubsub/terraform`. It can also be run manually (workflow_dispatch) with a `packages` input to limit the target packages (paths relative to `packages/`, e.g. `result-type shared/elasticsearch-client`).
 
 ## Development Notes
 
