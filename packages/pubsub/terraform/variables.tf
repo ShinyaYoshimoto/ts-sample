@@ -20,6 +20,12 @@ variable "push_endpoint" {
   }
 }
 
+variable "push_audience" {
+  description = "Push に付ける OIDC トークンの audience。null なら push_endpoint のオリジン（https://<host>）を使う。Cloud Run はサービス URL（パスなし）と照合するため"
+  type        = string
+  default     = null
+}
+
 variable "push_service_account_id" {
   description = "Push に OIDC トークンを付けるサービスアカウントの ID（Cloud Run 側でこのアカウントに roles/run.invoker を付ける）"
   type        = string

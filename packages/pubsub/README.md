@@ -124,7 +124,7 @@ terraform apply
 |---|---|
 | API | `pubsub.googleapis.com`、`iam.googleapis.com` |
 | トピック | `user-events`、`user-events-dead-letter` |
-| サブスクリプション | `welcome-mail`（Pull）、`search-index`（Push。`push_endpoint` を指定したときだけ）、`user-events-dead-letter-inspect` |
+| サブスクリプション | `welcome-mail`（Pull）、`search-index`（Push。`push_endpoint` を指定したときだけ）、`user-events-dead-letter-inspect`。いずれも無期限（既定の「31日間使われないと削除」を無効化） |
 | Dead Letter の権限 | Pub/Sub のサービスエージェントに、Dead Letter トピックの publisher と各サブスクリプションの subscriber |
 | Push 用サービスアカウント | `pubsub-push`（Push に OIDC トークンを付ける） |
 | アプリの権限（任意） | `publisher_members` / `welcome_mail_subscriber_members` に、トピック・サブスクリプション単位で付与 |
@@ -169,6 +169,7 @@ terraform -chdir=terraform apply
 ```
 
 - トークンの検証は Cloud Run が行うので、アプリのコードでの検証は不要です。
+- Cloud Run はトークンの audience をサービス URL（パスなし）と照合します。Terraform は既定で `push_endpoint` のオリジン（`https://<SERVICE_URL>`）を audience にします。カスタム audience を使う場合は `push_audience` で指定します。
 - 2021年4月8日より前に作られたプロジェクトでは、`grant_token_creator_to_pubsub_agent = true` にします（Pub/Sub のサービスエージェントが OIDC トークンを発行するために必要）。
 
 ### 5. 片付け

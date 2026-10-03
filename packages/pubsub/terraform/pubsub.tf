@@ -20,6 +20,11 @@ resource "google_pubsub_subscription" "welcome_mail" {
   topic                = google_pubsub_topic.events.id
   ack_deadline_seconds = local.topology.ackDeadlineSeconds
 
+  # 既定では 31 日間アクティビティがないとサブスクリプションが自動で削除されるため、無期限にする
+  expiration_policy {
+    ttl = ""
+  }
+
   dead_letter_policy {
     dead_letter_topic     = local.dead_letter_policy.dead_letter_topic
     max_delivery_attempts = local.dead_letter_policy.max_delivery_attempts
@@ -33,6 +38,11 @@ resource "google_pubsub_subscription" "search_index" {
   topic                = google_pubsub_topic.events.id
   ack_deadline_seconds = local.topology.ackDeadlineSeconds
 
+  # 既定では 31 日間アクティビティがないとサブスクリプションが自動で削除されるため、無期限にする
+  expiration_policy {
+    ttl = ""
+  }
+
   push_config {
     push_endpoint = var.push_endpoint
 
@@ -40,6 +50,7 @@ resource "google_pubsub_subscription" "search_index" {
     # Cloud Run を認証必須にしておけば、Pub/Sub 以外からのリクエストを弾ける
     oidc_token {
       service_account_email = google_service_account.push.email
+      audience              = local.push_audience
     }
   }
 
@@ -56,4 +67,9 @@ resource "google_pubsub_subscription" "dead_letter_inspect" {
 
   # 調査用なので長めに残す
   message_retention_duration = "604800s"
+
+  # 既定では 31 日間アクティビティがないとサブスクリプションが自動で削除されるため、無期限にする
+  expiration_policy {
+    ttl = ""
+  }
 }

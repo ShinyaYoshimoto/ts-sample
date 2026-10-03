@@ -8,6 +8,10 @@ locals {
     max_delivery_attempts = local.topology.maxDeliveryAttempts
   }
 
+  # OIDC トークンの audience。未指定だと Pub/Sub は push_endpoint 全体（パス付き）を使うが、
+  # Cloud Run はサービス URL（https://<host>）と照合するので、既定ではオリジンだけにする
+  push_audience = var.push_endpoint == null ? null : coalesce(var.push_audience, regex("^https://[^/]+", var.push_endpoint))
+
   # Dead Letter への転送や Push の OIDC トークン発行は、Pub/Sub のサービスエージェントが行う
   pubsub_service_agent = "serviceAccount:service-${data.google_project.this.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
